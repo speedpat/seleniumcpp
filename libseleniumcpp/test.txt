@@ -1,0 +1,24 @@
+{"sessionId":"",    "desiredCapabilites":{"browserName":"chrome","javascriptEnabled":"True","platform":"ANY","version":""}}
+{"sessionId": null, "desiredCapabilities": {"platform": "ANY", "browserName": "chrome", "version": "", "javascriptEnabled": true}}
+
+
+.(.0.(.0POST /session HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Host: localhost:9515
+Accept: */*
+Accept-Encoding: identity;q=1.0, *;q=0
+Connection: Close
+
+{"sessionId":"","desiredCapabilities":{"browserName":"chrome","javascriptEnabled":"True","platform":"ANY","version":""}}
+
+
+.)...)..POST /session HTTP/1.1
+Accept-Encoding: identity
+Content-Length: 130
+Host: 127.0.0.1:9515
+Accept: application/json
+User-Agent: Python-urllib/2.7
+Connection: close
+Content-Type: application/x-www-form-urlencoded
+
+{"sessionId": null, "desiredCapabilities": {"platform": "ANY", "browserName": "chrome", "version": "", "javascriptEnabled": true}}
