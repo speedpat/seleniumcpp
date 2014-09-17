@@ -28,4 +28,20 @@ const By& By::CLASS_NAME = By("class name");
 const By& By::CSS_SELECTOR = By("css selector");
 
 
+Locator::Locator(const By& by, const std::string& value)
+ : m_by(by), m_value(value)
+{
+}
+
+
+const By& Locator::getClause() const
+{
+  return m_by;
+}
+
+const std::string& Locator::getValue() const
+{
+  return m_value;
+}
+
 } /* namespace selenium */

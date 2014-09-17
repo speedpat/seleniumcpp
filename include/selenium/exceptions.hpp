@@ -59,6 +59,14 @@ public:
   virtual ~TimeoutException() = default;
 };
 
+class StaleElementReferenceException : public WebDriverException
+{
+public:
+  StaleElementReferenceException(const std::string& what);
+  StaleElementReferenceException(const NoSuchFrameException& e);
+  virtual ~StaleElementReferenceException() = default;
+
+};
 
 } /* namespace selenium */
 

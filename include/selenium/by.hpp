@@ -35,6 +35,20 @@ private:
 
 std::ostream& operator<< (std::ostream& stream, const By& by);
 
+class Locator
+{
+public:
+  Locator(const By& by, const std::string& value);
+  ~Locator() = default;
+
+  const By& getClause() const;
+  const std::string& getValue() const;
+
+private:
+  const By& m_by;
+  const std::string m_value;
+};
+
 
 } /* namespace selenium */
 

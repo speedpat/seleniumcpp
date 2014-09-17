@@ -75,6 +75,17 @@ TimeoutException::TimeoutException(const NoSuchFrameException& e)
 
 }
 
+StaleElementReferenceException::StaleElementReferenceException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
+
+StaleElementReferenceException::StaleElementReferenceException(const NoSuchFrameException& e)
+ : WebDriverException(e)
+{
+
+}
 
 
 } /* namespace selenium */
