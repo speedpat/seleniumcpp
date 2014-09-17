@@ -61,10 +61,14 @@ public:
 
 	std::string id() const;
 
+  friend std::ostream& operator<<(std::ostream& os, const WebElement& element);
+
 private:
 	struct Private;
 	Private* m_private;
 };
+
+std::ostream& operator<< (std::ostream& stream, const WebElement& element);
 
 } /* namespace selenium */
 

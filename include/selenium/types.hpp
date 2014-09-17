@@ -36,6 +36,8 @@ typedef std::list<Cookie> Cookies;
 typedef std::map<std::string, std::string> Capabilities;
 
 class WebDriver;
+class Alert;
+class SwitchTo;
 
 class WebElement;
 typedef std::list<WebElement> WebElements;

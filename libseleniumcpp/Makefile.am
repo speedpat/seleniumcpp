@@ -19,8 +19,11 @@ libseleniumcpp_la_SOURCES = \
 	action.cpp \
 	types.cpp \
 	wait.cpp \
-	expectedconditions.cpp
-	
+	expectedconditions.cpp \
+	alert.cpp \
+	switch_to.cpp \
+	mobile.cpp \
+	application_cache.cpp
 
 # Linker options libTestProgram
 libseleniumcpp_la_LDFLAGS = 

@@ -27,16 +27,11 @@ WebElement::Private::Private(const Private& other)
 WebElement::Private::~Private() {
 }
 
-/*Response WebElement::Private::execute(const std::string& command, const CommandParameters& params)
-{
-	CommandParameters _params = params;
-	_params.add(std::string("id"), m_elementId);
-	return m_driver.execute(command, _params);
+std::ostream& operator<<(std::ostream& stream, const WebElement& element) {
+  stream << element.m_private->m_elementId;
+  return stream;
 }
 
-Response WebElement::Private::execute(const std::string& command)
-{
-	return execute(command, {});
-}*/
+
 
 } /* namespace selenium */

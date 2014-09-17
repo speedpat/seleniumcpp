@@ -87,6 +87,8 @@ namespace selenium
     SET_SCRIPT_TIMEOUT,
     SET_TIMEOUTS,
     MAXIMIZE_WINDOW,
+    GET_LOG,
+    GET_LOG_TYPES,
 
 // Alerts
     DISMISS_ALERT,
@@ -119,14 +121,24 @@ namespace selenium
     TOUCH_MOVE,
     TOUCH_SCROLL,
     TOUCH_FLICK,
-    TOUCH_ELEMENT_SCROLL,
-    TOUCH_ELEMENT_DOUBLETAP,
-    TOUCH_ELEMENT_LONGTAP,
-    TOUCH_ELEMENT_FLICK,
+    TOUCH_DOUBLE_TAP,
+    TOUCH_LONG_PRESS,
+
+//  HTML 5
+    EXECUTE_SQL,
 
 //  GEO Location
     GET_GEO_LOCATION,
     SET_GEO_LOCATION,
+
+// Application Cache
+    GET_APP_CACHE,
+    GET_APP_CACHE_STATUS,
+    CLEAR_APP_CACHE,
+
+// Network Connection
+    GET_NETWORK_CONNECTION,
+    SET_NETWORK_CONNECTION,
 
 // Local Storage
     GET_LOCAL_STORAGE_KEYS,
@@ -144,10 +156,7 @@ namespace selenium
     DELETE_SESSION_STORAGE_ITEM,
     GET_SESSION_STORAGE_SIZE,
 
-// Misc.
-    GET_LOG,
-    GET_LOG_TYPES,
-    GET_APP_CACHE_STATUS,
+
 
   };
 

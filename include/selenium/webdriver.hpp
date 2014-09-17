@@ -19,6 +19,8 @@ class Action;
 }
 class By;
 class WebElement;
+class Mobile;
+class ApplicationCache;
 
 class WebDriver {
 public:
@@ -116,10 +118,8 @@ public:
 
 	void maximizeWindow();
 
-	std::string switchToActiveElement();
-	void switchToWindow(const std::string& window_name);
-	void switchToFrame(const std::string& frame_reference);
-	void switchToDefaultContent();
+	SwitchTo switchTo();
+	Mobile mobile();
 
 	void back();
 	void forward();
@@ -138,6 +138,7 @@ public:
 	Capabilities getCapabilities();
 	bool getScreenshotAsFile(const std::string& filename);
 	std::string getScreenshotAsBase64();
+	std::vector<char> getScreenshotAsPMG();
 
 	void setWindowSize(const unsigned int width, const unsigned int height, const std::string& windowHandle = "current");
 	Dimension getWindowSize(const std::string& windowHandle = "current");
@@ -147,6 +148,11 @@ public:
 
 	ScreenOrientation getOrientiation();
 	void setOrientation(ScreenOrientation orientation);
+
+	ApplicationCache getApplicationCache();
+
+	std::vector<std::string> getLogTypes();
+	std::vector<std::string> getLog(const std::string& logType);
 
 private:
 	friend class interactions::Actions;

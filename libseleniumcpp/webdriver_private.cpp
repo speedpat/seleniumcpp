@@ -173,14 +173,10 @@ WebDriver::Private::Commands WebDriver::Private::s_commands =
         { Command::TOUCH_UP, { POST, "/session/:sessionId/touch/up" } },
         { Command::TOUCH_MOVE, { POST, "session/:sessionId/touch/move" } },
         { Command::TOUCH_SCROLL, { POST, "session/:sessionId/touch/scroll" } },
-        { Command::TOUCH_ELEMENT_SCROLL, { POST,
-            "session/:sessionId/touch/scroll" } },
-        { Command::TOUCH_ELEMENT_DOUBLETAP, { POST,
+        { Command::TOUCH_DOUBLE_TAP, { POST,
             "session/:sessionId/touch/doubleclick" } },
-        { Command::TOUCH_ELEMENT_LONGTAP, { POST,
+        { Command::TOUCH_LONG_PRESS, { POST,
             "session/:sessionId/touch/longclick" } },
-        { Command::TOUCH_ELEMENT_FLICK,
-            { POST, "session/:sessionId/touch/flick" } },
         { Command::TOUCH_FLICK, { POST, "session/:sessionId/touch/flick" } },
         { Command::GET_GEO_LOCATION, { GET, "/session/:sessionId/location" } }, //  Get the current geo location.
         { Command::SET_GEO_LOCATION, { POST, "/session/:sessionId/location" } }, // Set the current geo location.
@@ -218,6 +214,10 @@ WebDriver::Private::Commands WebDriver::Private::s_commands =
         { Command::UPLOAD_FILE, { POST, "/session/$(sessionId)/file" } },
         { Command::GET_SPEED, { GET, "/session/$(sessionId)/speed" } },
         { Command::SET_SPEED, { POST, "/session/$(sessionId)/speed" } },
+        { Command::GET_NETWORK_CONNECTION,
+            { GET, "/session/$(sessionId)/network_connection" } },
+        { Command::SET_NETWORK_CONNECTION,
+            {POST, "/session/$(sessionId)/network_connection" } },
     };
 
 WebDriver::Private::Private(const std::string& uri,

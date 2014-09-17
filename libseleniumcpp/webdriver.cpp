@@ -18,6 +18,7 @@
 #include "command.hpp"
 #include "selenium/webelement.hpp"
 #include "selenium/by.hpp"
+#include "selenium/switch_to.hpp"
 
 namespace selenium {
 
@@ -243,35 +244,10 @@ void WebDriver::maximizeWindow()
 }
 
 
-std::string WebDriver::switchToActiveElement()
+SwitchTo WebDriver::switchTo()
 {
-	return m_private->execute<std::string>(Command::GET_ACTIVE_ELEMENT);
+	return SwitchTo(*m_private);
 }
-
-void WebDriver::switchToWindow(const std::string& window_name)
-{
-	CommandParameters params;
-	params.add("name", window_name);
-
-	m_private->execute(Command::SWITCH_TO_WINDOW, params);
-}
-
-void WebDriver::switchToFrame(const std::string& frame_reference)
-{
-	CommandParameters params;
-	params.add("id", frame_reference);
-
-	m_private->execute(Command::SWITCH_TO_FRAME, params);
-}
-
-void WebDriver::switchToDefaultContent()
-{
-	CommandParameters params;
-	params.add("id", "");
-
-	m_private->execute(Command::SWITCH_TO_FRAME, params);
-}
-
 
 void WebDriver::back()
 {
@@ -488,7 +464,7 @@ struct ScreenOrientationTranslator
         return ::boost::optional<external_type>(boost::none);
     }
 
-    // Converts a bool to string
+    // Converts a ScreenOrientation to string
     ::boost::optional<internal_type> put_value(const external_type& e)
     {
     	std::cout << "put value: ";
