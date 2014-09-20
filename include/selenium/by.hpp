@@ -12,6 +12,8 @@
 
 namespace selenium {
 
+class Locator;
+
 class By {
 public:
 	static const By& ID;
@@ -22,6 +24,15 @@ public:
 	static const By& XPATH;
 	static const By& CLASS_NAME;
 	static const By& CSS_SELECTOR;
+
+	static Locator id(const std::string& id);
+	static Locator name(const std::string& name);
+	static Locator linkText(const std::string& linkText);
+	static Locator partialLinkText(const std::string& linkText);
+	static Locator tagName(const std::string& tagName);
+	static Locator xpath(const std::string& xpath);
+	static Locator className(const std::string& className);
+	static Locator cssSelector(const std::string& selector);
 
 protected:
 	By(const std::string& selector);

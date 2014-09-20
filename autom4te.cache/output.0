@@ -15122,7 +15122,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-ac_config_files="$ac_config_files Makefile exampleProgram/Makefile libseleniumcpp/Makefile include/Makefile"
+ac_config_files="$ac_config_files Makefile exampleProgram/Makefile tests/Makefile libseleniumcpp/Makefile include/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -16248,6 +16248,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "exampleProgram/Makefile") CONFIG_FILES="$CONFIG_FILES exampleProgram/Makefile" ;;
+    "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "libseleniumcpp/Makefile") CONFIG_FILES="$CONFIG_FILES libseleniumcpp/Makefile" ;;
     "include/Makefile") CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
 

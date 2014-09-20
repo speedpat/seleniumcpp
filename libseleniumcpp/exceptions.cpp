@@ -87,6 +87,17 @@ StaleElementReferenceException::StaleElementReferenceException(const NoSuchFrame
 
 }
 
+ElementNotVisibleException::ElementNotVisibleException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
+
+NoAlertPresentException::NoAlertPresentException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
 
 } /* namespace selenium */
 

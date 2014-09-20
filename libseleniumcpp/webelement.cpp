@@ -126,6 +126,12 @@ WebElement WebElement::findElement(const By& by, const std::string& value)
 	return m_private->execute<WebElement>(Command::FIND_CHILD_ELEMENT, params);
 }
 
+WebElement WebElement::findElement(const Locator& locator)
+{
+  return findElement(locator.getClause(), locator.getValue());
+}
+
+
 WebElements WebElement::findElementsByID(const std::string& id)
 {
 	return findElements(By::ID, id);
@@ -174,6 +180,12 @@ WebElements WebElement::findElements(const By& by, const std::string& value)
 
 	return m_private->execute<WebElements>(Command::FIND_CHILD_ELEMENTS, params);
 }
+
+WebElements WebElement::findElements(const Locator& locator)
+{
+  return findElements(locator.getClause(), locator.getValue());
+}
+
 
 void WebElement::sendKeys()
 {

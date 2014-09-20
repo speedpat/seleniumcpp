@@ -32,20 +32,22 @@ void SwitchTo::defaultContent()
   m_driver.execute(Command::SWITCH_TO_FRAME, params);
 }
 
-void SwitchTo::frame(const std::string& frameReference)
+SwitchTo& SwitchTo::frame(const std::string& frameReference)
 {
   CommandParameters params;
   params.add("id", frameReference);
 
   m_driver.execute(Command::SWITCH_TO_FRAME, params);
+  return *this;
 }
 
-void SwitchTo::frame(const WebElement& frameReference)
+SwitchTo& SwitchTo::frame(const WebElement& frameReference)
 {
   CommandParameters params;
   params.add("id", frameReference);
 
   m_driver.execute(Command::SWITCH_TO_FRAME, params);
+  return *this;
 }
 
 void SwitchTo::parentFrame()

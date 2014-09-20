@@ -27,6 +27,45 @@ const By& By::XPATH = By("xpath");
 const By& By::CLASS_NAME = By("class name");
 const By& By::CSS_SELECTOR = By("css selector");
 
+Locator By::id(const std::string& id)
+{
+  return Locator(By::ID, id);
+}
+
+Locator By::name(const std::string& name)
+{
+  return Locator(By::NAME, name);
+}
+
+Locator By::linkText(const std::string& linkText)
+{
+  return Locator(By::LINK_TEXT, linkText);
+}
+
+Locator By::partialLinkText(const std::string& linkText)
+{
+  return Locator(By::PARTIAL_LINK_TEXT, linkText);
+}
+
+Locator By::tagName(const std::string& tagName)
+{
+  return Locator(By::TAG_NAME, tagName);
+}
+
+Locator By::xpath(const std::string& xpath)
+{
+  return Locator(By::XPATH, xpath);
+}
+
+Locator By::className(const std::string& className)
+{
+  return Locator(By::CLASS_NAME, className);
+}
+
+Locator By::cssSelector(const std::string& selector)
+{
+  return Locator(By::CSS_SELECTOR, selector);
+}
 
 Locator::Locator(const By& by, const std::string& value)
  : m_by(by), m_value(value)

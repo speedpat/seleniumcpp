@@ -357,7 +357,8 @@ WebDriver::Private::execute(const Command& command,
         break;
       }
       case ElementNotVisible:
-        {
+      {
+        throw ElementNotVisibleException(value);
         break;
       }
       case InvalidElementState:
@@ -402,6 +403,13 @@ WebDriver::Private::execute(const Command& command,
       }
       case NoAlertOpenError:
         {
+          ::boost::property_tree::iptree value = res.get_child("value");
+          std::string message;
+          if (value.find("message") != value.not_found())
+          {
+            message = value.get<std::string>("message");
+          }
+          throw NoAlertPresentException(message);
         break;
       }
       case ScriptTimeout:
@@ -530,6 +538,11 @@ WebDriver::ScriptResult WebDriver::Private::executeScript(
     }
     argsParam.push_back(CommandParameters::value_type("", argParam));
     argParam.clear();
+  }
+  if (args.empty())
+  {
+    argParam.put("", "");
+    argsParam.push_back(CommandParameters::value_type("", argParam));
   }
   params.put_child("args", argsParam);
   Response response = execute(command, params);

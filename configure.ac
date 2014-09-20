@@ -21,6 +21,7 @@ AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_CONFIG_FILES(Makefile
                 exampleProgram/Makefile
+                tests/Makefile
                 libseleniumcpp/Makefile
                 include/Makefile)
 AC_OUTPUT

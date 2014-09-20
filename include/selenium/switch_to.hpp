@@ -22,8 +22,8 @@ public:
 
   Alert alert();
   void defaultContent();
-  void frame(const std::string& reference);
-  void frame(const WebElement& element);
+  SwitchTo& frame(const std::string& reference);
+  SwitchTo& frame(const WebElement& element);
   void parentFrame();
   void window(const std::string& windowName);
   WebElement activeElement();

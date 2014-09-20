@@ -68,6 +68,21 @@ public:
 
 };
 
+class ElementNotVisibleException : public WebDriverException
+{
+public:
+  ElementNotVisibleException(const std::string& what);
+  virtual ~ElementNotVisibleException() = default;
+
+};
+
+class NoAlertPresentException : public WebDriverException
+{
+public:
+  NoAlertPresentException(const std::string& what);
+  virtual ~NoAlertPresentException() = default;
+};
+
 } /* namespace selenium */
 
 

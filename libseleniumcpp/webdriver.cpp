@@ -55,6 +55,11 @@ WebDriver::~WebDriver()
 
 void WebDriver::close()
 {
+  m_private->execute(Command::CLOSE, {});
+}
+
+void WebDriver::quit()
+{
 	m_private->execute(Command::QUIT, {});
 }
 
@@ -128,6 +133,11 @@ WebElement WebDriver::findElement(const By& by, const std::string& value)
 	return WebElement(*m_private, elementId);
 }
 
+WebElement WebDriver::findElement(const Locator& locator)
+{
+  return findElement(locator.getClause(), locator.getValue());
+}
+
 
 WebElements WebDriver::findElementsByID(const std::string& id)
 {
@@ -185,6 +195,11 @@ WebElements WebDriver::findElements(const By& by, const std::string& value)
 	}
 
 	return webElements;
+}
+
+WebElements WebDriver::findElements(const Locator& locator)
+{
+  return findElements(locator.getClause(), locator.getValue());
 }
 
 WebDriver::ScriptResult WebDriver::executeScript(const std::string& script, std::vector<ScriptArg> args)

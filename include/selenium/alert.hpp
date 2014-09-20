@@ -17,12 +17,15 @@ class Alert
 {
 public:
   Alert(WebDriver::Private& driver);
+  Alert(const Alert& other);
   ~Alert() = default;
 
   std::string text();
   void dismiss();
   void accept();
   void sendKeys(const std::string& keys);
+
+  Alert& operator=(const Alert& other);
 
 private:
   WebDriver::Private& m_driver;

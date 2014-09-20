@@ -111,36 +111,24 @@ struct TitleContainsPredicate
 
 struct PresenceOfElementLocatedPredicate
 {
-  PresenceOfElementLocatedPredicate(const By& locator, const std::string& value)
-      : m_locator(locator), m_value(value)
-  {
-  }
-
-  PresenceOfElementLocatedPredicate(const By& locator, const char* value)
-      : m_locator(locator), m_value(value)
+  PresenceOfElementLocatedPredicate(const Locator& locator)
+      : m_locator(locator)
   {
   }
 
   ::boost::optional<WebElement> apply(WebDriver& driver)
   {
-    WebElement element = driver.findElement(m_locator, m_value);
+    WebElement element = driver.findElement(m_locator);
     return ::boost::optional<WebElement>(element);
   }
 
-  const By& m_locator;
-  std::string m_value;
+  const Locator& m_locator;
 };
 
 struct VisibilityOfElementLocatedPredicate : public PresenceOfElementLocatedPredicate
 {
-  VisibilityOfElementLocatedPredicate(const By& locator,
-      const std::string& value)
-      : PresenceOfElementLocatedPredicate(locator, value)
-  {
-  }
-
-  VisibilityOfElementLocatedPredicate(const By& locator, const char* value)
-      : PresenceOfElementLocatedPredicate(locator, value)
+  VisibilityOfElementLocatedPredicate(const Locator& locator)
+      : PresenceOfElementLocatedPredicate(locator)
   {
   }
 
@@ -164,36 +152,25 @@ struct VisibilityOfElementLocatedPredicate : public PresenceOfElementLocatedPred
 
 struct PresenceOfAllElementsLocatedPredicate
 {
-  PresenceOfAllElementsLocatedPredicate(const By& locator, const std::string& value)
-      : m_locator(locator), m_value(value)
-  {
-  }
-
-  PresenceOfAllElementsLocatedPredicate(const By& locator, const char* value)
-      : m_locator(locator), m_value(value)
+  PresenceOfAllElementsLocatedPredicate(const Locator& locator)
+      : m_locator(locator)
   {
   }
 
   ::boost::optional<WebElements> apply(WebDriver& driver)
   {
-    WebElements elements = driver.findElements(m_locator, m_value);
+    WebElements elements = driver.findElements(m_locator);
     return ::boost::optional<WebElements>(elements);
   }
 
-  const By& m_locator;
-  std::string m_value;
+  const Locator& m_locator;
 };
 
 
 struct TextToBePresentInElementPredicate : public PresenceOfElementLocatedPredicate
 {
-  TextToBePresentInElementPredicate(const By& locator, const std::string& value, const std::string& text)
-      : PresenceOfElementLocatedPredicate(locator, value), m_text(text)
-  {
-  }
-
-  TextToBePresentInElementPredicate(const By& locator, const char* value, const char* text)
-      : PresenceOfElementLocatedPredicate(locator, value), m_text(text)
+  TextToBePresentInElementPredicate(const Locator& locator, const std::string& text)
+      : PresenceOfElementLocatedPredicate(locator), m_text(text)
   {
   }
 
@@ -224,13 +201,8 @@ struct TextToBePresentInElementPredicate : public PresenceOfElementLocatedPredic
 
 struct TextToBePresentInElementValuePredicate : public PresenceOfElementLocatedPredicate
 {
-  TextToBePresentInElementValuePredicate(const By& locator, const std::string& value, const std::string& text)
-      : PresenceOfElementLocatedPredicate(locator, value), m_text(text)
-  {
-  }
-
-  TextToBePresentInElementValuePredicate(const By& locator, const char* value, const char* text)
-      : PresenceOfElementLocatedPredicate(locator, value), m_text(text)
+  TextToBePresentInElementValuePredicate(const Locator& locator, const std::string& text)
+      : PresenceOfElementLocatedPredicate(locator), m_text(text)
   {
   }
 
@@ -266,14 +238,8 @@ struct FrameToBeAvailableAndSwitchToIt
 
 struct InvisibilityOfElementLocatedPredicate : public PresenceOfElementLocatedPredicate
 {
-  InvisibilityOfElementLocatedPredicate(const By& locator, const std::string& value)
-   : PresenceOfElementLocatedPredicate(locator, value)
-  {
-
-  }
-
-  InvisibilityOfElementLocatedPredicate(const By& locator, const char* value)
-   : PresenceOfElementLocatedPredicate(locator, value)
+  InvisibilityOfElementLocatedPredicate(const Locator& locator)
+   : PresenceOfElementLocatedPredicate(locator)
   {
 
   }
@@ -303,14 +269,8 @@ struct InvisibilityOfElementLocatedPredicate : public PresenceOfElementLocatedPr
 
 struct ElementToBeClickablePredicate : public VisibilityOfElementLocatedPredicate
 {
-  ElementToBeClickablePredicate(const By& locator,
-      const std::string& value)
-      : VisibilityOfElementLocatedPredicate(locator, value)
-  {
-  }
-
-  ElementToBeClickablePredicate(const By& locator, const char* value)
-      : VisibilityOfElementLocatedPredicate(locator, value)
+  ElementToBeClickablePredicate(const Locator& locator)
+      : VisibilityOfElementLocatedPredicate(locator)
   {
   }
 
@@ -388,15 +348,8 @@ struct ElementSelectionStatePredicate : public WebElementPredicate
 
 struct ElementLocatedIsSelectedPredicate : public PresenceOfElementLocatedPredicate
 {
-  ElementLocatedIsSelectedPredicate(const By& locator,
-      const std::string& value)
-      : PresenceOfElementLocatedPredicate(locator, value)
-  {
-  }
-
-  ElementLocatedIsSelectedPredicate(const By& locator,
-      const char* value)
-      : PresenceOfElementLocatedPredicate(locator, value)
+  ElementLocatedIsSelectedPredicate(const Locator& locator)
+      : PresenceOfElementLocatedPredicate(locator)
   {
   }
 
@@ -416,15 +369,8 @@ struct ElementLocatedIsSelectedPredicate : public PresenceOfElementLocatedPredic
 
 struct ElementLocatedSelectionStateToBePredicate : public PresenceOfElementLocatedPredicate
 {
-  ElementLocatedSelectionStateToBePredicate(const By& locator,
-      const std::string& value, bool selected)
-      : PresenceOfElementLocatedPredicate(locator, value), m_selected(selected)
-  {
-  }
-
-  ElementLocatedSelectionStateToBePredicate(const By& locator,
-      const char* value, bool selected)
-      : PresenceOfElementLocatedPredicate(locator, value), m_selected(selected)
+  ElementLocatedSelectionStateToBePredicate(const Locator& locator, bool selected)
+      : PresenceOfElementLocatedPredicate(locator), m_selected(selected)
   {
   }
 
@@ -446,9 +392,14 @@ struct AlertIsPresentPredicate
 {
   ::boost::optional<Alert> apply(WebDriver& driver)
   {
-    Alert alert = driver.switchTo().alert();
-    alert.text();
-    return ::boost::optional<Alert>(alert);
+    try {
+      Alert alert = driver.switchTo().alert();
+      alert.text();
+      return ::boost::optional<Alert>(alert);
+    } catch (NoAlertPresentException& e)
+    {
+      return ::boost::optional<Alert>(::boost::none);
+    }
   }
 
 };

@@ -16,6 +16,18 @@ Alert::Alert(WebDriver::Private& driver)
 {
 }
 
+Alert::Alert(const Alert& other)
+ : m_driver(other.m_driver)
+{
+
+}
+
+Alert& Alert::operator=(const Alert& other)
+{
+  m_driver = other.m_driver;
+  return *this;
+}
+
 std::string Alert::text()
 {
   return m_driver.execute<std::string>(Command::GET_ALERT_TEXT);
@@ -34,15 +46,7 @@ void Alert::accept()
 void Alert::sendKeys(const std::string& keys)
 {
   CommandParameters params;
-  CommandParameters keysParam;
-  CommandParameters keyParam;
-  for (char key: keys)
-  {
-    keyParam.put("", key);
-    keysParam.push_back(CommandParameters::value_type("", keyParam));
-
-  }
-  params.put_child("text", keysParam);
+  params.add("text", keys);
   m_driver.execute(Command::SET_ALERT_VALUE, params);
 
 }

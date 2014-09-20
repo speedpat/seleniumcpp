@@ -86,8 +86,8 @@ int main(void) {
     ut = w.until(ExpectedConditions::TitleIs(foos));
     ut = w.until(ExpectedConditions::TitleIs("bar"));
 
-    bb = w.until(ExpectedConditions::PresenceOfElementLocated(By::ID, foos));
-    bb = w.until(ExpectedConditions::PresenceOfElementLocated(By::ID, "bar"));
+    bb = w.until(ExpectedConditions::PresenceOfElementLocated(By::id(foos)));
+    bb = w.until(ExpectedConditions::PresenceOfElementLocated(By::id("bar")));
 
 	} catch (std::string& e) {
 		std::cout << e << std::endl;

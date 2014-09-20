@@ -1,1 +1,1 @@
-SUBDIRS=libseleniumcpp include exampleProgram
+SUBDIRS=libseleniumcpp include exampleProgram tests

@@ -18,6 +18,7 @@ class Actions;
 class Action;
 }
 class By;
+class Locator;
 class WebElement;
 class Mobile;
 class ApplicationCache;
@@ -95,6 +96,7 @@ public:
 	WebElement findElementByCssSelector(const std::string& css_selector);
 
 	WebElement findElement(const By& by, const std::string& value);
+	WebElement findElement(const Locator& locator);
 
 	WebElements findElementsByID(const std::string& id);
 	WebElements findElementsByName(const std::string& name);
@@ -106,9 +108,10 @@ public:
 	WebElements findElementsByCssSelector(const std::string& css_selector);
 
 	WebElements findElements(const By& by, const std::string& value);
+  WebElements findElements(const Locator& locator);
 
-	ScriptResult executeScript(const std::string& script, std::vector<ScriptArg> args);
-	ScriptResult executeAsyncSript(const std::string& script, std::vector<ScriptArg> args);
+	ScriptResult executeScript(const std::string& script, std::vector<ScriptArg> args = {});
+	ScriptResult executeAsyncSript(const std::string& script, std::vector<ScriptArg> args = {});
 
 	std::string currentUrl();
 	std::string pageSource();
