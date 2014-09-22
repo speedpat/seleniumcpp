@@ -72,4 +72,9 @@ std::string& TestEnvironment::driverUrl()
   return m_driverUrl;
 }
 
+std::string TestEnvironment::whereIs(const std::string& page)
+{
+  return m_webserver->whereIs(page);
+}
+
 } /* namespace selenium */

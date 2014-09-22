@@ -39,6 +39,7 @@ public:
     ScriptArg(const char* val);
     ScriptArg(std::string val);
     ScriptArg(int val);
+    ScriptArg(long val);
     ScriptArg(double val);
     ScriptArg(float val);
     ScriptArg(bool val);
@@ -47,6 +48,7 @@ public:
 
     ArgType type() const;
     operator int() const;
+    operator long() const;
     operator float() const;
     operator double() const;
     operator bool() const;
@@ -55,7 +57,7 @@ public:
   private:
     ArgType m_type;
     std::string m_stringvalue;
-    int m_int_value;
+    long m_int_value;
     double m_double_value;
   };
 
@@ -65,7 +67,8 @@ public:
     ScriptResult(WebDriver::Private& driver, std::string val);
     ScriptResult(const ScriptResult& other);
 
-    operator int() const  throw (std::invalid_argument, std::out_of_range);
+    operator int() const throw (std::invalid_argument, std::out_of_range);
+    operator long() const throw (std::invalid_argument, std::out_of_range);
     operator float() const;
     operator double() const;
     operator bool() const;

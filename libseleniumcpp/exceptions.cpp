@@ -15,11 +15,6 @@ WebDriverException::WebDriverException(const std::string& what)
 
 }
 
-WebDriverException::WebDriverException(const WebDriverException& e)
- : std::runtime_error(e)
-{
-
-}
 
 ErrorInResponseException::ErrorInResponseException(const std::string& what)
  : WebDriverException(what), m_cause("")
@@ -33,20 +28,8 @@ ErrorInResponseException::ErrorInResponseException(const std::string& what, cons
 
 }
 
-ErrorInResponseException::ErrorInResponseException(const ErrorInResponseException& e)
- : WebDriverException(e), m_cause(e.m_cause)
-{
-
-}
-
 NoSuchElementException::NoSuchElementException(const std::string& what)
  : WebDriverException(what)
-{
-
-}
-
-NoSuchElementException::NoSuchElementException(const NoSuchElementException& e)
- : WebDriverException(e)
 {
 
 }
@@ -57,32 +40,14 @@ NoSuchFrameException::NoSuchFrameException(const std::string& what)
 
 }
 
-NoSuchFrameException::NoSuchFrameException(const NoSuchFrameException& e)
- : WebDriverException(e)
-{
-
-}
-
 TimeoutException::TimeoutException(const std::string& what)
  : WebDriverException(what)
 {
 
 }
 
-TimeoutException::TimeoutException(const NoSuchFrameException& e)
- : WebDriverException(e)
-{
-
-}
-
 StaleElementReferenceException::StaleElementReferenceException(const std::string& what)
  : WebDriverException(what)
-{
-
-}
-
-StaleElementReferenceException::StaleElementReferenceException(const NoSuchFrameException& e)
- : WebDriverException(e)
 {
 
 }
@@ -99,6 +64,35 @@ NoAlertPresentException::NoAlertPresentException(const std::string& what)
 
 }
 
-} /* namespace selenium */
+InvalidElementStateException::InvalidElementStateException(const std::string& what)
+ : WebDriverException(what)
+{
 
+}
+
+MoveTargetOutOfBoundsException::MoveTargetOutOfBoundsException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
+
+UnknownErrorException::UnknownErrorException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
+
+ElementIsNotSelectableException::ElementIsNotSelectableException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
+
+JavaScriptErrorException::JavaScriptErrorException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
+
+} /* namespace selenium */
 

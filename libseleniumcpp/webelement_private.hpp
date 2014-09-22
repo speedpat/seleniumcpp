@@ -30,7 +30,7 @@ struct WebElement::Private {
 	{
 		CommandParameters _params = params;
 		_params.add(std::string("id"), m_elementId);
-		return m_driver.execute<RES, value_handler>(command, params);
+		return m_driver.execute<RES, value_handler>(command, _params);
 	}
 
 

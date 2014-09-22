@@ -6,6 +6,7 @@
  */
 
 #include "selenium/mobile.hpp"
+#include "log.hpp"
 #include "webdriver_private.hpp"
 
 namespace selenium
@@ -42,7 +43,7 @@ struct ConnectionTypeTranslator
     // Converts a string to ConnectionType
     ::boost::optional<external_type> get_value(const internal_type& str)
     {
-      std::cout << "get value: " << str << std::endl;
+      LOG("get value: " << str);
         std::string value = ::boost::to_upper_copy(str);
         int intVal = 0;
         try {

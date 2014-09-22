@@ -11,6 +11,7 @@
 
 #include <selenium/exceptions.hpp>
 
+#include "log.hpp"
 #include "webdriver_private.hpp"
 #include "command.hpp"
 
@@ -257,7 +258,7 @@ WebDriver::Private::execute(const Command& command,
   std::string output = boost::xpressive::regex_replace(path, envar,
       [&_params](boost::xpressive::smatch const &what)
       {
-        std::cout << what[1].str() << std::endl;
+        LOG(what[1].str());
         std::string value = _params.get<std::string>(what[1].str());
         _params.erase(what[1].str());
         return value;
@@ -265,7 +266,7 @@ WebDriver::Private::execute(const Command& command,
 
   request_uri.append(output);
 
-  std::cout << request_uri.string() << std::endl;
+  LOG(request_uri.string());
 
   httpclient::request request(request_uri);
   request << boost::network::header("Content-Type",
@@ -279,7 +280,7 @@ WebDriver::Private::execute(const Command& command,
   length << body.length();
   request << boost::network::header("Content-Length", length.str());
 
-  std::cout << "request: " << body << std::endl;
+  LOG("request: " << body);
   request.body(body);
 
   httpclient::response response;
@@ -287,19 +288,19 @@ WebDriver::Private::execute(const Command& command,
   {
     case GET:
       {
-      std::cout << "GET" << std::endl;
+      LOG("GET");
       response = m_client.get(request);
       break;
     }
     case POST:
       {
-      std::cout << "POST" << std::endl;
+      LOG("POST");
       response = m_client.post(request);
       break;
     }
     case DELETE:
       {
-      std::cout << "DELETE" << std::endl;
+      LOG("DELETE");
       response = m_client.delete_(request);
       break;
     }
@@ -313,7 +314,7 @@ WebDriver::Private::execute(const Command& command,
   {
     boost::property_tree::iptree res;
     std::stringstream str(response.body());
-    std::cout << "response: " << response.body() << std::endl;
+    LOG("response: " << response.body());
     try
     {
       boost::property_tree::json_parser::read_json(str, res);
@@ -326,6 +327,16 @@ WebDriver::Private::execute(const Command& command,
     ResponseStatusCode status = static_cast<ResponseStatusCode>(res.get<int>(
         "status"));
     std::string value = res.get<std::string>("value");
+    ::boost::property_tree::iptree valueObj = res.get_child("value");
+    std::string message;
+    if (valueObj.find("message") != valueObj.not_found())
+    {
+      message = valueObj.get<std::string>("message");
+    }
+    else
+    {
+      message = value;
+    }
     switch (status)
     {
       case Success:
@@ -354,6 +365,7 @@ WebDriver::Private::execute(const Command& command,
       }
       case StaleElementReference:
         {
+          throw StaleElementReferenceException(message);
         break;
       }
       case ElementNotVisible:
@@ -363,18 +375,22 @@ WebDriver::Private::execute(const Command& command,
       }
       case InvalidElementState:
         {
+          throw InvalidElementStateException(message);
         break;
       }
       case UnknownError:
         {
+          throw UnknownErrorException(message);
         break;
       }
       case ElementIsNotSelectable:
         {
+          throw ElementIsNotSelectableException(message);
         break;
       }
       case JavaScriptError:
         {
+          throw JavaScriptErrorException(message);
         break;
       }
       case XPathLookupError:
@@ -403,12 +419,6 @@ WebDriver::Private::execute(const Command& command,
       }
       case NoAlertOpenError:
         {
-          ::boost::property_tree::iptree value = res.get_child("value");
-          std::string message;
-          if (value.find("message") != value.not_found())
-          {
-            message = value.get<std::string>("message");
-          }
           throw NoAlertPresentException(message);
         break;
       }
@@ -438,6 +448,7 @@ WebDriver::Private::execute(const Command& command,
       }
       case MoveTargetOutOfBounds:
         {
+          throw MoveTargetOutOfBoundsException(message);
         break;
       }
       default:

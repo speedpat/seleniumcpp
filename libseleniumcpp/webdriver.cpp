@@ -14,6 +14,7 @@
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/archive/iterators/insert_linebreaks.hpp>
 
+#include "log.hpp"
 #include "webdriver_private.hpp"
 #include "command.hpp"
 #include "selenium/webelement.hpp"
@@ -466,7 +467,7 @@ struct ScreenOrientationTranslator
     // Converts a string to ScreenOrientation
     ::boost::optional<external_type> get_value(const internal_type& str)
     {
-    	std::cout << "get value: " << str << std::endl;
+    	LOG("get value: " << str);
         std::string value = ::boost::to_upper_copy(str);
         if (value == "PORTRAIT")
         {
@@ -482,20 +483,19 @@ struct ScreenOrientationTranslator
     // Converts a ScreenOrientation to string
     ::boost::optional<internal_type> put_value(const external_type& e)
     {
-    	std::cout << "put value: ";
     	switch (e)
     	{
     	case PORTRAIT: {
-    		std::cout << "PORTRAIT" << std::endl;
+    		LOG("PORTRAIT");
     		return ::boost::optional<internal_type>("PORTRAIT");
     	}
     	case LANDSCAPE: {
-    		std::cout << "LANDSCAPE" << std::endl;
+    		LOG("LANDSCAPE");
     		return ::boost::optional<internal_type>("LANDSCAPE");
     		break;
     	}
     	default: {
-    		std::cout << "NONE" << std::endl;
+    		LOG("NONE");
     		return ::boost::optional<internal_type>(boost::none);
     	}
     	}
@@ -516,52 +516,58 @@ void WebDriver::setOrientation(ScreenOrientation orientation)
 WebDriver::ScriptArg::ScriptArg(const char* val)
     : m_type(_STRING), m_int_value(0), m_stringvalue(val), m_double_value(0)
 {
-  std::cout << "create char*" << std::endl;
+  LOG("create char*");
 }
 
 WebDriver::ScriptArg::ScriptArg(std::string val)
     : m_type(_STRING), m_int_value(0), m_stringvalue(val), m_double_value(0)
 {
-  std::cout << "create string" << std::endl;
+  LOG("create string");
 }
 
 WebDriver::ScriptArg::ScriptArg(int val)
     : m_type(_INT), m_int_value(val), m_double_value(0)
 {
-  std::cout << "create int" << std::endl;
+  LOG("create int");
+}
+
+WebDriver::ScriptArg::ScriptArg(long val)
+    : m_type(_INT), m_int_value(val), m_double_value(0)
+{
+  LOG("create long");
 }
 
 WebDriver::ScriptArg::ScriptArg(double val)
     : m_type(_DOUBLE), m_int_value(0), m_double_value(val)
 {
-  std::cout << "create double" << std::endl;
+  LOG("create double");
 }
 
 WebDriver::ScriptArg::ScriptArg(float val)
     : m_type(_DOUBLE), m_int_value(0), m_double_value(val)
 {
-  std::cout << "create float" << std::endl;
+  LOG("create float");
 }
 
 WebDriver::ScriptArg::ScriptArg(bool val)
     : m_type(_STRING), m_int_value(val), m_stringvalue(val ? "true" : "false"),
         m_double_value(0)
 {
-  std::cout << "create bool" << std::endl;
+  LOG("create bool");
 }
 
 WebDriver::ScriptArg::ScriptArg(const WebElement& val)
     : m_type(_WEBELEMENT), m_int_value(0), m_stringvalue(val.id()),
         m_double_value(0)
 {
-  std::cout << "create WebElement" << std::endl;
+  LOG("create WebElement");
 }
 
 WebDriver::ScriptArg::ScriptArg(const ScriptArg& other)
     : m_type(other.m_type), m_int_value(other.m_int_value),
         m_stringvalue(other.m_stringvalue), m_double_value(other.m_double_value)
 {
-  std::cout << "copy element " << m_type << std::endl;
+  LOG("copy element " << m_type);
 }
 
 WebDriver::ScriptArg::ArgType  WebDriver::ScriptArg::type() const
@@ -570,6 +576,11 @@ WebDriver::ScriptArg::ArgType  WebDriver::ScriptArg::type() const
 }
 
 WebDriver::ScriptArg::operator int() const
+{
+  return m_int_value;
+}
+
+WebDriver::ScriptArg::operator long() const
 {
   return m_int_value;
 }
@@ -613,6 +624,11 @@ WebDriver::ScriptResult::operator double() const
   return std::stod(m_value);
 }
 
+WebDriver::ScriptResult::operator long() const throw (std::invalid_argument, std::out_of_range)
+{
+  return std::stol(m_value);
+}
+
 WebDriver::ScriptResult::operator bool() const
 {
   std::string lower = m_value;
@@ -649,7 +665,7 @@ struct ScriptArgTranslator
     // Converts a string to ScreenOrientation
     ::boost::optional<external_type> get_value(const internal_type& str)
     {
-      std::cout << "get value: " << str << std::endl;
+      LOG("get value: " << str);
         std::string value = ::boost::to_upper_copy(str);
         if (value == "PORTRAIT")
         {
@@ -665,7 +681,6 @@ struct ScriptArgTranslator
     // Converts a bool to string
     ::boost::optional<internal_type> put_value(const external_type& e)
     {
-      std::cout << "put value: ";
       switch (e.type())
       {
         case ScriptArg::ArgType::_INT:
@@ -703,7 +718,7 @@ struct ScriptArgTranslator
           break;
         }
         default: {
-          std::cout << "NONE" << std::endl;
+          LOG("NONE");
           return ::boost::optional<internal_type>(boost::none);
         }
       }

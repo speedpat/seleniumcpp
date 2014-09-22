@@ -19,7 +19,13 @@ namespace selenium
 struct InProcessWebServer::WebServer
 {
   WebServer(unsigned int port, const std::string& basedir)
-      : m_server(http_server::options(*this).address("0.0.0.0").port(std::to_string(port)).linger(true).linger_timeout(1)), m_running(false), m_port(port), m_basedir(basedir)
+      : m_server(http_server::options(*this)
+          .address("localhost")
+          .port(std::to_string(port))
+          .reuse_address(true)),
+        m_running(false),
+        m_port(port),
+        m_basedir(basedir)
         {
 
         }

@@ -7,7 +7,7 @@
 
 
 #include "selenium/selenium.hpp"
-#include "selenium_testcase.hpp"
+#include "support/selenium_testcase.hpp"
 
 
 using namespace selenium;

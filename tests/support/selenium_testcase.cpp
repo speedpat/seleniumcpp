@@ -12,8 +12,10 @@
 namespace selenium
 {
 
+WebDriver* SeleniumTestCase::s_driver = nullptr;
+
 SeleniumTestCase::SeleniumTestCase()
- : m_driver(nullptr), m_wait(nullptr)
+ : m_wait(nullptr)
 {
 
 }
@@ -24,25 +26,23 @@ SeleniumTestCase::~SeleniumTestCase()
 
 void SeleniumTestCase::SetUpTestCase()
 {
-
+  s_driver = new WebDriver(testEnvironment().driverUrl(), DesiredCapabilities::CHROME);
 }
 
 void SeleniumTestCase::TearDownTestCase()
 {
-
+  s_driver->quit();
+  delete s_driver;
+  s_driver = nullptr;
 }
 
 void SeleniumTestCase::SetUp()
 {
-  m_driver = new WebDriver(testEnvironment().driverUrl(), DesiredCapabilities::CHROME);
-  m_wait = new Wait(*m_driver, 5);
+  m_wait = new Wait(*s_driver, 5);
 }
 
 void SeleniumTestCase::TearDown()
 {
-  m_driver->quit();
-  delete m_driver;
-  m_driver = nullptr;
   delete m_wait;
   m_wait = nullptr;
 }
@@ -52,9 +52,19 @@ TestEnvironment& SeleniumTestCase::testEnvironment()
   return *selenium::TestEnvironment::s_testEnvironment;
 }
 
+Pages& SeleniumTestCase::pages()
+{
+  return testEnvironment().pages();
+}
+
+std::string SeleniumTestCase::whereIs(const std::string& relativePath)
+{
+  return testEnvironment().whereIs(relativePath);
+}
+
 WebDriver& SeleniumTestCase::webDriver()
 {
-  return *m_driver;
+  return *SeleniumTestCase::s_driver;
 }
 
 Wait& SeleniumTestCase::wait()

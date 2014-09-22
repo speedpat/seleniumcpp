@@ -36,7 +36,8 @@ struct response_value_handler<WebElement>
 
 	WebElement get_value(WebDriver::Private& driver, const CommandParameters& params, Response& response)
 	{
-		std::string elementId = response.get<std::string>("ELEMENT");
+	  Response element = response.get_child("value");
+		std::string elementId = element.get<std::string>("ELEMENT");
 
 		return WebElement(driver, elementId);
 	}
@@ -65,7 +66,8 @@ struct response_value_handler<Dimension>
 {
   Dimension get_value(WebDriver::Private& driver, const CommandParameters& params, Response& response)
   {
-    return {response.get<int>("height"), response.get<int>("width")};
+    Response value = response.get_child("value");
+    return {value.get<int>("height"), value.get<int>("width")};
   }
 };
 

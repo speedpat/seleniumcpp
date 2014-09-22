@@ -17,7 +17,6 @@ class WebDriverException : public std::runtime_error
 {
 public:
 	WebDriverException(const std::string& what);
-	WebDriverException(const WebDriverException& e);
 	virtual ~WebDriverException() = default;
 };
 
@@ -26,7 +25,6 @@ class ErrorInResponseException : public WebDriverException
 public:
 	ErrorInResponseException(const std::string& what);
 	ErrorInResponseException(const std::string& what, const std::runtime_error& cause);
-	ErrorInResponseException(const ErrorInResponseException& e);
 	virtual ~ErrorInResponseException() = default;
 
 private:
@@ -37,7 +35,6 @@ class NoSuchElementException : public WebDriverException
 {
 public:
 	NoSuchElementException(const std::string& what);
-	NoSuchElementException(const NoSuchElementException& e);
 	virtual ~NoSuchElementException() = default;
 
 };
@@ -46,7 +43,6 @@ class NoSuchFrameException : public WebDriverException
 {
 public:
 	NoSuchFrameException(const std::string& what);
-	NoSuchFrameException(const NoSuchFrameException& e);
 	virtual ~NoSuchFrameException() = default;
 
 };
@@ -55,7 +51,6 @@ class TimeoutException : public WebDriverException
 {
 public:
   TimeoutException(const std::string& what);
-  TimeoutException(const NoSuchFrameException& e);
   virtual ~TimeoutException() = default;
 };
 
@@ -63,7 +58,6 @@ class StaleElementReferenceException : public WebDriverException
 {
 public:
   StaleElementReferenceException(const std::string& what);
-  StaleElementReferenceException(const NoSuchFrameException& e);
   virtual ~StaleElementReferenceException() = default;
 
 };
@@ -81,6 +75,41 @@ class NoAlertPresentException : public WebDriverException
 public:
   NoAlertPresentException(const std::string& what);
   virtual ~NoAlertPresentException() = default;
+};
+
+class InvalidElementStateException : public WebDriverException
+{
+public:
+  InvalidElementStateException(const std::string& what);
+  virtual ~InvalidElementStateException() = default;
+};
+
+class MoveTargetOutOfBoundsException : public WebDriverException
+{
+public:
+  MoveTargetOutOfBoundsException(const std::string& what);
+  virtual ~MoveTargetOutOfBoundsException() = default;
+};
+
+class UnknownErrorException : public WebDriverException
+{
+public:
+  UnknownErrorException(const std::string& what);
+  virtual ~UnknownErrorException() = default;
+};
+
+class ElementIsNotSelectableException : public WebDriverException
+{
+public:
+  ElementIsNotSelectableException(const std::string& what);
+  virtual ~ElementIsNotSelectableException() = default;
+};
+
+class JavaScriptErrorException : public WebDriverException
+{
+public:
+  JavaScriptErrorException(const std::string& what);
+  virtual ~JavaScriptErrorException() = default;
 };
 
 } /* namespace selenium */

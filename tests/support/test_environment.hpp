@@ -30,6 +30,8 @@ public:
   Pages& pages();
   std::string& driverUrl();
 
+  std::string whereIs(const std::string& page);
+
   static TestEnvironment* s_testEnvironment;
 
 private:

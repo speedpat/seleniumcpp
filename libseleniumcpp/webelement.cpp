@@ -33,13 +33,13 @@ WebElement::~WebElement()
 	delete m_private;
 }
 
-std::string WebElement::tagName()
+const std::string WebElement::tagName()
 {
 	return m_private->execute<std::string>(Command::GET_ELEMENT_TAG_NAME);
 }
 
 
-std::string WebElement::text()
+const std::string WebElement::text()
 {
 	return m_private->execute<std::string>(Command::GET_ELEMENT_TEXT);
 }
@@ -59,7 +59,7 @@ void WebElement::clear()
 	m_private->execute(Command::CLEAR_ELEMENT);
 }
 
-std::string WebElement::getAttribute(const std::string& name)
+const std::string WebElement::getAttribute(const std::string& name)
 {
 	CommandParameters params;
 	params.add("name", name);

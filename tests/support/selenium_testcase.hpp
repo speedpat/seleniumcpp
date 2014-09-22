@@ -12,6 +12,7 @@
 #include "in_process_web_server.hpp"
 #include "test_environment.hpp"
 #include "pages.hpp"
+#include "log.hpp"
 
 namespace selenium
 {
@@ -32,12 +33,14 @@ public:
 
 
 protected:
-  TestEnvironment& testEnvironment();
-  WebDriver& webDriver();
+  static TestEnvironment& testEnvironment();
+  static WebDriver& webDriver();
+  static Pages& pages();
+  static std::string whereIs(const std::string& relativePath);
   Wait& wait();
 
 private:
-  WebDriver* m_driver;
+  static WebDriver* s_driver;
   Wait* m_wait;
 };
 

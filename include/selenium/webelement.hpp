@@ -20,12 +20,12 @@ public:
 	WebElement(const WebElement& other);
 	~WebElement();
 
-	std::string tagName();
-	std::string text();
+	const std::string tagName();
+	const std::string text();
 	void submit();
 	void click();
 	void clear();
-	std::string getAttribute(const std::string& name);
+	const std::string getAttribute(const std::string& name);
 	bool isSelected();
 	bool isEnabled();
 	WebElement findElementByID(const std::string& id);

@@ -10,6 +10,7 @@
 
 #include <map>
 #include <list>
+#include <vector>
 
 namespace selenium {
 struct Dimension
@@ -40,7 +41,7 @@ class Alert;
 class SwitchTo;
 
 class WebElement;
-typedef std::list<WebElement> WebElements;
+typedef std::vector<WebElement> WebElements;
 
 
 } /* namespace selenium */

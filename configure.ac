@@ -23,5 +23,6 @@ AC_CONFIG_FILES(Makefile
                 exampleProgram/Makefile
                 tests/Makefile
                 libseleniumcpp/Makefile
-                include/Makefile)
+                include/Makefile
+                tests/support/Makefile)
 AC_OUTPUT

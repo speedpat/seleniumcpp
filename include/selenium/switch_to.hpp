@@ -24,8 +24,8 @@ public:
   void defaultContent();
   SwitchTo& frame(const std::string& reference);
   SwitchTo& frame(const WebElement& element);
-  void parentFrame();
-  void window(const std::string& windowName);
+  SwitchTo& parentFrame();
+  SwitchTo& window(const std::string& windowName);
   WebElement activeElement();
 
 

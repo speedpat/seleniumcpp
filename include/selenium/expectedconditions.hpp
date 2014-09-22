@@ -15,6 +15,7 @@
 #include <selenium/webdriver.hpp>
 
 #include <selenium/conditions/conditions.hpp>
+#include <selenium/conditions/expected_condition.hpp>
 
 namespace selenium
 {

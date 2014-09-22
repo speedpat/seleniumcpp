@@ -10,6 +10,8 @@
 
 #include <utf8.h>
 
+#include "log.hpp"
+
 #include "selenium/interactions/actions.hpp"
 #include "selenium/interactions/action.hpp"
 #include "selenium/webdriver.hpp"
@@ -382,7 +384,7 @@ struct KeyTranslator
     // Converts a string to ScreenOrientation
     ::boost::optional<external_type> get_value(const internal_type& str)
     {
-         std::cout << "get value: " << str << std::endl;
+         LOG("get value: " << str);
         std::string value = ::boost::to_upper_copy(str);
         if (value == "PORTRAIT")
         {
@@ -399,18 +401,17 @@ struct KeyTranslator
     ::boost::optional<internal_type> put_value(const external_type& e)
     {
 
-      std::cout << "put value: ";
       switch (e)
       {
       case CONTROL: {
-        std::cout << "CONTROL" << std::endl;
+        LOG("put value: " << "CONTROL");
         std::string ustr = u8"\00dc";
         std::string str;
         utf8::utf16to8(ustr.begin(), ustr.end(), std::back_inserter(str));
         return ::boost::optional<internal_type>(str);
       }
       case F1: {
-        std::cout << "F1" << std::endl;
+        LOG("put value: " << "F1");
         std::string ustr = u8"\ue0dc";
         std::string str;
         utf8::utf16to8(ustr.begin(), ustr.end(), std::back_inserter(str));
@@ -419,7 +420,7 @@ struct KeyTranslator
         break;
       }
       default: {
-        std::cout << "NONE" << std::endl;
+        LOG("NONE");
         return ::boost::optional<internal_type>(boost::none);
       }
       }

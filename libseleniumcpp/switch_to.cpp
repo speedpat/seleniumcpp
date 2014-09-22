@@ -50,17 +50,19 @@ SwitchTo& SwitchTo::frame(const WebElement& frameReference)
   return *this;
 }
 
-void SwitchTo::parentFrame()
+SwitchTo& SwitchTo::parentFrame()
 {
   m_driver.execute(Command::SWITCH_TO_PARENT_FRAME);
+  return *this;
 }
 
-void SwitchTo::window(const std::string& windowName)
+SwitchTo& SwitchTo::window(const std::string& windowName)
 {
   CommandParameters params;
   params.add("name", windowName);
 
   m_driver.execute(Command::SWITCH_TO_WINDOW, params);
+  return *this;
 }
 
 WebElement SwitchTo::activeElement()
