@@ -10,12 +10,14 @@
 
 #include <utf8.h>
 
+#include <boost/algorithm/string.hpp>
+
 #include "log.hpp"
 
 #include "selenium/interactions/actions.hpp"
 #include "selenium/interactions/action.hpp"
 #include "selenium/webdriver.hpp"
-#include "webdriver_private.hpp"
+#include "selenium/command_executor.hpp"
 #include "action_private.hpp"
 #include "actions_private.hpp"
 
@@ -37,7 +39,7 @@ Actions::Actions(WebDriver& driver)
 
 Action Actions::build()
 {
-  Action action(*m_driver.m_private);
+  Action action(*((CommandExecutor*)m_driver.m_private));
   std::vector<ActionFunction> actions = m_private->m_actions;
   for (auto actionFunction: actions) {
     action.m_private->m_actions.push_back(actionFunction);
@@ -50,7 +52,7 @@ Action Actions::build()
 
 Actions& Actions::click(MouseButton button)
 {
-  m_private->add([button](WebDriver::Private& driver){
+  m_private->add([button](CommandExecutor& driver){
     CommandParameters params;
     params.put("button", button);
     driver.execute(Command::CLICK, params);
@@ -62,7 +64,7 @@ Actions& Actions::click(MouseButton button)
  */
 Actions& Actions::click(const WebElement& onElement, MouseButton button)
 {
-  m_private->add([onElement, button](WebDriver::Private& driver){
+  m_private->add([onElement, button](CommandExecutor& driver){
     CommandParameters moveParams;
     moveParams.put("element", onElement.id());
     driver.execute(Command::MOVE_TO, moveParams);
@@ -77,7 +79,7 @@ Actions& Actions::click(const WebElement& onElement, MouseButton button)
  */
 Actions& Actions::clickAndHold(MouseButton button)
 {
-  m_private->add([button](WebDriver::Private& driver){
+  m_private->add([button](CommandExecutor& driver){
     CommandParameters params;
     params.put("button", button);
     driver.execute(Command::MOUSE_DOWN, params);
@@ -89,7 +91,7 @@ Actions& Actions::clickAndHold(MouseButton button)
  */
 Actions& Actions::clickAndHold(const WebElement& onElement, MouseButton button)
 {
-  m_private->add([onElement, button](WebDriver::Private& driver){
+  m_private->add([onElement, button](CommandExecutor& driver){
     CommandParameters moveParams;
     moveParams.put("element", onElement.id());
     driver.execute(Command::MOVE_TO, moveParams);
@@ -118,7 +120,7 @@ Actions& Actions::contextClick(const WebElement& onElement)
  */
 Actions& Actions::doubleClick()
 {
-  m_private->add([](WebDriver::Private& driver){
+  m_private->add([](CommandExecutor& driver){
     driver.execute(Command::DOUBLE_CLICK);
   });
   return *this;
@@ -128,7 +130,7 @@ Actions& Actions::doubleClick()
  */
 Actions& Actions::doubleClick(const WebElement& onElement)
 {
-  m_private->add([onElement](WebDriver::Private& driver){
+  m_private->add([onElement](CommandExecutor& driver){
     CommandParameters moveParams;
     moveParams.put("element", onElement.id());
     driver.execute(Command::MOVE_TO, moveParams);
@@ -143,7 +145,7 @@ Actions& Actions::doubleClick(const WebElement& onElement)
 Actions& Actions::dragAndDrop(const WebElement& source,
     const WebElement& target)
 {
-  m_private->add([source, target](WebDriver::Private& driver){
+  m_private->add([source, target](CommandExecutor& driver){
     CommandParameters moveParams;
     moveParams.put("element", source.id());
     driver.execute(Command::MOVE_TO, moveParams);
@@ -160,7 +162,7 @@ Actions& Actions::dragAndDrop(const WebElement& source,
 Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
     int yOffset)
 {
-  m_private->add([source, xOffset, yOffset](WebDriver::Private& driver){
+  m_private->add([source, xOffset, yOffset](CommandExecutor& driver){
     CommandParameters moveParams;
     moveParams.put("element", source.id());
     driver.execute(Command::MOVE_TO, moveParams);
@@ -178,7 +180,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
  */
 /*Actions& Actions::keyDown(std::vector<Keys> keys)
 {
-  m_private->add([keys](WebDriver::Private& driver){
+  m_private->add([keys](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
     CommandParameters keyParam;
@@ -198,7 +200,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
  */
 /*Actions& Actions::keyDown(const WebElement& element, std::vector<Keys> keys)
 {
-  m_private->add([element](WebDriver::Private& driver){
+  m_private->add([element](CommandExecutor& driver){
     CommandParameters params;
     params.put("element", element.id());
     driver.execute(Command::CLICK_ELEMENT, params);
@@ -211,7 +213,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
  */
 /*Actions& Actions::keyUp(std::vector<Keys> keys)
 {
-  m_private->add([keys](WebDriver::Private& driver){
+  m_private->add([keys](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
     CommandParameters keyParam;
@@ -231,7 +233,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
  */
 /*Actions& Actions::keyUp(const WebElement& element, std::vector<Keys> keys)
 {
-  m_private->add([element](WebDriver::Private& driver){
+  m_private->add([element](CommandExecutor& driver){
     CommandParameters params;
     params.put("element", element.id());
     driver.execute(Command::CLICK_ELEMENT, params);
@@ -244,7 +246,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
  */
 Actions& Actions::moveByOffset(int xOffset, int yOffset)
 {
-  m_private->add([xOffset, yOffset](WebDriver::Private& driver){
+  m_private->add([xOffset, yOffset](CommandExecutor& driver){
     CommandParameters params;
     params.put("xoffset", xOffset);
     params.put("yOffset", yOffset);
@@ -257,7 +259,7 @@ Actions& Actions::moveByOffset(int xOffset, int yOffset)
  */
 Actions& Actions::moveToElement(const WebElement& toElement)
 {
-  m_private->add([toElement](WebDriver::Private& driver){
+  m_private->add([toElement](CommandExecutor& driver){
     CommandParameters params;
     params.put("element", toElement.id());
     driver.execute(Command::MOVE_TO, params);
@@ -270,7 +272,7 @@ Actions& Actions::moveToElement(const WebElement& toElement)
 Actions& Actions::moveToElement(const WebElement& toElement, int xOffset,
     int yOffset)
 {
-  m_private->add([toElement, xOffset, yOffset](WebDriver::Private& driver){
+  m_private->add([toElement, xOffset, yOffset](CommandExecutor& driver){
     CommandParameters params;
     params.put("element", toElement.id());
     params.put("xoffset", xOffset);
@@ -286,7 +288,7 @@ Actions& Actions::moveToElement(const WebElement& toElement, int xOffset,
  */
 Actions& Actions::pause(long pause)
 {
-  m_private->add([pause](WebDriver::Private& driver){
+  m_private->add([pause](CommandExecutor& driver){
     std::this_thread::sleep_for(std::chrono::milliseconds(pause));
   });
   return *this;
@@ -298,7 +300,7 @@ void Actions::perform()
 {
   for (ActionFunction action: m_private->m_actions)
   {
-    action(*m_driver.m_private);
+    action(*((CommandExecutor*)m_driver.m_private));
   }
 }
 /**
@@ -306,7 +308,7 @@ void Actions::perform()
  */
 Actions& Actions::release(MouseButton button)
 {
-  m_private->add([button](WebDriver::Private& driver){
+  m_private->add([button](CommandExecutor& driver){
     CommandParameters params;
     params.put("button", button);
     driver.execute(Command::MOUSE_UP, params);
@@ -318,7 +320,7 @@ Actions& Actions::release(MouseButton button)
  */
 Actions& Actions::release(const WebElement& onElement, MouseButton button)
 {
-  m_private->add([onElement, button](WebDriver::Private& driver){
+  m_private->add([onElement, button](CommandExecutor& driver){
     CommandParameters moveParams;
     moveParams.put("element", onElement.id());
     driver.execute(Command::MOVE_TO, moveParams);
@@ -333,7 +335,7 @@ Actions& Actions::release(const WebElement& onElement, MouseButton button)
  */
 Actions& Actions::sendKeys(const std::string& keysToSend)
 {
-  m_private->add([keysToSend](WebDriver::Private& driver){
+  m_private->add([keysToSend](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
     CommandParameters keyParam;
@@ -354,7 +356,7 @@ Actions& Actions::sendKeys(const std::string& keysToSend)
 Actions& Actions::sendKeys(const WebElement& element,
     const std::string& keysToSend)
 {
-  m_private->add([keysToSend, element](WebDriver::Private& driver){
+  m_private->add([keysToSend, element](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
     CommandParameters keyParam;
@@ -368,8 +370,6 @@ Actions& Actions::sendKeys(const WebElement& element,
     params.put("id", element.id());
     driver.execute(Command::SEND_KEYS_TO_ELEMENT, params);
   });
-  return *this;
-
   return *this;
 }
 

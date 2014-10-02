@@ -5,16 +5,18 @@
  *      Author: speedpat
  */
 
-#include "selenium/application_cache.hpp"
+#include <boost/algorithm/string.hpp>
 
 #include "log.hpp"
+#include "selenium/command_executor.hpp"
+#include "selenium/application_cache.hpp"
 
-#include "webdriver_private.hpp"
+
 
 namespace selenium
 {
 
-ApplicationCache::ApplicationCache(WebDriver::Private& driver)
+ApplicationCache::ApplicationCache(CommandExecutor& driver)
  : m_driver(driver)
 {
 

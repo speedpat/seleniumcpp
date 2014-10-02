@@ -8,16 +8,18 @@
 #ifndef SWITCH_TO_HPP_
 #define SWITCH_TO_HPP_
 
-#include <selenium/webdriver.hpp>
+#include <string>
 
 namespace selenium
 {
 class Alert;
+class CommandExecutor;
+class WebElement;
 
 class SwitchTo
 {
 public:
-  SwitchTo(WebDriver::Private& driver);
+  SwitchTo(CommandExecutor& driver);
   virtual ~SwitchTo() = default;
 
   Alert alert();
@@ -30,7 +32,7 @@ public:
 
 
 private:
-  WebDriver::Private& m_driver;
+  CommandExecutor& m_driver;
 };
 
 } /* namespace selenium */

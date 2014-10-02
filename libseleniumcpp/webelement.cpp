@@ -10,14 +10,45 @@
 
 
 #include "selenium/by.hpp"
-#include "selenium/webelement.hpp"
+#include "selenium/command_executor.hpp"
 #include "selenium/webdriver.hpp"
+#include "selenium/webelement.hpp"
 #include "command.hpp"
-#include "webelement_private.hpp"
 
 namespace selenium {
 
-WebElement::WebElement(WebDriver::Private& driver, const std::string& elementId)
+struct WebElement::Private {
+  Private(CommandExecutor& driver, const std::string& elementId);
+  Private(const Private& other);
+  virtual ~Private();
+
+  CommandExecutor& m_driver;
+  std::string m_elementId;
+
+  template <typename RES = std::string, typename value_handler = response_value_handler<RES> >
+  RES execute(const Command& command, const CommandParameters& params)
+  {
+    CommandParameters _params = params;
+    _params.add(std::string("id"), m_elementId);
+    return m_driver.execute<RES, value_handler>(command, _params);
+  }
+
+
+  template <typename RES = std::string, typename value_handler = response_value_handler<RES> >
+  RES execute(const Command& command)
+  {
+    CommandParameters params;
+    params.add(std::string("id"), m_elementId);
+    return execute<RES, value_handler>(command, params);
+  }
+
+};
+
+} /* namespace selenium */
+
+namespace selenium {
+
+WebElement::WebElement(CommandExecutor& driver, const std::string& elementId)
  : m_private(new Private(driver, elementId))
 {
 }
@@ -219,3 +250,28 @@ std::string WebElement::id() const
 }
 
 } /* namespace selenium */
+
+namespace selenium {
+
+WebElement::Private::Private(CommandExecutor& driver, const std::string& elementId)
+ : m_driver(driver), m_elementId(elementId)
+{
+}
+WebElement::Private::Private(const Private& other)
+ : m_driver(other.m_driver), m_elementId(other.m_elementId)
+{
+
+}
+
+WebElement::Private::~Private() {
+}
+
+std::ostream& operator<<(std::ostream& stream, const WebElement& element) {
+  stream << element.m_private->m_elementId;
+  return stream;
+}
+
+
+
+} /* namespace selenium */
+

@@ -8,7 +8,7 @@
 #ifndef LOG_HPP_
 #define LOG_HPP_
 
-#define DEBUG 1
+#define DEBUG 0
 
 #if DEBUG
 #define LOG(x) \

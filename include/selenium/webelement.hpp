@@ -9,14 +9,14 @@
 #define WEBELEMENT_H_
 
 #include <selenium/types.hpp>
-#include <selenium/webdriver.hpp>
 
 namespace selenium {
 
+class CommandExecutor;
 
 class WebElement {
 public:
-	WebElement(WebDriver::Private& driver, const std::string& elementId);
+	WebElement(CommandExecutor& driver, const std::string& elementId);
 	WebElement(const WebElement& other);
 	~WebElement();
 

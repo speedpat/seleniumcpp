@@ -10,9 +10,7 @@ lib_LTLIBRARIES = libseleniumcpp.la
 # Sources for libseleniumcpp
 libseleniumcpp_la_SOURCES = \
 	webdriver.cpp \
-	webdriver_private.cpp \
 	webelement.cpp \
-	webelement_private.cpp \
 	by.cpp \
 	exceptions.cpp \
 	actions.cpp \
@@ -23,7 +21,10 @@ libseleniumcpp_la_SOURCES = \
 	alert.cpp \
 	switch_to.cpp \
 	mobile.cpp \
-	application_cache.cpp
+	application_cache.cpp \
+	cookie.cpp \
+	script_arg.cpp \
+	script_result.cpp
 
 # Linker options libTestProgram
 libseleniumcpp_la_LDFLAGS = 

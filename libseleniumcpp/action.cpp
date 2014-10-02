@@ -12,7 +12,7 @@ namespace selenium
 {
 namespace interactions {
 
-Action::Private::Private(WebDriver::Private& driver)
+Action::Private::Private(CommandExecutor& driver)
  : m_driver(driver)
 {
 
@@ -38,7 +38,7 @@ Action::Action(const Action& other)
 
 }
 
-Action::Action(WebDriver::Private& driver)
+Action::Action(CommandExecutor& driver)
  : m_private(new Private(driver))
 {
 

@@ -22,64 +22,10 @@ class Locator;
 class WebElement;
 class Mobile;
 class ApplicationCache;
+class ScriptArg;
+class ScriptResult;
 
 class WebDriver {
-public:
-  struct Private;
-  class ScriptArg
-  {
-  public:
-    enum ArgType
-    {
-      _INT,
-      _DOUBLE,
-      _STRING,
-      _WEBELEMENT,
-    };
-    ScriptArg(const char* val);
-    ScriptArg(std::string val);
-    ScriptArg(int val);
-    ScriptArg(long val);
-    ScriptArg(double val);
-    ScriptArg(float val);
-    ScriptArg(bool val);
-    ScriptArg(const WebElement& val);
-    ScriptArg(const ScriptArg& other);
-
-    ArgType type() const;
-    operator int() const;
-    operator long() const;
-    operator float() const;
-    operator double() const;
-    operator bool() const;
-    operator std::string() const;
-
-  private:
-    ArgType m_type;
-    std::string m_stringvalue;
-    long m_int_value;
-    double m_double_value;
-  };
-
-  class ScriptResult
-  {
-  public:
-    ScriptResult(WebDriver::Private& driver, std::string val);
-    ScriptResult(const ScriptResult& other);
-
-    operator int() const throw (std::invalid_argument, std::out_of_range);
-    operator long() const throw (std::invalid_argument, std::out_of_range);
-    operator float() const;
-    operator double() const;
-    operator bool() const;
-    operator WebElement() const;
-    operator std::string() const;
-
-  private:
-    std::string m_value;
-    WebDriver::Private& m_driver;
-  };
-
 public:
 	WebDriver(const std::string& uri, const Capabilities& capabilities);
 	virtual ~WebDriver();
@@ -135,7 +81,7 @@ public:
 	Cookie getCookie(const std::string& name);
 	void deleteCookie(const std::string& name);
 	void deleteAllCookies();
-	void addCookie(Cookie cookie);
+	void addCookie(const Cookie& cookie);
 
 	void implicitlyWait(const unsigned int timeToWait);
 	void setScriptTimeout(const unsigned int timeToWait);
@@ -159,6 +105,8 @@ public:
 
 	std::vector<std::string> getLogTypes();
 	std::vector<std::string> getLog(const std::string& logType);
+
+  struct Private;
 
 private:
 	friend class interactions::Actions;

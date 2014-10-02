@@ -8,7 +8,9 @@
 #ifndef LOG_HPP_
 #define LOG_HPP_
 
-#define DEBUG 1
+#include <iostream>
+
+#define DEBUG 0
 
 #if DEBUG
 #define LOG(x) \

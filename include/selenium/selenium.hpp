@@ -17,6 +17,8 @@
 #include <selenium/interactions/actions.hpp>
 #include <selenium/expectedconditions.hpp>
 #include <selenium/wait.hpp>
+#include <selenium/script_result.hpp>
+#include <selenium/script_arg.hpp>
 
 
 

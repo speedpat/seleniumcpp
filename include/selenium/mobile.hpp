@@ -8,10 +8,11 @@
 #ifndef MOBILE_HPP_
 #define MOBILE_HPP_
 
-#include <selenium/webdriver.hpp>
 
 namespace selenium
 {
+
+class CommandExecutor;
 
 class Mobile
 {
@@ -24,14 +25,14 @@ public:
     AIRPLANE_MODE = 1,
   };
 
-  Mobile(WebDriver::Private& driver);
+  Mobile(CommandExecutor& driver);
   ~Mobile() = default;
 
   ConnectionType getNetworkConnection();
   void setNetworkConnection(ConnectionType type);
 
 private:
-  WebDriver::Private& m_driver;
+  CommandExecutor& m_driver;
 };
 
 } /* namespace selenium */

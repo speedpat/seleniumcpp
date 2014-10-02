@@ -12,6 +12,11 @@
 #include <list>
 #include <vector>
 
+#include <boost/property_tree/ptree.hpp>
+
+
+#include <selenium/cookie.hpp>
+
 namespace selenium {
 struct Dimension
 {
@@ -31,7 +36,6 @@ enum ScreenOrientation
 	PORTRAIT
 };
 
-typedef std::map<std::string, std::string> Cookie;
 typedef std::list<Cookie> Cookies;
 
 typedef std::map<std::string, std::string> Capabilities;
@@ -39,9 +43,14 @@ typedef std::map<std::string, std::string> Capabilities;
 class WebDriver;
 class Alert;
 class SwitchTo;
+class By;
+class Locator;
 
 class WebElement;
 typedef std::vector<WebElement> WebElements;
+
+typedef boost::property_tree::iptree CommandParameters;
+typedef boost::property_tree::iptree Response;
 
 
 } /* namespace selenium */

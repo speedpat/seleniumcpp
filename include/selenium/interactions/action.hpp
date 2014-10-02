@@ -8,10 +8,11 @@
 #ifndef ACTION_HPP_
 #define ACTION_HPP_
 
-#include <selenium/webdriver.hpp>
-
 namespace selenium
 {
+
+class CommandExecutor;
+
 namespace interactions
 {
 
@@ -26,7 +27,7 @@ public:
   void perform();
 
 private:
-  Action(WebDriver::Private& driver);
+  Action(CommandExecutor& driver);
   friend class Actions;
   struct Private;
 

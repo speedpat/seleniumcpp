@@ -5,14 +5,16 @@
  *      Author: speedpat
  */
 
-#include "selenium/mobile.hpp"
+#include <boost/algorithm/string.hpp>
+
 #include "log.hpp"
-#include "webdriver_private.hpp"
+#include "selenium/command_executor.hpp"
+#include "selenium/mobile.hpp"
 
 namespace selenium
 {
 
-Mobile::Mobile(WebDriver::Private& driver)
+Mobile::Mobile(CommandExecutor& driver)
  : m_driver(driver)
 {
 

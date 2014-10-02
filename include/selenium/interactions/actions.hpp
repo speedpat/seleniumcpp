@@ -16,6 +16,7 @@
 namespace selenium
 {
 class WebElement;
+class CommandExecutor;
 class WebDriver;
 
 namespace interactions

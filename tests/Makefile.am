@@ -25,9 +25,11 @@ tests_SOURCES= \
 	click_test.cpp
 
 # Linker options for a.out
-tests_LDFLAGS = $(top_srcdir)/libseleniumcpp/libseleniumcpp.la $(top_srcdir)/tests/support/libseleniumcpptest.la  -lpthread -lcppnetlib-client-connections -lboost_system -lboost_thread -lcppnetlib-uri 
+tests_LDFLAGS = $(top_srcdir)/tests/support/libseleniumcpptest.la $(top_srcdir)/libseleniumcpp/libseleniumcpp.la  -lpthread -lcppnetlib-client-connections -lboost_system -lboost_thread -lcppnetlib-uri 
 
 # Compiler options for a.out
 tests_CPPFLAGS = -I$(top_srcdir)/include -I/usr/src/gtest -I$(top_srcdir)/ -std=c++0x
+
+tests_DEPENDENCIES = $(top_srcdir)/tests/support/libseleniumcpptest.la
 
 SUBDIRS=support

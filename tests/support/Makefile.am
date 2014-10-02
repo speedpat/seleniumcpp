@@ -19,9 +19,9 @@ libseleniumcpptest_la_SOURCES = \
 	pages.cpp
 
 # Linker options libTestProgram
-libseleniumcpptest_la_LDFLAGS = 
+libseleniumcpptest_la_LDFLAGS = $(AM_LDFLAGS)
 
 # Compiler options. Here we are adding the include directory
 # to be searched for headers included in the source code.
-libseleniumcpptest_la_CPPFLAGS = -I$(top_srcdir)/include -I/usr/src/gtest  -I$(top_srcdir)/  -std=c++0x
+libseleniumcpptest_la_CPPFLAGS = -I$(top_srcdir)/include -I/usr/src/gtest  -I$(top_srcdir)/  -std=c++0x $(AM_CFLAGS)
 

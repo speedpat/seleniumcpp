@@ -19,6 +19,18 @@ dnl Check if Libtool is present
 dnl Libtool is used for building share libraries 
 AC_PROG_LIBTOOL
 AC_PROG_CXX
+
+AC_ARG_ENABLE(coverage, AS_HELP_STRING([--enable-coverage]), COVERAGE=1, COVERAGE=0)
+
+AS_IF([test "x$enable_coverage" != "xno"],
+	[COVERAGE_CFLAGS="--coverage"],
+	[COVERAGE_LDFLAGS="--coverage"])
+
+AC_SUBST(COVERAGE_CFLAGS)
+AC_SUBST(COVERAGE_LDFLAGS)
+
+
+
 AC_CONFIG_FILES(Makefile
                 exampleProgram/Makefile
                 tests/Makefile

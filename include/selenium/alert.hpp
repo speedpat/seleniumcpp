@@ -8,15 +8,17 @@
 #ifndef ALERT_HPP_
 #define ALERT_HPP_
 
-#include "selenium/webdriver.hpp"
+#include <string>
 
 namespace selenium
 {
 
+class CommandExecutor;
+
 class Alert
 {
 public:
-  Alert(WebDriver::Private& driver);
+  Alert(CommandExecutor& driver);
   Alert(const Alert& other);
   ~Alert() = default;
 
@@ -28,7 +30,7 @@ public:
   Alert& operator=(const Alert& other);
 
 private:
-  WebDriver::Private& m_driver;
+  CommandExecutor& m_driver;
 };
 
 } /* namespace selenium */

@@ -8,10 +8,11 @@
 #ifndef APPLICATION_CACHE_HPP_
 #define APPLICATION_CACHE_HPP_
 
-#include <selenium/webdriver.hpp>
 
 namespace selenium
 {
+
+class CommandExecutor;
 
 class ApplicationCache
 {
@@ -25,7 +26,7 @@ public:
     UPDATE_READY = 4,
     OBSOLETE = 5,
   };
-  ApplicationCache(WebDriver::Private& driver);
+  ApplicationCache(CommandExecutor& driver);
   ~ApplicationCache() = default;
 
   void get();
@@ -33,7 +34,7 @@ public:
   void clear();
 
 private:
-  WebDriver::Private& m_driver;
+  CommandExecutor& m_driver;
 
 };
 

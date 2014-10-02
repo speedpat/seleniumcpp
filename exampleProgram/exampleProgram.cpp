@@ -25,6 +25,9 @@ int main(void) {
 				DesiredCapabilities::CHROME);
 //    driver.get("file:///tmp/test.html");
     driver.get("http://www.google.ch");
+    driver.addCookie(Cookie("test", "foo"));
+
+    driver.getCookies();
 /*
 		driver.title();
 		WebElement element = driver.findElementByID("viewport");
@@ -49,13 +52,13 @@ int main(void) {
 		//std::cout << driver.getScreenshotAsFile("/tmp/foo.png") << std::endl;
 		//std::cout << driver.getOrientiation() << std::endl;
 
-		interactions::Actions actions(driver);
+//		interactions::Actions actions(driver);
 /*		actions.click();
 
 		interactions::Action a = actions.build();
 
 		a.perform();*/
-
+/*
 		actions.sendKeys("hallo");
 		WebElement element = driver.findElementByID("gbqfq");
 		actions.sendKeys(element, "gugus");
@@ -63,7 +66,7 @@ int main(void) {
 		interactions::Action a = actions.build();
 		a.perform();
 
-		WebDriver::ScriptResult res = driver.executeScript("return arguments[4]", { 42, true, false, "hallo", element, "gugus", 1.1f, 1.1 });
+		ScriptResult res = driver.executeScript("return arguments[4]", { 42, true, false, "hallo", element, "gugus", 1.1f, 1.1 });
 		std::cout << "foooo" << std::endl;
 		WebElement foo = res;
     std::cout << "bar" << std::endl;
@@ -71,7 +74,7 @@ int main(void) {
 		foo.clear();
     std::cout << "foooobar" << std::endl;
 
-    WebDriver::ScriptResult res2 = driver.executeScript("return arguments[1]", { 42, true, false, "hallo", element, "gugus", 1.1f, 1.1 });
+    ScriptResult res2 = driver.executeScript("return arguments[1]", { 42, true, false, "hallo", element, "gugus", 1.1f, 1.1 });
     bool bRes2 = res2;
     std::cout << (bRes2 ? "yeah" : "boo") << std::endl;
 
@@ -88,7 +91,7 @@ int main(void) {
 
     bb = w.until(ExpectedConditions::PresenceOfElementLocated(By::id(foos)));
     bb = w.until(ExpectedConditions::PresenceOfElementLocated(By::id("bar")));
-
+*/
 	} catch (std::string& e) {
 		std::cout << e << std::endl;
 	} catch (WebDriverException& e) {

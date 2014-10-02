@@ -74,7 +74,9 @@ std::string& TestEnvironment::driverUrl()
 
 std::string TestEnvironment::whereIs(const std::string& page)
 {
-  return m_webserver->whereIs(page);
+  //return m_webserver->whereIs(page);
+  return "http://testhost.test.ch:15814/common/" + page;
+
 }
 
 } /* namespace selenium */

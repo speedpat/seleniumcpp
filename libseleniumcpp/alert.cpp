@@ -6,12 +6,12 @@
  */
 
 #include "selenium/alert.hpp"
-#include "webdriver_private.hpp"
+#include "selenium/command_executor.hpp"
 
 namespace selenium
 {
 
-Alert::Alert(WebDriver::Private& driver)
+Alert::Alert(CommandExecutor& driver)
  : m_driver(driver)
 {
 }

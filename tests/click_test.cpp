@@ -129,15 +129,15 @@ TEST_F(ClickTest, testCanClickOnAnElementWithTopSetToANegativeNumber) {
 
 
 
-TEST_F(ClickTest, testShouldClickOnFirstBoundingClientRectWithNonZeroSize) {
+/*TEST_F(ClickTest, testShouldClickOnFirstBoundingClientRectWithNonZeroSize) {
   webDriver().findElement(By::id("twoClientRects")).click();
   wait().until(TitleIs("XHTML Test Page"));
-}
+}*/
 
 
 
 
-TEST_F(ClickTest, testShouldSetRelatedTargetForMouseOver) {
+/*TEST_F(ClickTest, testShouldSetRelatedTargetForMouseOver) {
   webDriver().get(pages().javascriptPage);
 
   webDriver().findElement(By::id("movable")).click();
@@ -152,13 +152,14 @@ TEST_F(ClickTest, testShouldSetRelatedTargetForMouseOver) {
 //  } else {
     EXPECT_STREQ("parent matches? true", log.data());
 //  }
-}
+}*/
 
 
 
 
 
 
+/*
 TEST_F(ClickTest, testShouldOnlyFollowHrefOnce) {
   webDriver().get(pages().clicksPage);
   std::string current = webDriver().currentWindowHandle();
@@ -173,6 +174,7 @@ TEST_F(ClickTest, testShouldOnlyFollowHrefOnce) {
 //    webDriver().switchTo().window(current);
 //  }
 }
+*/
 
 
 

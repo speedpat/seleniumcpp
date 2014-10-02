@@ -11,17 +11,17 @@
 #include <vector>
 
 #include "selenium/interactions/action.hpp"
-#include "webdriver_private.hpp"
+#include "selenium/command_executor.hpp"
 
 namespace selenium
 {
 namespace interactions
 {
-typedef std::function<void(WebDriver::Private&)> ActionFunction;
+typedef std::function<void(CommandExecutor&)> ActionFunction;
 
 struct Action::Private
 {
-  Private(WebDriver::Private& driver);
+  Private(CommandExecutor& driver);
   Private(const Private& other);
 
   void perform();
@@ -29,7 +29,7 @@ struct Action::Private
 private:
   friend class Actions;
   std::vector<ActionFunction> m_actions;
-  WebDriver::Private& m_driver;
+  CommandExecutor& m_driver;
 };
 
 } /* namespace interactions */
