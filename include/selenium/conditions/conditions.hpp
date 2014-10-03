@@ -404,6 +404,73 @@ struct AlertIsPresentPredicate
 
 };
 
+struct ElementTextToBeEqualPredicate : public WebElementPredicate
+{
+  ElementTextToBeEqualPredicate(WebElement element, const std::string& text)
+   : WebElementPredicate(element), m_text(text)
+  {
+
+  }
+
+  ::boost::optional<std::string> apply(WebDriver& driver)
+  {
+    const std::string text = m_element.text();
+    std::cerr << "  text: " << text << std::endl;
+    std::cerr << "m_text: " << m_text << std::endl;
+    if (text == m_text)
+    {
+      return ::boost::optional<std::string>(text);
+    }
+    return ::boost::optional<std::string>(::boost::none);
+  }
+
+  std::string m_text;
+};
+
+struct ElementValueToBeEqualPredicate : public WebElementPredicate
+{
+  ElementValueToBeEqualPredicate(WebElement element, const std::string& text)
+   : WebElementPredicate(element), m_text(text)
+  {
+
+  }
+
+  ::boost::optional<std::string> apply(WebDriver& driver)
+  {
+    const std::string text = m_element.getAttribute("value");
+    std::cerr << "  text: " << text << std::endl;
+    std::cerr << "m_text: " << m_text << std::endl;
+    if (text == m_text)
+    {
+      return ::boost::optional<std::string>(text);
+    }
+    return ::boost::optional<std::string>(::boost::none);
+  }
+
+  std::string m_text;
+};
+
+struct ElementTextToContainPredicate : public WebElementPredicate
+{
+  ElementTextToContainPredicate(WebElement element, const std::string& text)
+   : WebElementPredicate(element), m_text(text)
+  {
+
+  }
+
+  ::boost::optional<std::string> apply(WebDriver& driver)
+  {
+    const std::string text = m_element.text();
+    if (text.find(m_text) != std::string::npos)
+    {
+      return ::boost::optional<std::string>(text);
+    }
+    return ::boost::optional<std::string>(::boost::none);
+  }
+
+  std::string m_text;
+};
+
 } /* namespace conditions */
 
 } /* namespace selenium */

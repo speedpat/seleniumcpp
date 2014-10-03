@@ -368,7 +368,7 @@ const std::string InProcessWebServer::whereIs(const std::string& relativePath) c
   std::string slash = "/";
   return "http://"
     //  + m_hostName + ":" + std::to_string(m_webServer->m_port)
-      + std::string("testhost.test.ch:15814/common")
+      + std::string("testhost.test.ch:8787/common")
       + (relativePath.size() > 0 && std::equal(slash.begin(), slash.end(), relativePath.begin()) ? "" : "/" ) + relativePath;
 }
 

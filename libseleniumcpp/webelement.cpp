@@ -237,7 +237,7 @@ std::string WebElement::valueOfCssProperty(const std::string& propertyName)
 {
 	CommandParameters params;
 	params.put("propertyName", propertyName);
-	return m_private->execute(Command::GET_ELEMENT_VALUE_OF_CSS_PROPERTY);
+	return m_private->execute(Command::GET_ELEMENT_VALUE_OF_CSS_PROPERTY, params);
 }
 std::string WebElement::location()
 {
@@ -271,6 +271,16 @@ std::ostream& operator<<(std::ostream& stream, const WebElement& element) {
   return stream;
 }
 
+WebElement& WebElement::operator=(WebElement other)
+{
+        std::swap(m_private, other.m_private);
+        return *this;
+}
+
+bool WebElement::operator==(const WebElement& other) const
+{
+  return other.m_private->m_elementId == m_private->m_elementId;
+}
 
 
 } /* namespace selenium */

@@ -112,6 +112,13 @@ public:
   virtual ~JavaScriptErrorException() = default;
 };
 
+class InvalidSelectorException : public WebDriverException
+{
+public:
+  InvalidSelectorException(const std::string& what);
+  virtual ~InvalidSelectorException() = default;
+};
+
 } /* namespace selenium */
 
 

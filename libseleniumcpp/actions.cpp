@@ -302,6 +302,7 @@ void Actions::perform()
   {
     action(*((CommandExecutor*)m_driver.m_private));
   }
+ // m_private->m_actions.clear();
 }
 /**
  Releases the depressed left mouse button at the current mouse location.

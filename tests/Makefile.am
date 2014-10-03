@@ -22,7 +22,12 @@ tests_SOURCES= \
 	children_finding_test.cpp \
 	clear_test.cpp \
 	click_scrolling_test.cpp \
-	click_test.cpp
+	click_test.cpp \
+	correct_event_firing_test.cpp \
+	css_value_test.cpp \
+	element_attribute_test.cpp \
+	element_equality_test.cpp \
+	element_finding_test.cpp
 
 # Linker options for a.out
 tests_LDFLAGS = $(top_srcdir)/tests/support/libseleniumcpptest.la $(top_srcdir)/libseleniumcpp/libseleniumcpp.la  -lpthread -lcppnetlib-client-connections -lboost_system -lboost_thread -lcppnetlib-uri 
@@ -33,3 +38,4 @@ tests_CPPFLAGS = -I$(top_srcdir)/include -I/usr/src/gtest -I$(top_srcdir)/ -std=
 tests_DEPENDENCIES = $(top_srcdir)/tests/support/libseleniumcpptest.la
 
 SUBDIRS=support
+

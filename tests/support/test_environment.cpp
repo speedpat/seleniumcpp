@@ -60,6 +60,9 @@ void TestEnvironment::TearDown()
   delete m_webserver;
   m_webserver = nullptr;
 
+  delete m_pages;
+  m_pages = nullptr;
+
 }
 
 Pages& TestEnvironment::pages()
@@ -75,7 +78,7 @@ std::string& TestEnvironment::driverUrl()
 std::string TestEnvironment::whereIs(const std::string& page)
 {
   //return m_webserver->whereIs(page);
-  return "http://testhost.test.ch:15814/common/" + page;
+  return "http://testhost.test.ch:8787/common/" + page;
 
 }
 

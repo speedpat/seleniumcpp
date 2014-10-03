@@ -26,7 +26,7 @@ public:
   typedef conditions::ExpectedCondition<bool, conditions::TitleIsPredicate, std::string> TitleIs;
   typedef conditions::ExpectedCondition<bool, conditions::TitleContainsPredicate, std::string> TitleContains;
   typedef conditions::ExpectedCondition<WebElement, conditions::PresenceOfElementLocatedPredicate, const Locator&> PresenceOfElementLocated;
-  typedef conditions::ExpectedCondition<bool, conditions::VisibilityOfElementLocatedPredicate, const Locator&> VisibilityOfElementLocated;
+  typedef conditions::ExpectedCondition<WebElement, conditions::VisibilityOfElementLocatedPredicate, const Locator&> VisibilityOfElementLocated;
   typedef conditions::ExpectedCondition<WebElement, conditions::VisibilityOfElementPredicate, WebElement> VisibilityOfElement;
   typedef conditions::ExpectedCondition<WebElements, conditions::PresenceOfAllElementsLocatedPredicate, const Locator&> PresenceOfAllElementsLocated;
   typedef conditions::ExpectedCondition<std::string, conditions::TextToBePresentInElementPredicate, const Locator&, std::string> TextToBePresentInElement;
@@ -39,6 +39,9 @@ public:
   typedef conditions::ExpectedCondition<bool, conditions::ElementLocatedIsSelectedPredicate, const Locator&> ElementLocatedIsSelected;
   typedef conditions::ExpectedCondition<bool, conditions::ElementLocatedSelectionStateToBePredicate, const Locator&, bool> ElementLocatedSelectionStateToBe;
   typedef conditions::ExpectedCondition<Alert, conditions::AlertIsPresentPredicate> AlertIsPresent;
+  typedef conditions::ExpectedCondition<std::string, conditions::ElementTextToBeEqualPredicate, WebElement, std::string> ElementTextToBeEqual;
+  typedef conditions::ExpectedCondition<std::string, conditions::ElementValueToBeEqualPredicate, WebElement, std::string> ElementValueToBeEqual;
+  typedef conditions::ExpectedCondition<std::string, conditions::ElementTextToContainPredicate, WebElement, std::string> ElementTextToContain;
 
 private:
   ExpectedConditions() = delete;
@@ -61,6 +64,9 @@ typedef ExpectedConditions::ElementSelectionState ElementSelectionState;
 typedef ExpectedConditions::ElementLocatedIsSelected ElementLocatedIsSelected;
 typedef ExpectedConditions::ElementLocatedSelectionStateToBe ElementLocatedSelectionStateToBe;
 typedef ExpectedConditions::AlertIsPresent AlertIsPresent;
+typedef ExpectedConditions::ElementTextToBeEqual ElementTextToBeEqual;
+typedef ExpectedConditions::ElementValueToBeEqual ElementValueToBeEqual;
+typedef ExpectedConditions::ElementTextToContain ElementTextToContain;
 
 } /* namespace selenium */
 

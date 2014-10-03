@@ -65,6 +65,10 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const WebElement& element);
 
+  WebElement& operator=(WebElement other);
+
+  bool operator==(const WebElement& other) const;
+
 private:
 	struct Private;
 	Private* m_private;

@@ -1089,6 +1089,7 @@ WebDriver::Private::execute(const Command& command,
       }
       case InvalidSelector:
         {
+          throw InvalidSelectorException(message);
         break;
       }
       case SessionNotCreatedException:

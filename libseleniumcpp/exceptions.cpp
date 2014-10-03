@@ -94,5 +94,12 @@ JavaScriptErrorException::JavaScriptErrorException(const std::string& what)
 
 }
 
+InvalidSelectorException::InvalidSelectorException(const std::string& what)
+ : WebDriverException(what)
+{
+
+}
+
+
 } /* namespace selenium */
 
