@@ -12,6 +12,7 @@ from selenium.common.exceptions import TimeoutException
 
 if __name__ == '__main__':
 	driver = WebDriver(command_executor='http://localhost:9515', desired_capabilities=DesiredCapabilities.CHROME, browser_profile=None)
+        driver.set_script_timeout(1);
 	driver.get('http://www.google.ch')
 	chains = ActionChains(driver)
 	chains.send_keys('hallo')

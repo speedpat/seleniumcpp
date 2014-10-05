@@ -60,7 +60,7 @@ public:
   WebElements findElements(const Locator& locator);
 
 	ScriptResult executeScript(const std::string& script, std::vector<ScriptArg> args = {});
-	ScriptResult executeAsyncSript(const std::string& script, std::vector<ScriptArg> args = {});
+	ScriptResult executeAsyncScript(const std::string& script, std::vector<ScriptArg> args = {});
 
 	std::string currentUrl();
 	std::string pageSource();
@@ -84,7 +84,14 @@ public:
 	void addCookie(const Cookie& cookie);
 
 	void implicitlyWait(const unsigned int timeToWait);
-	void setScriptTimeout(const unsigned int timeToWait);
+	template <class period>
+  void setScriptTimeout(std::chrono::duration<long int, period> timeout)
+	{
+	  std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
+	  setScriptTimeout(ms.count());
+	}
+
+	void setScriptTimeout(double timeToWait);
 	void setPageLoadTimeout(const unsigned int timeToWait);
 
 	Capabilities getCapabilities();

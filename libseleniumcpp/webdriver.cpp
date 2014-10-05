@@ -273,7 +273,7 @@ ScriptResult WebDriver::executeScript(const std::string& script, std::vector<Scr
   return m_private->executeScript(Command::EXECUTE_SCRIPT, script, args);
 }
 
-ScriptResult WebDriver::executeAsyncSript(const std::string& script, std::vector<ScriptArg> args)
+ScriptResult WebDriver::executeAsyncScript(const std::string& script, std::vector<ScriptArg> args)
 {
   return m_private->executeScript(Command::EXECUTE_ASYNC_SCRIPT, script, args);
 }
@@ -438,10 +438,10 @@ void WebDriver::implicitlyWait(const unsigned int timeToWait)
 	m_private->execute(Command::IMPLICIT_WAIT, params);
 }
 
-void WebDriver::setScriptTimeout(const unsigned int timeToWait)
+void WebDriver::setScriptTimeout(double timeoutInMs)
 {
 	CommandParameters params;
-	params.add("ms", timeToWait*1000);
+	params.add("ms", std::to_string(timeoutInMs));
 
 	m_private->execute(Command::SET_SCRIPT_TIMEOUT, params);
 }
@@ -1073,6 +1073,7 @@ WebDriver::Private::execute(const Command& command,
       }
       case ScriptTimeout:
         {
+          throw TimeoutException(message);
         break;
       }
       case InvalidElementCoordinated:
@@ -1208,13 +1209,8 @@ ScriptResult WebDriver::Private::executeScript(
   params.put_child("args", argsParam);
   Response response = execute(command, params);
   Response value = response.get_child("value");
-  if (value.find("ELEMENT") != value.not_found())
-  {
-    std::string elementId = value.get<std::string>("ELEMENT");
-    return ScriptResult(*this, elementId);
-  }
 
-  return ScriptResult(*this, value.data());
+  return ScriptResult::create(*this, value);
 
 }
 } /* namespace selenium */

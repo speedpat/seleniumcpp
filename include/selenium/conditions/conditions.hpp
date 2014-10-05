@@ -294,7 +294,7 @@ struct ElementToBeClickablePredicate : public VisibilityOfElementLocatedPredicat
 
 struct StalenessOfPredicate : public WebElementPredicate
 {
-  StalenessOfPredicate(WebElement& element)
+  StalenessOfPredicate(const WebElement& element)
    : WebElementPredicate(element)
   {
 
@@ -331,7 +331,7 @@ struct ElementIsSelectedPredicate : public WebElementPredicate
 
 struct ElementSelectionStatePredicate : public WebElementPredicate
 {
-  ElementSelectionStatePredicate(WebElement& element, bool selected)
+  ElementSelectionStatePredicate(const WebElement& element, bool selected)
    : WebElementPredicate(element), m_selected(selected)
   {
 
@@ -406,7 +406,7 @@ struct AlertIsPresentPredicate
 
 struct ElementTextToBeEqualPredicate : public WebElementPredicate
 {
-  ElementTextToBeEqualPredicate(WebElement element, const std::string& text)
+  ElementTextToBeEqualPredicate(const WebElement element, const std::string& text)
    : WebElementPredicate(element), m_text(text)
   {
 
@@ -429,7 +429,7 @@ struct ElementTextToBeEqualPredicate : public WebElementPredicate
 
 struct ElementValueToBeEqualPredicate : public WebElementPredicate
 {
-  ElementValueToBeEqualPredicate(WebElement element, const std::string& text)
+  ElementValueToBeEqualPredicate(const WebElement element, const std::string& text)
    : WebElementPredicate(element), m_text(text)
   {
 
@@ -452,7 +452,7 @@ struct ElementValueToBeEqualPredicate : public WebElementPredicate
 
 struct ElementTextToContainPredicate : public WebElementPredicate
 {
-  ElementTextToContainPredicate(WebElement element, const std::string& text)
+  ElementTextToContainPredicate(const WebElement element, const std::string& text)
    : WebElementPredicate(element), m_text(text)
   {
 

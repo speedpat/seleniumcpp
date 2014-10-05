@@ -27,7 +27,9 @@ tests_SOURCES= \
 	css_value_test.cpp \
 	element_attribute_test.cpp \
 	element_equality_test.cpp \
-	element_finding_test.cpp
+	element_finding_test.cpp \
+	element_selecting_test.cpp \
+	executing_async_javascript_test.cpp	
 
 # Linker options for a.out
 tests_LDFLAGS = $(top_srcdir)/tests/support/libseleniumcpptest.la $(top_srcdir)/libseleniumcpp/libseleniumcpp.la  -lpthread -lcppnetlib-client-connections -lboost_system -lboost_thread -lcppnetlib-uri 
