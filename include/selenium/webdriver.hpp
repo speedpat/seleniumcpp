@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 #include <selenium/types.hpp>
+#include <selenium/script_result.hpp>
+#include <selenium/script_arg.hpp>
 
 namespace selenium {
 namespace interactions {
@@ -59,14 +61,38 @@ public:
 	WebElements findElements(const By& by, const std::string& value);
   WebElements findElements(const Locator& locator);
 
-	ScriptResult executeScript(const std::string& script, std::vector<ScriptArg> args = {});
-	ScriptResult executeAsyncScript(const std::string& script, std::vector<ScriptArg> args = {});
+	const ScriptResult executeScript(const std::string& script, const ScriptArgs& args = {});
+
+	template <typename T>
+	const ScriptResult executeScript(const std::string& script, const std::vector<T>& args)
+	{
+	  ScriptArgs scriptArgs;
+	  for (auto element: args)
+	  {
+	     scriptArgs.push_back(element);
+	  }
+	  ScriptArgs arg;
+	  arg.push_back(scriptArgs);
+	  return executeScript(script, arg);
+	}
+
+	const ScriptResult executeScript(const std::string& script, const std::map<std::string, ScriptArg>& args)
+	{
+	  ScriptArg arg(Json::objectValue);
+	  for (std::pair<std::string, ScriptArg> entry: args)
+	  {
+	    arg[entry.first] = entry.second;
+	  }
+	  return executeScript(script, { arg });
+	}
+
+	const ScriptResult executeAsyncScript(const std::string& script, const ScriptArgs& args = {});
 
 	std::string currentUrl();
 	std::string pageSource();
 
-	std::string currentWindowHandle();
-	std::vector<std::string> windowHandles();
+	WindowHandle currentWindowHandle();
+	WindowHandles windowHandles();
 
 	void maximizeWindow();
 

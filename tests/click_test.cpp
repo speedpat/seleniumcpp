@@ -62,8 +62,9 @@ TEST_F(ClickTest, testCanClickOnAnAnchorAndNotReloadThePage) {
 
   webDriver().findElement(By::id("anchor")).click();
 
-  bool samePage = webDriver().executeScript("return document.latch");
+  ScriptResult res = webDriver().executeScript("return document.latch");
 
+  bool samePage = res.asBool();
   EXPECT_EQ(true, samePage) << "Latch was reset";
 }
 

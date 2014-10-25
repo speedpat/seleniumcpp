@@ -36,18 +36,20 @@ void TestEnvironment::SetUp()
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   EXPECT_TRUE(m_webserver->isRunning());
 
+  m_pages = new Pages(*m_webserver);
+
   ::boost::process::context ctx;
   ctx.stdout_behavior = ::boost::process::inherit_stream();
   ctx.stderr_behavior = ::boost::process::inherit_stream();
   ctx.environment = ::boost::process::self::get_environment();
 
-  m_pages = new Pages(*m_webserver);
-
   std::string command = "/home/speedpat/tools/chromedriver/chromedriver";
   std::vector<std::string> args({command});
   m_driver = ::boost::process::launch(command, args, ctx);
   std::cout << "chromedriver started, pid: " << m_driver.get_id() << std::endl;
+
   m_driverUrl = "http://localhost:9515";
+  //m_driverUrl = "http://localhost:4444/wd/hub";
 
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }

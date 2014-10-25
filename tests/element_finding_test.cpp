@@ -39,7 +39,7 @@ public:
 TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementById) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::id("linkId"));
-  ASSERT_STREQ(element.getAttribute("id").data(), "linkId");
+  ASSERT_TRUE(equals(element.getAttribute("id"), "linkId"));
 }
 
 //@Ignore(value = ANDROID, reason = "Bug in Android's XPath library.")
@@ -97,7 +97,7 @@ TEST_F(ElementFindingTest, testFindingMultipleElementsByIdWithSpaceShouldThrow) 
 TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementByName) {
   webDriver().get(pages().formPage);
   WebElement element = webDriver().findElement(By::name("checky"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "furrfu");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "furrfu"));
 }
 
 //@Test
@@ -111,7 +111,7 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindMultipleElementsByName) {
 TEST_F(ElementFindingTest, testShouldBeAbleToFindAnElementThatDoesNotSupportTheNameProperty) {
   webDriver().get(pages().nestedPage);
   WebElement element = webDriver().findElement(By::name("div1"));
-  ASSERT_STREQ(element.getAttribute("name").data(), "div1");
+  ASSERT_TRUE(equals(element.getAttribute("name"), "div1"));
 }
 
 // By::name negative
@@ -161,7 +161,7 @@ TEST_F(ElementFindingTest, testFindingMultipleElementsByNameWithSpaceShouldThrow
 TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementByTagName) {
   webDriver().get(pages().formPage);
   WebElement element = webDriver().findElement(By::tagName("input"));
-  ASSERT_STRCASEEQ(element.tagName().data(), "input");
+  ASSERT_TRUE(equalsIgnoreCase(element.tagName(), "input"));
 }
 
 //@Test
@@ -218,7 +218,7 @@ TEST_F(ElementFindingTest, testFindingMultipleElementsByTagNameWithSpaceShouldTh
 /*TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementByClass) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::className("extraDiv"));
-  ASSERT_EQ(element.text().data(), startsWith("Another div starts here."));
+  ASSERT_EQ(element.text(), startsWith("Another div starts here."));
 }*/
 
 //@Test
@@ -232,28 +232,28 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindMultipleElementsByClassName) {
 TEST_F(ElementFindingTest, testShouldFindElementByClassWhenItIsTheFirstNameAmongMany) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::className("nameA"));
-  ASSERT_STREQ(element.text().data(), "An H2 title");
+  ASSERT_TRUE(equals(element.text(), "An H2 title"));
 }
 
 //@Test
 TEST_F(ElementFindingTest, testShouldFindElementByClassWhenItIsTheLastNameAmongMany) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::className("nameC"));
-  ASSERT_STREQ(element.text().data(), "An H2 title");
+  ASSERT_TRUE(equals(element.text(), "An H2 title"));
 }
 
 //@Test
 TEST_F(ElementFindingTest, testShouldFindElementByClassWhenItIsInTheMiddleAmongMany) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::className("nameBnoise"));
-  ASSERT_STREQ(element.text().data(), "An H2 title");
+  ASSERT_TRUE(equals(element.text(), "An H2 title"));
 }
 
 //@Test
 TEST_F(ElementFindingTest, testShouldFindElementByClassWhenItsNameIsSurroundedByWhitespace) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::className("spaceAround"));
-  ASSERT_STREQ(element.text().data(), "Spaced out");
+  ASSERT_TRUE(equals(element.text(), "Spaced out"));
 }
 
 //@Test
@@ -261,7 +261,7 @@ TEST_F(ElementFindingTest, testShouldFindElementsByClassWhenItsNameIsSurroundedB
   webDriver().get(pages().xhtmlTestPage);
   WebElements elements = webDriver().findElements(By::className("spaceAround"));
   ASSERT_EQ(elements.size(), 1);
-  ASSERT_STREQ(elements[0].text().data(), "Spaced out");
+  ASSERT_TRUE(equals(elements[0].text(), "Spaced out"));
 }
 
 // By::className negative
@@ -324,7 +324,7 @@ TEST_F(ElementFindingTest, testFindingMultipleElementsByInvalidClassNameShouldTh
 TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementByXPath) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::xpath("//h1"));
-  ASSERT_STREQ(element.text().data(), "XHTML Might Be The Future");
+  ASSERT_TRUE(equals(element.text(), "XHTML Might Be The Future"));
 }
 
 //@Test
@@ -348,7 +348,7 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindManyElementsRepeatedlyByXPath) 
 TEST_F(ElementFindingTest, testShouldBeAbleToIdentifyElementsByClass) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement header = webDriver().findElement(By::xpath("//h1[@class='header']"));
-  ASSERT_STREQ(header.text().data(), "XHTML Might Be The Future");
+  ASSERT_TRUE(equals(header.text(), "XHTML Might Be The Future"));
 }
 
 //@Test
@@ -358,15 +358,15 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindAnElementByXPathWithMultipleAtt
       By::xpath("//form[@name='optional']/input[@type='submit' and @value='Click!']"));
   std::string tagName = element.tagName();
   std::transform(tagName.begin(), tagName.end(), tagName.begin(), ::tolower);
-  ASSERT_STREQ(tagName.data(), "input");
-  ASSERT_STREQ(element.getAttribute("value").data(), "Click!");
+  ASSERT_TRUE(equals(tagName, "input"));
+  ASSERT_TRUE(equals(element.getAttribute("value"), "Click!"));
 }
 
 //@Test
 TEST_F(ElementFindingTest, testFindingALinkByXpathShouldLocateAnElementWithTheGivenText) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::xpath("//a[text()='click me']"));
-  ASSERT_STREQ(element.text().data(), "click me");
+  ASSERT_TRUE(equals(element.text(), "click me"));
 }
 
 //@Test
@@ -461,8 +461,8 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementByCssSelector) {
   WebElement element = webDriver().findElement(By::cssSelector("div.content"));
   std::string tagName = element.tagName();
   std::transform(tagName.begin(), tagName.end(), tagName.begin(), ::tolower);
-  ASSERT_STREQ(tagName.data(), "div");
-  ASSERT_STREQ(element.getAttribute("class").data(), "content");
+  ASSERT_TRUE(equals(tagName, "div"));
+  ASSERT_TRUE(equals(element.getAttribute("class"), "content"));
 }
 
 //@Test
@@ -478,8 +478,8 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementByCompoundCssSele
   WebElement element = webDriver().findElement(By::cssSelector("div.extraDiv, div.content"));
   std::string tagName = element.tagName();
   std::transform(tagName.begin(), tagName.end(), tagName.begin(), ::tolower);
-  ASSERT_STREQ(tagName.data(), "div");
-  ASSERT_STREQ(element.getAttribute("class").data(), "content");
+  ASSERT_TRUE(equals(tagName, "div"));
+  ASSERT_TRUE(equals(element.getAttribute("class"), "content"));
 }
 
 //@Test
@@ -487,8 +487,8 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindMultipleElementsByCompoundCssSe
   webDriver().get(pages().xhtmlTestPage);
   WebElements elements = webDriver().findElements(By::cssSelector("div.extraDiv, div.content"));
   ASSERT_GT(elements.size(), 1);
-  ASSERT_STREQ(elements[0].getAttribute("class").data(), "content");
-  ASSERT_STREQ(elements[1].getAttribute("class").data(), "extraDiv");
+  ASSERT_TRUE(equals(elements[0].getAttribute("class"), "content"));
+  ASSERT_TRUE(equals(elements[1].getAttribute("class"), "extraDiv"));
 }
 
 //@Test
@@ -496,21 +496,21 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindMultipleElementsByCompoundCssSe
 TEST_F(ElementFindingTest, testShouldBeAbleToFindAnElementByBooleanAttributeUsingCssSelector) {
   webDriver().get(whereIs("locators_tests/boolean_attribute_selected.html"));
   WebElement element = webDriver().findElement(By::cssSelector("option[selected='selected']"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "two");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "two"));
 }
 
 //@Test
 TEST_F(ElementFindingTest, testShouldBeAbleToFindAnElementByBooleanAttributeUsingShortCssSelector) {
   webDriver().get(whereIs("locators_tests/boolean_attribute_selected.html"));
   WebElement element = webDriver().findElement(By::cssSelector("option[selected]"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "two");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "two"));
 }
 
 //@Test
 TEST_F(ElementFindingTest, testShouldBeAbleToFindAnElementByBooleanAttributeUsingShortCssSelectorOnHtml4Page) {
   webDriver().get(whereIs("locators_tests/boolean_attribute_selected_html4.html"));
   WebElement element = webDriver().findElement(By::cssSelector("option[selected]"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "two");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "two"));
 }
 
 // By::cssSelector negative
@@ -568,7 +568,7 @@ TEST_F(ElementFindingTest, testFindingMultipleElementsByInvalidCssSelectorShould
 TEST_F(ElementFindingTest, testShouldBeAbleToFindALinkByText) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement link = webDriver().findElement(By::linkText("click me"));
-  ASSERT_STREQ(link.text().data(), "click me");
+  ASSERT_TRUE(equals(link.text(), "click me"));
 }
 
 //@Test
@@ -582,7 +582,7 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindMultipleLinksByText) {
 TEST_F(ElementFindingTest, testShouldFindElementByLinkTextContainingEqualsSign) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::linkText("Link=equalssign"));
-  ASSERT_STREQ(element.getAttribute("id").data(), "linkWithEqualsSign");
+  ASSERT_TRUE(equals(element.getAttribute("id"), "linkWithEqualsSign"));
 }
 
 //@Test
@@ -590,7 +590,7 @@ TEST_F(ElementFindingTest, testShouldFindMultipleElementsByLinkTextContainingEqu
   webDriver().get(pages().xhtmlTestPage);
   WebElements elements = webDriver().findElements(By::linkText("Link=equalssign"));
   ASSERT_EQ(1, elements.size());
-  ASSERT_STREQ(elements[0].getAttribute("id").data(), "linkWithEqualsSign");
+  ASSERT_TRUE(equals(elements[0].getAttribute("id"), "linkWithEqualsSign"));
 }
 
 //@Test
@@ -612,7 +612,7 @@ TEST_F(ElementFindingTest, testLinkWithFormattingTags) {
   WebElement elem = webDriver().findElement(By::id("links"));
 
   WebElement res = elem.findElement(By::partialLinkText("link with formatting tags"));
-  ASSERT_STREQ(res.text().data(), "link with formatting tags");
+  ASSERT_TRUE(equals(res.text(), "link with formatting tags"));
 }
 
 //@Test
@@ -620,8 +620,8 @@ TEST_F(ElementFindingTest, testLinkWithFormattingTags) {
 TEST_F(ElementFindingTest, testDriverCanGetLinkByLinkTestIgnoringTrailingWhitespace) {
   webDriver().get(pages().simpleTestPage);
   WebElement link = webDriver().findElement(By::linkText("link with trailing space"));
-  ASSERT_STREQ(link.getAttribute("id").data(), "linkWithTrailingSpace");
-  ASSERT_STREQ(link.text().data(), "link with trailing space");
+  ASSERT_TRUE(equals(link.getAttribute("id"), "linkWithTrailingSpace"));
+  ASSERT_TRUE(equals(link.text(), "link with trailing space"));
 }
 
 // By::linkText negative
@@ -659,7 +659,7 @@ TEST_F(ElementFindingTest, testShouldBeAbleToFindASingleElementByPartialLinkText
 TEST_F(ElementFindingTest, testShouldFindElementByPartialLinkTextContainingEqualsSign) {
   webDriver().get(pages().xhtmlTestPage);
   WebElement element = webDriver().findElement(By::partialLinkText("Link="));
-  ASSERT_STREQ(element.getAttribute("id").data(), "linkWithEqualsSign");
+  ASSERT_TRUE(equals(element.getAttribute("id"), "linkWithEqualsSign"));
 }
 
 //@Test
@@ -667,7 +667,7 @@ TEST_F(ElementFindingTest, testShouldFindMultipleElementsByPartialLinkTextContai
   webDriver().get(pages().xhtmlTestPage);
   WebElements elements = webDriver().findElements(By::partialLinkText("Link="));
   ASSERT_EQ(elements.size(), 1);
-  ASSERT_STREQ(elements[0].getAttribute("id").data(), "linkWithEqualsSign");
+  ASSERT_TRUE(equals(elements[0].getAttribute("id"), "linkWithEqualsSign"));
 }
 
 // Misc tests
@@ -677,7 +677,7 @@ TEST_F(ElementFindingTest, testDriverShouldBeAbleToFindElementsAfterLoadingMoreT
   webDriver().get(pages().formPage);
   webDriver().get(pages().xhtmlTestPage);
   WebElement link = webDriver().findElement(By::linkText("click me"));
-  ASSERT_STREQ(link.text().data(), "click me");
+  ASSERT_TRUE(equals(link.text(), "click me"));
 }
 
 // You don't want to ask why this is here
@@ -686,23 +686,23 @@ TEST_F(ElementFindingTest, testWhenFindingByNameShouldNotReturnById) {
   webDriver().get(pages().formPage);
 
   WebElement element = webDriver().findElement(By::name("id-name1"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "name");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "name"));
 
   element = webDriver().findElement(By::id("id-name1"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "id");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "id"));
 
   element = webDriver().findElement(By::name("id-name2"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "name");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "name"));
 
   element = webDriver().findElement(By::id("id-name2"));
-  ASSERT_STREQ(element.getAttribute("value").data(), "id");
+  ASSERT_TRUE(equals(element.getAttribute("value"), "id"));
 }
 
 //@Test
 TEST_F(ElementFindingTest, testShouldBeAbleToFindAHiddenElementsByName) {
   webDriver().get(pages().formPage);
   WebElement element = webDriver().findElement(By::name("hidden"));
-  ASSERT_STREQ(element.getAttribute("name").data(), "hidden");
+  ASSERT_TRUE(equals(element.getAttribute("name"), "hidden"));
 }
 
 //@Test(expected = NoSuchElementException.class)

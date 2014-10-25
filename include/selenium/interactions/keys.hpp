@@ -5,85 +5,93 @@
  *      Author: speedpat
  */
 
-//ifndef KEYS_HPP_
-//define KEYS_HPP_
+#ifndef KEYS_HPP_
+#define KEYS_HPP_
+
+#include <string>
 
 namespace selenium
 {
 namespace interactions
 {
-enum Keys
+class Keys
 {
-  NULL_KEY     = u'\ue000',
-  CANCEL       = u'\ue001', //  ^break
-  HELP         = u'\ue002',
-  BACK_SPACE   = u'\ue003',
-  TAB          = u'\ue004',
-  CLEAR        = u'\ue005',
-  RETURN       = u'\ue006',
-  ENTER        = u'\ue007',
-  SHIFT        = u'\ue008',
-  LEFT_SHIFT   = u'\ue008' ,//  alias
-  CONTROL      = u'\ue009',
-  LEFT_CONTROL = u'\ue009', //  alias
-  ALT          = u'\ue00a',
-  LEFT_ALT     = u'\ue00a', //  alias
-  PAUSE        = u'\ue00b',
-  ESCAPE       = u'\ue00c',
-  SPACE        = u'\ue00d',
-  PAGE_UP      = u'\ue00e',
-  PAGE_DOWN    = u'\ue00f',
-  END          = u'\ue010',
-  HOME         = u'\ue011',
-  LEFT         = u'\ue012',
-  ARROW_LEFT   = u'\ue012', // alias
-  UP           = u'\ue013',
-  ARROW_UP     = u'\ue013', // alias
-  RIGHT        = u'\ue014',
-  ARROW_RIGHT  = u'\ue014', //  alias
-  DOWN         = u'\ue015',
-  ARROW_DOWN   = u'\ue015', //  alias
-  INSERT       = u'\ue016',
-  DELETE       = u'\ue017',
-  SEMICOLON    = u'\ue018',
-  EQUALS       = u'\ue019',
+public:
+  static const Keys NULL_KEY;
+   static const Keys CANCEL      ;
+   static const Keys HELP        ;
+   static const Keys BACK_SPACE  ;
+   static const Keys TAB         ;
+   static const Keys CLEAR       ;
+   static const Keys RETURN      ;
+   static const Keys ENTER       ;
+   static const Keys SHIFT       ;
+   static const Keys LEFT_SHIFT  ;
+   static const Keys CONTROL     ;
+   static const Keys LEFT_CONTROL;
+   static const Keys ALT         ;
+   static const Keys LEFT_ALT    ;
+   static const Keys PAUSE       ;
+   static const Keys ESCAPE      ;
+   static const Keys SPACE       ;
+   static const Keys PAGE_UP     ;
+   static const Keys PAGE_DOWN   ;
+   static const Keys END         ;
+   static const Keys HOME        ;
+   static const Keys LEFT        ;
+   static const Keys ARROW_LEFT  ;
+   static const Keys UP          ;
+   static const Keys ARROW_UP    ;
+   static const Keys RIGHT       ;
+   static const Keys ARROW_RIGHT ;
+   static const Keys DOWN        ;
+   static const Keys ARROW_DOWN  ;
+   static const Keys INSERT      ;
+   static const Keys DELETE      ;
+   static const Keys SEMICOLON   ;
+   static const Keys EQUALS      ;
 
-  NUMPAD0      = u'\ue01a', //  numbe pad  keys
-  NUMPAD1      = u'\ue01b',
-  NUMPAD2      = u'\ue01c',
-  NUMPAD3      = u'\ue01d',
-  NUMPAD4      = u'\ue01e',
-  NUMPAD5      = u'\ue01f',
-  NUMPAD6      = u'\ue020',
-  NUMPAD7      = u'\ue021',
-  NUMPAD8      = u'\ue022',
-  NUMPAD9      = u'\ue023',
-  MULTIPLY     = u'\ue024',
-  ADD          = u'\ue025',
-  SEPARATOR    = u'\ue026',
-  SUBTRACT     = u'\ue027',
-  DECIMAL      = u'\ue028',
-  DIVIDE       = u'\ue029',
+   static const Keys NUMPAD0     ;
+   static const Keys NUMPAD1     ;
+   static const Keys NUMPAD2     ;
+   static const Keys NUMPAD3     ;
+   static const Keys NUMPAD4     ;
+   static const Keys NUMPAD5     ;
+   static const Keys NUMPAD6     ;
+   static const Keys NUMPAD7     ;
+   static const Keys NUMPAD8     ;
+   static const Keys NUMPAD9     ;
+   static const Keys MULTIPLY    ;
+   static const Keys ADD         ;
+   static const Keys SEPARATOR   ;
+   static const Keys SUBTRACT    ;
+   static const Keys DECIMAL     ;
+   static const Keys DIVIDE      ;
 
-  F1           = u'\ue031', //  function  keys
-  F2           = u'\ue032',
-  F3           = u'\ue033',
-  F4           = u'\ue034',
-  F5           = u'\ue035',
-  F6           = u'\ue036',
-  F7           = u'\ue037',
-  F8           = u'\ue038',
-  F9           = u'\ue039',
-  F10          = u'\ue03a',
-  F11          = u'\ue03b',
-  F12          = u'\ue03c',
+   static const Keys F1          ;
+   static const Keys F2          ;
+   static const Keys F3          ;
+   static const Keys F4          ;
+   static const Keys F5          ;
+   static const Keys F6          ;
+   static const Keys F7          ;
+   static const Keys F8          ;
+   static const Keys F9          ;
+   static const Keys F10         ;
+   static const Keys F11         ;
+   static const Keys F12         ;
 
-  META         = u'\ue03d',
-  COMMAND      = u'\ue03d',
+   static const Keys META        ;
+   static const Keys COMMAND     ;
 
+   const std::string& key() const { return m_key; };
+
+private:
+   Keys(std::string key);
+   std::string m_key;
 };
 } /* namespace interactions*/
 } /* namespace selenium */
 
 
-//endif /* KEYS_HPP_ */
+#endif /* KEYS_HPP_ */

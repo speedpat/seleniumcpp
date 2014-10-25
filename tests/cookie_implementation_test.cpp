@@ -7,6 +7,8 @@
 
 #include <list>
 
+#include <boost/network/uri.hpp>
+
 #include "selenium/selenium.hpp"
 #include "support/selenium_testcase.hpp"
 #include "support/expected_test_conditions.hpp"
@@ -30,6 +32,7 @@ public:
   virtual void TearDown()
   {
     SeleniumTestCase::TearDown();
+    webDriver().deleteAllCookies();
   }
 
   void openAnotherPage()
@@ -103,27 +106,32 @@ public:
   {
     std::string url = cookiePage;
     url.append("?action=add");
-    url.append("&name=").append(cookie["name"]);
-    url.append("&value=").append(cookie["value"]);
+    url.append("&name=").append(cookie.getName());
+    url.append("&value=").append(cookie.getValue());
     if (cookie.find("domain")!= cookie.end())
     {
-      url.append("&domain=").append(cookie["domain"]);
+      url.append("&domain=").append(cookie.getDomain());
     }
     if (cookie.find("path") != cookie.end())
     {
-      url.append("&path=").append(cookie["path"]);
+      url.append("&path=").append(cookie.getPath());
     }
     if (cookie.find("expiry") != cookie.end())
     {
-      url.append("&expiry=").append(cookie["expiry"]);
+      std::chrono::system_clock::time_point expiry = cookie.getExpiry();
+    std::chrono::nanoseconds elapsed = expiry
+            - std::chrono::system_clock::time_point();
+        unsigned long count = std::chrono::duration_cast<std::chrono::seconds>(
+            elapsed).count();
+      url.append("&expiry=").append(std::to_string(count));
     }
     if (cookie.find("secure") != cookie.end())
     {
-      url.append("&secure=").append(cookie["secure"]);
+      url.append("&secure=").append(std::to_string(cookie.isSecure()));
     }
     if (cookie.find("httpOnly") != cookie.end())
     {
-      url.append("&httpOnly=").append(cookie["httpOnly"]);
+      url.append("&httpOnly=").append(std::to_string(cookie.httpOnly()));
     }
     webDriver().get(url);
   }
@@ -144,7 +152,7 @@ public:
 
   void assertCookieIsPresentWithName(std::string key)
   {
-    EXPECT_TRUE(webDriver().getCookie(key).empty()) << "Cookie was not present with name " + key;
+    EXPECT_FALSE(webDriver().getCookie(key).empty()) << "Cookie was not present with name " + key;
     ::boost::optional<std::string> documentCookie = getDocumentCookieOrNull();
     if (documentCookie && !documentCookie->empty())
     {
@@ -161,8 +169,12 @@ public:
       != cookies.end();
   }
 
-  std::chrono::system_clock::time_point someTimeInTheFuture() {
-    return std::chrono::system_clock::now() + std::chrono::seconds(100000);
+  Cookie::TimePoint someTimeInTheFuture() {
+    //return std::chrono::system_clock::time_point();
+
+    std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(10000);
+    std::chrono::seconds secs = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch());
+    return Cookie::TimePoint(secs);
   }
 
   std::string cookiePage;
@@ -279,13 +291,13 @@ TEST_F(CookieImplementationTest, testShouldNotDeleteCookiesWithASimilarName)
 
 TEST_F(CookieImplementationTest, testAddCookiesWithDifferentPathsThatAreRelatedToOurs)
 {
-  webDriver().get(whereIs("/common/animals"));
+  webDriver().get(whereIs("animals"));
   Cookie cookie1 = Cookie("fish", "cod", "/common/animals");
   Cookie cookie2 = Cookie("planet", "earth", "/common/");
   webDriver().addCookie(cookie1);
   webDriver().addCookie(cookie2);
 
-  webDriver().get(whereIs("/common/animals"));
+  webDriver().get(whereIs("animals"));
 
   assertCookieIsPresentWithName(cookie1.getName());
   assertCookieIsPresentWithName(cookie2.getName());
@@ -294,9 +306,11 @@ TEST_F(CookieImplementationTest, testAddCookiesWithDifferentPathsThatAreRelatedT
   assertCookieIsNotPresentWithName(cookie1.getName());
 }
 
-TEST_F(CookieImplementationTest, testGetCookiesInAFrame)
+//@Ignore(value = {ANDROID, CHROME, OPERA, OPERA_MOBILE, PHANTOMJS, SAFARI})
+//@Test
+/*TEST_F(CookieImplementationTest, testGetCookiesInAFrame)
 {
-  webDriver().get(whereIs("/common/animals"));
+  webDriver().get(whereIs("animals"));
   Cookie cookie1 = Cookie("fish", "cod", "/common/animals");
   webDriver().addCookie(cookie1);
 
@@ -305,22 +319,23 @@ TEST_F(CookieImplementationTest, testGetCookiesInAFrame)
 
   webDriver().switchTo().frame("iframe1");
   assertCookieIsPresentWithName(cookie1.getName());
-}
+}*/
 
-TEST_F(CookieImplementationTest, testCannotGetCookiesWithPathDifferingOnlyInCase)
+//@Ignore({CHROME, OPERA})
+//@Test
+/*TEST_F(CookieImplementationTest, testCannotGetCookiesWithPathDifferingOnlyInCase)
 {
   std::string cookieName = "fish";
   Cookie cookie = Cookie(cookieName, "cod", "/Common/animals");
   webDriver().addCookie(cookie);
 
-  webDriver().get(whereIs("/common/animals"));
   EXPECT_TRUE(webDriver().getCookie(cookieName).empty());
-}
+}*/
 
 /*TEST_F(CookieImplementationTest, testShouldNotGetCookieOnDifferentDomain) {
 
  std::string cookieName = "fish";
- webDriver().addCookie(Cookie.Builder(cookieName, "cod").build());
+ webDriver().addCookie(Cookie(cookieName, "cod"));
  assertCookieIsPresentWithName(cookieName);
 
  webDriver().get(domainHelper.getUrlForSecondValidHostname("simpleTest.html"));
@@ -405,20 +420,21 @@ TEST_F(CookieImplementationTest, testShouldWalkThePathToDeleteACookie)
   webDriver().get(whereIs("child/grandchild/grandchildPage.html"));
   assertNoCookiesArePresent();
 }
-/*
+
 TEST_F(CookieImplementationTest, testShouldIgnoreThePortNumberOfTheHostWhenSettingTheCookie)
 {
-  std::string uri = new URI(webDriver().currentUrl());
-  std::string host = std::string.format("%s:%d", uri.getHost(), uri.getPort());
+  boost::network::uri::uri currentUrl = webDriver().currentUrl();
+  std::string host = currentUrl.host() + ":" + currentUrl.port();
 
   std::string cookieName = "name";
   assertCookieIsNotPresentWithName(cookieName);
 
-  Cookie cookie = Cookie.Builder(cookieName, "value").domain(host).build();
+  Cookie cookie(cookieName, "value");
+  cookie.setDomain(currentUrl.host());
   webDriver().addCookie(cookie);
 
   assertCookieIsPresentWithName(cookieName);
-}*/
+}
 
 /*TEST_F(CookieImplementationTest, testCookieEqualityAfterSetAndGet)
 {
@@ -451,11 +467,18 @@ TEST_F(CookieImplementationTest, testShouldIgnoreThePortNumberOfTheHostWhenSetti
 
 TEST_F(CookieImplementationTest, testRetainsCookieExpiry)
 {
+  webDriver().get(whereIs("animals"));
+  webDriver().deleteAllCookies();
   Cookie addedCookie =
       Cookie("fish", "cod", "/common/animals", someTimeInTheFuture());
+  addedCookie.setDomain("testhost.test.ch");
   webDriver().addCookie(addedCookie);
 
   Cookie retrieved = webDriver().getCookie("fish");
+  for (auto entry: retrieved)
+  {
+    std::cout << entry.first << "=" << entry.second;
+  }
   EXPECT_FALSE(retrieved.empty());
   EXPECT_EQ(addedCookie.getExpiry(), retrieved.getExpiry());
 }
@@ -528,7 +551,7 @@ TEST_F(CookieImplementationTest, testDeleteNotExistedCookie)
 /*
 TEST_F(CookieImplementationTest, testShouldDeleteOneOfTheCookiesWithTheSameName)
 {
-  webDriver().get(whereIs("/common/animals"));
+  webDriver().get(whereIs("animals"));
   Cookie cookie1 = Cookie.Builder("fish", "cod")
       .domain(domainHelper.getHostName()).path("/common/animals").build();
   Cookie cookie2 = Cookie.Builder("fish", "tune")

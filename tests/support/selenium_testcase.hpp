@@ -39,6 +39,28 @@ protected:
   static std::string whereIs(const std::string& relativePath);
   Wait& wait();
 
+  void assertThat(::testing::AssertionResult result);
+   ::testing::AssertionResult equals(Attribute attribute, const char* value);
+   ::testing::AssertionResult equals(Attribute attribute, const std::string& value);
+   ::testing::AssertionResult equals(const char* value, Attribute attribute);
+   ::testing::AssertionResult equals(const char* val1, const char* val2);
+   ::testing::AssertionResult equals(const char* val1, const std::string val2);
+   ::testing::AssertionResult equals(const std::string val1, const std::string val2);
+   ::testing::AssertionResult equals(const std::string val1, const char* val2);
+   ::testing::AssertionResult equals(const Attribute& attribute, bool value);
+   ::testing::AssertionResult equals(const Attribute& attribute, int value);
+
+   ::testing::AssertionResult equals(Response& resp, selenium::ScriptResult result);
+   ::testing::AssertionResult equals(Response& resp, Response& result);
+
+   ::testing::AssertionResult equalsIgnoreCase(Attribute attribute, const char* value);
+   ::testing::AssertionResult equalsIgnoreCase(const char* value, const std::string& value2);
+
+   ::testing::AssertionResult null(Attribute attribute);
+
+   ::testing::AssertionResult contains(const Attribute& attribute, const char* value);
+   ::testing::AssertionResult contains(const Attribute& attribute, const std::string& value);
+
 private:
   static WebDriver* s_driver;
   Wait* m_wait;

@@ -40,6 +40,7 @@ public:
   typedef conditions::ExpectedCondition<bool, conditions::ElementLocatedSelectionStateToBePredicate, const Locator&, bool> ElementLocatedSelectionStateToBe;
   typedef conditions::ExpectedCondition<Alert, conditions::AlertIsPresentPredicate> AlertIsPresent;
   typedef conditions::ExpectedCondition<std::string, conditions::ElementTextToBeEqualPredicate, WebElement, std::string> ElementTextToBeEqual;
+  typedef conditions::ExpectedCondition<std::string, conditions::ElementTextToBeEqualLocatedPredicate, Locator, std::string> ElementTextToBeEqualLocated;
   typedef conditions::ExpectedCondition<std::string, conditions::ElementValueToBeEqualPredicate, WebElement, std::string> ElementValueToBeEqual;
   typedef conditions::ExpectedCondition<std::string, conditions::ElementTextToContainPredicate, WebElement, std::string> ElementTextToContain;
 
@@ -65,6 +66,7 @@ typedef ExpectedConditions::ElementLocatedIsSelected ElementLocatedIsSelected;
 typedef ExpectedConditions::ElementLocatedSelectionStateToBe ElementLocatedSelectionStateToBe;
 typedef ExpectedConditions::AlertIsPresent AlertIsPresent;
 typedef ExpectedConditions::ElementTextToBeEqual ElementTextToBeEqual;
+typedef ExpectedConditions::ElementTextToBeEqualLocated ElementTextToBeEqualLocated;
 typedef ExpectedConditions::ElementValueToBeEqual ElementValueToBeEqual;
 typedef ExpectedConditions::ElementTextToContain ElementTextToContain;
 

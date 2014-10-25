@@ -16,109 +16,98 @@ namespace selenium
 class WebDriverException : public std::runtime_error
 {
 public:
-	WebDriverException(const std::string& what);
-	virtual ~WebDriverException() = default;
+  using std::runtime_error::runtime_error;
 };
 
 class ErrorInResponseException : public WebDriverException
 {
 public:
-	ErrorInResponseException(const std::string& what);
-	ErrorInResponseException(const std::string& what, const std::runtime_error& cause);
-	virtual ~ErrorInResponseException() = default;
-
-private:
-	std::runtime_error m_cause;
+  using WebDriverException::WebDriverException;
 };
 
 class NoSuchElementException : public WebDriverException
 {
 public:
-	NoSuchElementException(const std::string& what);
-	virtual ~NoSuchElementException() = default;
-
+  using WebDriverException::WebDriverException;
 };
 
 class NoSuchFrameException : public WebDriverException
 {
 public:
-	NoSuchFrameException(const std::string& what);
-	virtual ~NoSuchFrameException() = default;
-
+  using WebDriverException::WebDriverException;
 };
 
 class TimeoutException : public WebDriverException
 {
 public:
-  TimeoutException(const std::string& what);
-  virtual ~TimeoutException() = default;
+  using WebDriverException::WebDriverException;
 };
 
 class StaleElementReferenceException : public WebDriverException
 {
 public:
-  StaleElementReferenceException(const std::string& what);
-  virtual ~StaleElementReferenceException() = default;
-
+  using WebDriverException::WebDriverException;
 };
 
 class ElementNotVisibleException : public WebDriverException
 {
 public:
-  ElementNotVisibleException(const std::string& what);
-  virtual ~ElementNotVisibleException() = default;
-
+  using WebDriverException::WebDriverException;
 };
 
 class NoAlertPresentException : public WebDriverException
 {
 public:
-  NoAlertPresentException(const std::string& what);
-  virtual ~NoAlertPresentException() = default;
+  using WebDriverException::WebDriverException;
 };
 
 class InvalidElementStateException : public WebDriverException
 {
 public:
-  InvalidElementStateException(const std::string& what);
-  virtual ~InvalidElementStateException() = default;
+  using WebDriverException::WebDriverException;
 };
 
 class MoveTargetOutOfBoundsException : public WebDriverException
 {
 public:
-  MoveTargetOutOfBoundsException(const std::string& what);
-  virtual ~MoveTargetOutOfBoundsException() = default;
+  using WebDriverException::WebDriverException;
 };
 
 class UnknownErrorException : public WebDriverException
 {
 public:
-  UnknownErrorException(const std::string& what);
-  virtual ~UnknownErrorException() = default;
+  using WebDriverException::WebDriverException;
 };
 
 class ElementIsNotSelectableException : public WebDriverException
 {
 public:
-  ElementIsNotSelectableException(const std::string& what);
-  virtual ~ElementIsNotSelectableException() = default;
+  using WebDriverException::WebDriverException;
 };
 
 class JavaScriptErrorException : public WebDriverException
 {
 public:
-  JavaScriptErrorException(const std::string& what);
-  virtual ~JavaScriptErrorException() = default;
+  using WebDriverException::WebDriverException;
 };
 
 class InvalidSelectorException : public WebDriverException
 {
 public:
-  InvalidSelectorException(const std::string& what);
-  virtual ~InvalidSelectorException() = default;
+  using WebDriverException::WebDriverException;
 };
 
+class UnexpectedAlertException : public WebDriverException
+{
+public:
+  using WebDriverException::WebDriverException;
+};
+
+class NoSuchWindowException : public WebDriverException
+{
+public:
+  using WebDriverException::WebDriverException;
+};
 } /* namespace selenium */
 
 

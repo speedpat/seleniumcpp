@@ -7,15 +7,16 @@
 
 #include "selenium/by.hpp"
 
+
 namespace selenium {
 
 By::By(const std::string& selector) :
 		m_selector(selector) {
 }
 
-std::ostream& operator<<(std::ostream& stream, const By& by) {
-	stream << by.m_selector;
-	return stream;
+By::operator Json::Value() const
+{
+  return Json::Value(m_selector);
 }
 
 const By& By::ID = By("id");

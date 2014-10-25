@@ -9,23 +9,18 @@
 #define SCRIPT_ARG_HPP_
 
 #include <string>
+#include <json/json.h>
 
 namespace selenium
 {
 class WebElement;
 
-class ScriptArg
+class ScriptArg : public Json::Value
 {
 public:
-  enum ArgType
-  {
-    _INT,
-    _DOUBLE,
-    _STRING,
-    _WEBELEMENT,
-  };
+  ScriptArg(Json::ValueType type = Json::nullValue);
   ScriptArg(const char* val);
-  ScriptArg(std::string val);
+  ScriptArg(const std::string& val);
   ScriptArg(int val);
   ScriptArg(long val);
   ScriptArg(double val);
@@ -33,8 +28,17 @@ public:
   ScriptArg(bool val);
   ScriptArg(const WebElement& val);
   ScriptArg(const ScriptArg& other);
+  ScriptArg(const Json::Value& value);
+  template <typename T>
+  ScriptArg(const std::vector<T>& arg)
+  : Json::Value(Json::arrayValue)
+  {
+    for (auto elem: arg)
+    {
+      append(elem);
+    }
+  }
 
-  ArgType type() const;
   operator int() const;
   operator long() const;
   operator float() const;
@@ -42,11 +46,6 @@ public:
   operator bool() const;
   operator std::string() const;
 
-private:
-  ArgType m_type;
-  std::string m_stringvalue;
-  long m_int_value;
-  double m_double_value;
 };
 
 } /* namespace selenium */

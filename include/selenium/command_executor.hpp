@@ -23,9 +23,37 @@ struct response_value_handler
 {
   RES get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
   {
-    return response.get<RES>("value");
+    return response["value"].asString();
   }
 
+};
+
+template <>
+struct response_value_handler<Response>
+{
+  Response get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
+  {
+    return response["value"];
+  }
+
+};
+
+template <>
+struct response_value_handler<int>
+{
+  int get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
+  {
+    return response["value"].asInt();
+  }
+};
+
+template <>
+struct response_value_handler<bool>
+{
+  bool get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
+  {
+    return response["value"].asBool();
+  }
 };
 
 template<>
@@ -34,8 +62,8 @@ struct response_value_handler<WebElement>
 
   WebElement get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
   {
-    Response element = response.get_child("value");
-    std::string elementId = element.get<std::string>("ELEMENT");
+    Response element = response["value"];
+    std::string elementId = element["ELEMENT"].asString();
 
     return WebElement(driver, elementId);
   }
@@ -47,11 +75,11 @@ struct response_value_handler<WebElements>
 
   WebElements get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
   {
-    Response elements = response.get_child("value");
+    Response elements = response["value"];
     WebElements webElements;
-    for (Response::const_iterator pos = elements.begin();
+    for (Response::iterator pos = elements.begin();
         pos != elements.end(); ++pos) {
-      std::string elementId = pos->second.get<std::string>("ELEMENT");
+      std::string elementId = (*pos)["ELEMENT"].asString();
       webElements.push_back(WebElement(driver, elementId));
     }
 
@@ -64,8 +92,8 @@ struct response_value_handler<Dimension>
 {
   Dimension get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
   {
-    Response value = response.get_child("value");
-    return {value.get<int>("height"), value.get<int>("width")};
+    Response value = response["value"];
+    return {value["height"].asInt(), value["width"].asInt()};
   }
 };
 
@@ -97,7 +125,7 @@ public:
   virtual Response execute(const Command& command, const CommandParameters& params) = 0;
   virtual Response execute(const Command& command) = 0;
 
-  virtual ScriptResult executeScript(const Command& command, const std::string& script, std::vector<ScriptArg> args) = 0;
+  virtual const ScriptResult executeScript(const Command& command, const std::string& script, const std::vector<ScriptArg>& args) = 0;
 
 };
 

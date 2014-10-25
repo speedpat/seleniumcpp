@@ -11,9 +11,9 @@
 #include <map>
 #include <list>
 #include <vector>
+#include <string>
 
-#include <boost/property_tree/ptree.hpp>
-
+#include <json/json.h>
 
 #include <selenium/cookie.hpp>
 
@@ -32,13 +32,14 @@ struct Rect
 
 enum ScreenOrientation
 {
+  UNDEFINED,
 	LANDSCAPE,
 	PORTRAIT
 };
 
 typedef std::list<Cookie> Cookies;
 
-typedef std::map<std::string, std::string> Capabilities;
+typedef Json::Value Capabilities;
 
 class WebDriver;
 class Alert;
@@ -49,9 +50,29 @@ class Locator;
 class WebElement;
 typedef std::vector<WebElement> WebElements;
 
-typedef boost::property_tree::iptree CommandParameters;
-typedef boost::property_tree::iptree Response;
+/*typedef boost::property_tree::iptree CommandParameters;
+typedef boost::property_tree::iptree Response;*/
 
+typedef Json::Value CommandParameters;
+typedef Json::Value Response;
+typedef Json::Value Attribute;
+
+class ScriptArg;
+typedef std::vector<ScriptArg> ScriptArgs;
+
+
+class WindowHandle : public std::string
+{
+public:
+   using std::string::string;
+   WindowHandle(const std::string& str)
+    : std::string(str)
+   {
+
+   }
+};
+
+typedef std::vector<WindowHandle> WindowHandles;
 
 } /* namespace selenium */
 

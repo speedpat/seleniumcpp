@@ -47,6 +47,7 @@ public:
     return *m_actions;
   }
 
+
   Actions* m_actions;
 };
 
@@ -56,39 +57,39 @@ public:
 TEST_F(ElementAttributeTest, testShouldReturnNullWhenGettingTheValueOfAnAttributeThatIsNotListed) {
   webDriver().get(pages().simpleTestPage);
   WebElement head = webDriver().findElement(By::xpath("/html"));
-  std::string attribute = head.getAttribute("cheese");
-  ASSERT_STREQ(attribute.data(), "null"); // TODO handle null values
+  Response attribute = head.getAttribute("cheese");
+  ASSERT_TRUE(null(attribute));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testShouldReturnNullWhenGettingSrcAttributeOfInvalidImgTag) {
   webDriver().get(pages().simpleTestPage);
   WebElement img = webDriver().findElement(By::id("invalidImgTag"));
-  std::string attribute = img.getAttribute("src");
-  ASSERT_STREQ(attribute.data(), "null"); // TODO handle null values
+  Response attribute= img.getAttribute("src");
+  ASSERT_TRUE(null(attribute));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testShouldReturnAnAbsoluteUrlWhenGettingSrcAttributeOfAValidImgTag) {
   webDriver().get(pages().simpleTestPage);
   WebElement img = webDriver().findElement(By::id("validImgTag"));
-  std::string attribute = img.getAttribute("src");
-  ASSERT_STREQ(attribute.data(), whereIs("icon.gif").data());
+  Response attribute= img.getAttribute("src");
+  ASSERT_TRUE(equals(attribute, whereIs("icon.gif")));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testShouldReturnAnAbsoluteUrlWhenGettingHrefAttributeOfAValidAnchorTag) {
   webDriver().get(pages().simpleTestPage);
   WebElement img = webDriver().findElement(By::id("validAnchorTag"));
-  std::string attribute = img.getAttribute("href");
-  ASSERT_STREQ(attribute.data(), whereIs("icon.gif").data());
+  Response attribute= img.getAttribute("href");
+  ASSERT_TRUE(equals(attribute, whereIs("icon.gif")));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testShouldReturnEmptyAttributeValuesWhenPresentAndTheValueIsActuallyEmpty) {
   webDriver().get(pages().simpleTestPage);
   WebElement body = webDriver().findElement(By::xpath("//body"));
-  ASSERT_STREQ(body.getAttribute("style").data(), "");
+  ASSERT_TRUE(equals(body.getAttribute("style"), ""));
 }
 
 //@Ignore({OPERA, IPHONE, ANDROID, MARIONETTE})
@@ -96,11 +97,11 @@ TEST_F(ElementAttributeTest, testShouldReturnEmptyAttributeValuesWhenPresentAndT
 TEST_F(ElementAttributeTest, testShouldReturnTheValueOfTheDisabledAttributeAsNullIfNotSet) {
   webDriver().get(pages().formPage);
   WebElement inputElement = webDriver().findElement(By::xpath("//input[@id='working']"));
-  ASSERT_STREQ(inputElement.getAttribute("disabled").data(), "null"); // TODO handle null values
+  ASSERT_TRUE(inputElement.getAttribute("disabled").isNull());
   ASSERT_TRUE(inputElement.isEnabled());
 
   WebElement pElement = webDriver().findElement(By::id("peas"));
-  ASSERT_STREQ(pElement.getAttribute("disabled").data(), "null"); // TODO handle null values
+  ASSERT_TRUE(null(pElement.getAttribute("disabled")));
   ASSERT_TRUE(pElement.isEnabled());
 }
 
@@ -110,7 +111,7 @@ TEST_F(ElementAttributeTest, testShouldReturnTheValueOfTheIndexAttrbuteEvenIfItI
 
   WebElement multiSelect = webDriver().findElement(By::id("multi"));
   WebElements options = multiSelect.findElements(By::tagName("option"));
-  ASSERT_STREQ(options[1].getAttribute("index").data(), "1");
+  ASSERT_TRUE(equals(options[1].getAttribute("index"), "1"));
 }
 
 //@Test
@@ -148,7 +149,7 @@ TEST_F(ElementAttributeTest, testShouldThrowExceptionIfSendingKeysToElementDisab
   } catch (InvalidElementStateException& e) {
     // Expected
   }
-  ASSERT_STREQ(disabledTextElement1.text().data(), "");
+  ASSERT_TRUE(equals(disabledTextElement1.text(), ""));
 
   WebElement disabledTextElement2 = webDriver().findElement(By::id("disabledTextElement2"));
   try {
@@ -157,7 +158,7 @@ TEST_F(ElementAttributeTest, testShouldThrowExceptionIfSendingKeysToElementDisab
   } catch (InvalidElementStateException& e) {
     // Expected
   }
-  ASSERT_STREQ(disabledTextElement2.text().data(), "");
+  ASSERT_TRUE(equals(disabledTextElement2.text(), ""));
 }
 
 //@Test
@@ -182,9 +183,9 @@ TEST_F(ElementAttributeTest, testShouldIndicateWhenASelectIsDisabled) {
 TEST_F(ElementAttributeTest, testShouldReturnTheValueOfCheckedForACheckboxOnlyIfItIsChecked) {
   webDriver().get(pages().formPage);
   WebElement checkbox = webDriver().findElement(By::xpath("//input[@id='checky']"));
-  ASSERT_STREQ(checkbox.getAttribute("checked").data(), "null"); // TODO handle null value
+  ASSERT_TRUE(null(checkbox.getAttribute("checked")));
   checkbox.click();
-  ASSERT_STREQ(checkbox.getAttribute("checked").data(), "true");
+  ASSERT_TRUE(equals(checkbox.getAttribute("checked"), "true"));
 }
 
 //@Test
@@ -194,14 +195,14 @@ TEST_F(ElementAttributeTest, testShouldOnlyReturnTheValueOfSelectedForRadioButto
   WebElement initiallyNotSelected = webDriver().findElement(By::id("peas"));
   WebElement initiallySelected = webDriver().findElement(By::id("cheese_and_peas"));
 
-  ASSERT_STREQ(neverSelected.getAttribute("selected").data(), "null"); // TODO handle null value
-  ASSERT_STREQ(initiallyNotSelected.getAttribute("selected").data(), "null"); // TODO handle null value
-  ASSERT_STREQ(initiallySelected.getAttribute("selected").data(), "true");
+  ASSERT_TRUE(null(neverSelected.getAttribute("selected")));
+  ASSERT_TRUE(null(initiallyNotSelected.getAttribute("selected")));
+  ASSERT_TRUE(equals(initiallySelected.getAttribute("selected"), "true"));
 
   initiallyNotSelected.click();
-  ASSERT_STREQ(neverSelected.getAttribute("selected").data(), "null"); // TODO handle null value
-  ASSERT_STREQ(initiallyNotSelected.getAttribute("selected").data(), "true");
-  ASSERT_STREQ(initiallySelected.getAttribute("selected").data(), "null"); // TODO handle null value
+  ASSERT_TRUE(null(neverSelected.getAttribute("selected")));
+  ASSERT_TRUE(equals(initiallyNotSelected.getAttribute("selected"), "true"));
+  ASSERT_TRUE(null(initiallySelected.getAttribute("selected")));
 }
 
 //@Test
@@ -213,8 +214,8 @@ TEST_F(ElementAttributeTest, testShouldReturnTheValueOfSelectedForOptionsOnlyIfT
   WebElement two = options[1];
   ASSERT_TRUE(one.isSelected());
   ASSERT_FALSE(two.isSelected());
-  ASSERT_STREQ(one.getAttribute("selected").data(), "true");
-  ASSERT_STREQ(two.getAttribute("selected").data(), "null"); // TODO handle null value
+  ASSERT_TRUE(equals(one.getAttribute("selected"), "true"));
+  ASSERT_TRUE(null(two.getAttribute("selected")));
 }
 
 //@Test
@@ -222,18 +223,18 @@ TEST_F(ElementAttributeTest, testShouldReturnValueOfClassAttributeOfAnElement) {
   webDriver().get(pages().xhtmlTestPage);
 
   WebElement heading = webDriver().findElement(By::xpath("//h1"));
-  std::string className = heading.getAttribute("class");
+  Attribute className = heading.getAttribute("class");
 
-  ASSERT_STREQ(className.data(), "header");
+  ASSERT_TRUE(equals(className, "header"));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testShouldReturnTheContentsOfATextAreaAsItsValue) {
   webDriver().get(pages().formPage);
 
-  std::string value = webDriver().findElement(By::id("withText")).getAttribute("value");
+  Attribute value = webDriver().findElement(By::id("withText")).getAttribute("value");
 
-  ASSERT_STREQ(value.data(), "Example text");
+  ASSERT_TRUE(equals(value, "Example text"));
 }
 
 //@Test
@@ -241,12 +242,12 @@ TEST_F(ElementAttributeTest, testShouldTreatReadonlyAsAValue) {
   webDriver().get(pages().formPage);
 
   WebElement element = webDriver().findElement(By::name("readonly"));
-  std::string readonly = element.getAttribute("readonly");
+  Attribute readonly = element.getAttribute("readonly");
 
-  ASSERT_STRNE(readonly.data(), "null"); // TODO handle null value (!null check)
+  ASSERT_FALSE(null(readonly));
 
   WebElement textInput = webDriver().findElement(By::name("x"));
-  std::string notReadonly = textInput.getAttribute("readonly");
+  Attribute notReadonly = textInput.getAttribute("readonly");
 
   ASSERT_FALSE(readonly == notReadonly);
 }
@@ -255,17 +256,16 @@ TEST_F(ElementAttributeTest, testShouldTreatReadonlyAsAValue) {
 TEST_F(ElementAttributeTest, testShouldGetNumericAtribute) {
   webDriver().get(pages().formPage);
   WebElement element = webDriver().findElement(By::id("withText"));
-  ASSERT_STREQ(element.getAttribute("rows").data(), "5");
+  ASSERT_TRUE(equals(element.getAttribute("rows"), "5"));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testCanReturnATextApproximationOfTheStyleAttribute) {
   webDriver().get(pages().javascriptPage);
 
-  std::string style = webDriver().findElement(By::id("red-item")).getAttribute("style");
+  Attribute style = webDriver().findElement(By::id("red-item")).getAttribute("style");
 
-  std::transform(style.begin(), style.end(), style.begin(), ::tolower);
-  ASSERT_TRUE(style.find("background-color") != std::string::npos);
+  ASSERT_TRUE(contains(style, "background-color"));
 }
 
 //@Test
@@ -277,11 +277,11 @@ TEST_F(ElementAttributeTest, testShouldCorrectlyReportValueOfColspan) {
   WebElement th1 = webDriver().findElement(By::id("th1"));
   WebElement td2 = webDriver().findElement(By::id("td2"));
 
-  ASSERT_STREQ("th1", th1.getAttribute("id").data()) << "th1 id";
-  ASSERT_STREQ("3", th1.getAttribute("colspan").data()) << "th1 colspan should be 3";
+  ASSERT_TRUE(equals(th1.getAttribute("id"), "th1")) << "th1 id";
+  ASSERT_TRUE(equals(th1.getAttribute("colspan"), "3")) << "th1 colspan should be 3";
 
-  ASSERT_STREQ("td2", td2.getAttribute("id").data()) << "td2 id";
-  ASSERT_STREQ("2", td2.getAttribute("colspan").data()) << "td2 colspan should be 2";
+  ASSERT_TRUE(equals(td2.getAttribute("id"), "td2")) << "td2 id";
+  ASSERT_TRUE(equals(td2.getAttribute("colspan"), "2")) << "td2 colspan should be 2";
 }
 
 // This is a test-case re-creating issue 900.
@@ -299,7 +299,7 @@ TEST_F(ElementAttributeTest, testShouldCorrectlyReportValueOfColspan) {
       equalTo("function onclick()\n{\n" + expectedOnClickValue + "\n}"))); // IE
 
   WebElement mousedownDiv = webDriver().findElement(By::id("mousedown"));
-  ASSERT_STREQ("", mousedownDiv.getAttribute("onclick").data()); // TODO handle null values
+  ASSERT_TRUE(equals(("", mousedownDiv.getAttribute("onclick").data()); // TODO handle null values
 }*/
 
 //@Ignore(value = {IE, IPHONE, ANDROID}, reason = "IE7 Does not support SVG; " +
@@ -309,25 +309,25 @@ TEST_F(ElementAttributeTest, testShouldCorrectlyReportValueOfColspan) {
 TEST_F(ElementAttributeTest, testGetAttributeDoesNotReturnAnObjectForSvgProperties) {
   webDriver().get(pages().svgPage);
   WebElement svgElement = webDriver().findElement(By::id("rotate"));
-  ASSERT_STREQ("rotate(30)", svgElement.getAttribute("transform").data());
+  ASSERT_TRUE(equals(svgElement.getAttribute("transform"), "rotate(30)"));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testCanRetrieveTheCurrentValueOfATextFormField_textInput) {
   webDriver().get(pages().formPage);
   WebElement element = webDriver().findElement(By::id("working"));
-  ASSERT_STREQ("", element.getAttribute("value").data());
+  ASSERT_TRUE(equals(element.getAttribute("value"), ""));
   actions().sendKeys(element, "hello world").perform();
-  ASSERT_STREQ("hello world", element.getAttribute("value").data());
+  ASSERT_TRUE(equals(element.getAttribute("value"), "hello world"));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testCanRetrieveTheCurrentValueOfATextFormField_emailInput) {
   webDriver().get(pages().formPage);
   WebElement element = webDriver().findElement(By::id("email"));
-  ASSERT_STREQ("", element.getAttribute("value").data());
+  ASSERT_TRUE(equals(element.getAttribute("value"), ""));
   actions().sendKeys(element, "hello@example.com").perform();
-  ASSERT_STREQ("hello@example.com", element.getAttribute("value").data());
+  ASSERT_TRUE(equals(element.getAttribute("value"), "hello@example.com"));
 }
 
 //@Ignore({ANDROID, OPERA_MOBILE})
@@ -335,9 +335,9 @@ TEST_F(ElementAttributeTest, testCanRetrieveTheCurrentValueOfATextFormField_emai
 TEST_F(ElementAttributeTest, testCanRetrieveTheCurrentValueOfATextFormField_textArea) {
   webDriver().get(pages().formPage);
   WebElement element = webDriver().findElement(By::id("emptyTextArea"));
-  ASSERT_STREQ("", element.getAttribute("value").data());
+  ASSERT_TRUE(equals(element.getAttribute("value"), ""));
   actions().sendKeys(element, "hello world").perform();
-  ASSERT_STREQ("hello world", element.getAttribute("value").data());
+  ASSERT_TRUE(equals(element.getAttribute("value"), "hello world"));
 }
 
 //@Ignore({OPERA, IPHONE, ANDROID, MARIONETTE})
@@ -345,9 +345,9 @@ TEST_F(ElementAttributeTest, testCanRetrieveTheCurrentValueOfATextFormField_text
 TEST_F(ElementAttributeTest, testShouldReturnNullForNonPresentBooleanAttributes) {
   webDriver().get(pages().booleanAttributes);
   WebElement element1 = webDriver().findElement(By::id("working"));
-  ASSERT_STREQ(element1.getAttribute("required").data(), "null"); // TODO handle null value
+  ASSERT_TRUE(null(element1.getAttribute("required")));
   WebElement element2 = webDriver().findElement(By::id("wallace"));
-  ASSERT_STREQ(element2.getAttribute("nowrap").data(), "null"); // TODO handle null value
+  ASSERT_TRUE(null(element2.getAttribute("nowrap")));
 }
 
 //@Ignore({IPHONE, ANDROID})
@@ -355,15 +355,15 @@ TEST_F(ElementAttributeTest, testShouldReturnNullForNonPresentBooleanAttributes)
 TEST_F(ElementAttributeTest, testShouldReturnTrueForPresentBooleanAttributes) {
   webDriver().get(pages().booleanAttributes);
   WebElement element1 = webDriver().findElement(By::id("emailRequired"));
-  ASSERT_STREQ("true", element1.getAttribute("required").data());
+  ASSERT_TRUE(equals(element1.getAttribute("required"), "true"));
   WebElement element2 = webDriver().findElement(By::id("emptyTextAreaRequired"));
-  ASSERT_STREQ("true", element2.getAttribute("required").data());
+  ASSERT_TRUE(equals(element2.getAttribute("required"), "true"));
   WebElement element3 = webDriver().findElement(By::id("inputRequired"));
-  ASSERT_STREQ("true", element3.getAttribute("required").data());
+  ASSERT_TRUE(equals(element3.getAttribute("required"), "true"));
   WebElement element4 = webDriver().findElement(By::id("textAreaRequired"));
-  ASSERT_STREQ("true", element4.getAttribute("required").data());
+  ASSERT_TRUE(equals(element4.getAttribute("required"), "true"));
   WebElement element5 = webDriver().findElement(By::id("unwrappable"));
-  ASSERT_STREQ("true", element5.getAttribute("nowrap").data());
+  ASSERT_TRUE(equals(element5.getAttribute("nowrap"), "true"));
 }
 
 //@Ignore({OPERA, IPHONE, ANDROID, MARIONETTE})
@@ -371,35 +371,35 @@ TEST_F(ElementAttributeTest, testShouldReturnTrueForPresentBooleanAttributes) {
 TEST_F(ElementAttributeTest, testMultipleAttributeShouldBeNullWhenNotSet) {
   webDriver().get(pages().selectPage);
   WebElement element = webDriver().findElement(By::id("selectWithoutMultiple"));
-  ASSERT_STREQ("null", element.getAttribute("multiple").data()); // TODO handle null value
+  ASSERT_TRUE(null(element.getAttribute("multiple")));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testMultipleAttributeShouldBeTrueWhenSet) {
   webDriver().get(pages().selectPage);
   WebElement element = webDriver().findElement(By::id("selectWithMultipleEqualsMultiple"));
-  ASSERT_STREQ("true", element.getAttribute("multiple").data());
+  ASSERT_TRUE(equals(element.getAttribute("multiple"), "true"));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testMultipleAttributeShouldBeTrueWhenSelectHasMultipleWithValueAsBlank) {
   webDriver().get(pages().selectPage);
   WebElement element = webDriver().findElement(By::id("selectWithEmptyStringMultiple"));
-  ASSERT_STREQ("true", element.getAttribute("multiple").data());
+  ASSERT_TRUE(equals(element.getAttribute("multiple"), "true"));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testMultipleAttributeShouldBeTrueWhenSelectHasMultipleWithoutAValue) {
   webDriver().get(pages().selectPage);
   WebElement element = webDriver().findElement(By::id("selectWithMultipleWithoutValue"));
-  ASSERT_STREQ("true", element.getAttribute("multiple").data());
+  ASSERT_TRUE(equals(element.getAttribute("multiple"), "true"));
 }
 
 //@Test
 TEST_F(ElementAttributeTest, testMultipleAttributeShouldBeTrueWhenSelectHasMultipleWithValueAsSomethingElse) {
   webDriver().get(pages().selectPage);
   WebElement element = webDriver().findElement(By::id("selectWithRandomMultipleValue"));
-  ASSERT_STREQ("true", element.getAttribute("multiple").data());
+  ASSERT_TRUE(equals(element.getAttribute("multiple"), "true"));
 }
 
 //@Ignore({HTMLUNIT})
@@ -407,5 +407,5 @@ TEST_F(ElementAttributeTest, testMultipleAttributeShouldBeTrueWhenSelectHasMulti
 TEST_F(ElementAttributeTest, testGetAttributeOfUserDefinedProperty) {
   webDriver().get(pages().userDefinedProperty);
   WebElement element = webDriver().findElement(By::id("d"));
-  ASSERT_STREQ("sampleValue", element.getAttribute("dynamicProperty").data());
+  ASSERT_TRUE(equals(element.getAttribute("dynamicProperty"), "sampleValue"));
 }

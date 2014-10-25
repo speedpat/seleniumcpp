@@ -11,6 +11,7 @@
 #include <utf8.h>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/optional.hpp>
 
 #include "log.hpp"
 
@@ -54,7 +55,7 @@ Actions& Actions::click(MouseButton button)
 {
   m_private->add([button](CommandExecutor& driver){
     CommandParameters params;
-    params.put("button", button);
+    params["button"] = button;
     driver.execute(Command::CLICK, params);
   });
   return *this;
@@ -66,10 +67,10 @@ Actions& Actions::click(const WebElement& onElement, MouseButton button)
 {
   m_private->add([onElement, button](CommandExecutor& driver){
     CommandParameters moveParams;
-    moveParams.put("element", onElement.id());
+    moveParams["element"] = onElement.id();
     driver.execute(Command::MOVE_TO, moveParams);
     CommandParameters params;
-    params.put("button", button);
+    params["button"] = button;
     driver.execute(Command::CLICK, params);
   });
   return *this;
@@ -81,7 +82,7 @@ Actions& Actions::clickAndHold(MouseButton button)
 {
   m_private->add([button](CommandExecutor& driver){
     CommandParameters params;
-    params.put("button", button);
+    params["button"] = button;
     driver.execute(Command::MOUSE_DOWN, params);
   });
   return *this;
@@ -93,10 +94,10 @@ Actions& Actions::clickAndHold(const WebElement& onElement, MouseButton button)
 {
   m_private->add([onElement, button](CommandExecutor& driver){
     CommandParameters moveParams;
-    moveParams.put("element", onElement.id());
+    moveParams["element"] = onElement.id();
     driver.execute(Command::MOVE_TO, moveParams);
     CommandParameters params;
-    params.put("button", button);
+    params["button"] = button;
     driver.execute(Command::MOUSE_DOWN, params);
   });
   return *this;
@@ -132,7 +133,7 @@ Actions& Actions::doubleClick(const WebElement& onElement)
 {
   m_private->add([onElement](CommandExecutor& driver){
     CommandParameters moveParams;
-    moveParams.put("element", onElement.id());
+    moveParams["element"] = onElement.id();
     driver.execute(Command::MOVE_TO, moveParams);
     CommandParameters params;
     driver.execute(Command::DOUBLE_CLICK, params);
@@ -147,10 +148,10 @@ Actions& Actions::dragAndDrop(const WebElement& source,
 {
   m_private->add([source, target](CommandExecutor& driver){
     CommandParameters moveParams;
-    moveParams.put("element", source.id());
+    moveParams["element"] = source.id();
     driver.execute(Command::MOVE_TO, moveParams);
     driver.execute(Command::MOUSE_DOWN);
-    moveParams.put("element", target.id());
+    moveParams["element"] = target.id();
     driver.execute(Command::MOVE_TO, moveParams);
     driver.execute(Command::MOUSE_UP);
   });
@@ -164,12 +165,12 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
 {
   m_private->add([source, xOffset, yOffset](CommandExecutor& driver){
     CommandParameters moveParams;
-    moveParams.put("element", source.id());
+    moveParams["element"] = source.id();
     driver.execute(Command::MOVE_TO, moveParams);
     driver.execute(Command::MOUSE_DOWN);
     CommandParameters moveToParams;
-    moveToParams.put("xoffset", xOffset);
-    moveToParams.put("yoffset", yOffset);
+    moveToParams["xoffset"] = xOffset;
+    moveToParams["yoffset"] = yOffset;
     driver.execute(Command::MOVE_TO, moveToParams);
     driver.execute(Command::MOUSE_UP);
   });
@@ -186,7 +187,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
     CommandParameters keyParam;
     for (Keys key: keys)
     {
-      keyParam.put("", key);
+      keyParam[""] = key;
       keysParam.push_back(CommandParameters::value_type("", keyParam));
 
     }
@@ -202,7 +203,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
 {
   m_private->add([element](CommandExecutor& driver){
     CommandParameters params;
-    params.put("element", element.id());
+    params["element"] = element.id();
     driver.execute(Command::CLICK_ELEMENT, params);
   });
   keyDown(keys);
@@ -219,7 +220,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
     CommandParameters keyParam;
     for (Keys key: keys)
     {
-      keyParam.put("", key);
+      keyParam[""] = key;
       keysParam.push_back(CommandParameters::value_type("", keyParam));
 
     }
@@ -235,7 +236,7 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
 {
   m_private->add([element](CommandExecutor& driver){
     CommandParameters params;
-    params.put("element", element.id());
+    params["element"] = element.id();
     driver.execute(Command::CLICK_ELEMENT, params);
   });
   keyUp(keys);
@@ -248,8 +249,8 @@ Actions& Actions::moveByOffset(int xOffset, int yOffset)
 {
   m_private->add([xOffset, yOffset](CommandExecutor& driver){
     CommandParameters params;
-    params.put("xoffset", xOffset);
-    params.put("yOffset", yOffset);
+    params["xoffset"] = xOffset;
+    params["yOffset"] = yOffset;
     driver.execute(Command::MOVE_TO, params);
   });
   return *this;
@@ -261,7 +262,7 @@ Actions& Actions::moveToElement(const WebElement& toElement)
 {
   m_private->add([toElement](CommandExecutor& driver){
     CommandParameters params;
-    params.put("element", toElement.id());
+    params["element"] = toElement.id();
     driver.execute(Command::MOVE_TO, params);
   });
   return *this;
@@ -274,9 +275,9 @@ Actions& Actions::moveToElement(const WebElement& toElement, int xOffset,
 {
   m_private->add([toElement, xOffset, yOffset](CommandExecutor& driver){
     CommandParameters params;
-    params.put("element", toElement.id());
-    params.put("xoffset", xOffset);
-    params.put("yOffset", yOffset);
+    params["element"] = toElement.id();
+    params["xoffset"] = xOffset;
+    params["yOffset"] = yOffset;
     driver.execute(Command::MOVE_TO, params);
   });
   return *this;
@@ -311,7 +312,7 @@ Actions& Actions::release(MouseButton button)
 {
   m_private->add([button](CommandExecutor& driver){
     CommandParameters params;
-    params.put("button", button);
+    params["button"] = button;
     driver.execute(Command::MOUSE_UP, params);
   });
   return *this;
@@ -323,10 +324,10 @@ Actions& Actions::release(const WebElement& onElement, MouseButton button)
 {
   m_private->add([onElement, button](CommandExecutor& driver){
     CommandParameters moveParams;
-    moveParams.put("element", onElement.id());
+    moveParams["element"] = onElement.id();
     driver.execute(Command::MOVE_TO, moveParams);
     CommandParameters params;
-    params.put("button", button);
+    params["button"] = button;
     driver.execute(Command::MOUSE_DOWN, params);
   });
   return *this;
@@ -342,11 +343,11 @@ Actions& Actions::sendKeys(const std::string& keysToSend)
     CommandParameters keyParam;
     for (char key: keysToSend)
     {
-      keyParam.put("", key);
-      keysParam.push_back(CommandParameters::value_type("", keyParam));
+      keyParam[""] = key;
+      keysParam.append(key);
 
     }
-    params.put_child("value", keysParam);
+    params["value"] = keysParam;
     driver.execute(Command::SEND_KEYS_TO_ACTIVE_ELEMENT, params);
   });
   return *this;
@@ -363,94 +364,22 @@ Actions& Actions::sendKeys(const WebElement& element,
     CommandParameters keyParam;
     for (char key: keysToSend)
     {
-      keyParam.put("", key);
-      keysParam.push_back(CommandParameters::value_type("", keyParam));
+      std::string keyString;
+      keyString += key;
+      keysParam.append(keyString);
 
     }
-    params.put_child("value", keysParam);
-    params.put("id", element.id());
+    params["value"] = keysParam;
+    params["id"] = element.id();
     driver.execute(Command::SEND_KEYS_TO_ELEMENT, params);
   });
   return *this;
 }
 
 
-struct KeyTranslator
-{
-    typedef std::string            internal_type;
-    typedef interactions::Keys     external_type;
-
-
-
-    // Converts a string to ScreenOrientation
-    ::boost::optional<external_type> get_value(const internal_type& str)
-    {
-         LOG("get value: " << str);
-        std::string value = ::boost::to_upper_copy(str);
-        if (value == "PORTRAIT")
-        {
-          return ::boost::optional<external_type>(NULL_KEY);
-        }
-        else if (value == "LANDSCAPE")
-        {
-          return ::boost::optional<external_type>(F1);
-        }
-        return ::boost::optional<external_type>(boost::none);
-    }
-
-    // Converts a bool to string
-    ::boost::optional<internal_type> put_value(const external_type& e)
-    {
-
-      switch (e)
-      {
-      case CONTROL: {
-        LOG("put value: " << "CONTROL");
-        std::string ustr = u8"\00dc";
-        std::string str;
-        utf8::utf16to8(ustr.begin(), ustr.end(), std::back_inserter(str));
-        return ::boost::optional<internal_type>(str);
-      }
-      case F1: {
-        LOG("put value: " << "F1");
-        std::string ustr = u8"\ue0dc";
-        std::string str;
-        utf8::utf16to8(ustr.begin(), ustr.end(), std::back_inserter(str));
-        str = "\xe0\x31";
-        return ::boost::optional<internal_type>(str);
-        break;
-      }
-      default: {
-        LOG("NONE");
-        return ::boost::optional<internal_type>(boost::none);
-      }
-      }
-
-    }
-};
-
 } /* namespace interactions */
 } /* namespace selenium */
 
-/*
-  Specialize translator_between so that it uses our custom translator for
-    bool value types. Specialization must be in boost::property_tree
-    namespace.*/
 
-
-
-namespace boost {
-namespace property_tree {
-
-template<typename Ch, typename Traits, typename Alloc>
-struct translator_between<std::basic_string< Ch, Traits, Alloc >,  selenium::interactions::Keys>
-{
-    typedef selenium::interactions::KeyTranslator type;
-};
-
-
-
-} // namespace property_tree
-} // namespace boost
 
 

@@ -20,11 +20,12 @@ class SwitchTo
 {
 public:
   SwitchTo(CommandExecutor& driver);
-  virtual ~SwitchTo() = default;
+  //virtual ~SwitchTo() = default;
 
   Alert alert();
-  void defaultContent();
+  SwitchTo& defaultContent();
   SwitchTo& frame(const std::string& reference);
+  SwitchTo& frame(int index);
   SwitchTo& frame(const WebElement& element);
   SwitchTo& parentFrame();
   SwitchTo& window(const std::string& windowName);

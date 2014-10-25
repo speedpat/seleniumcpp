@@ -27,6 +27,7 @@ public:
   {
     SeleniumTestCase::TearDown();
   }
+
 };
 
 
@@ -35,7 +36,7 @@ TEST_F(ChildrenFindingTest, testFindElementByXPath) {
   webDriver().get(testEnvironment().pages().nestedPage);
   WebElement element = webDriver().findElement(By::name("form2"));
   WebElement child = element.findElement(By::xpath("select"));
-  EXPECT_STRCASEEQ(child.getAttribute("id").c_str(), "2");
+  assertThat(equals(child.getAttribute("id"), "2"));
 }
 
 
@@ -54,7 +55,7 @@ TEST_F(ChildrenFindingTest, testFindingDotSlashElementsOnElementByXPathShouldFin
   WebElements children = parent.findElements(By::xpath("./p"));
   EXPECT_EQ(1, children.size());
   const std::string text = children[0].text();
-  EXPECT_STREQ("A div containing", text.c_str());
+  assertThat(equals("A div containing", children[0].text()));
 }
 
 
@@ -76,8 +77,8 @@ TEST_F(ChildrenFindingTest, testFindElementsByXPath) {
   WebElement element = webDriver().findElement(By::name("form2"));
   WebElements children = element.findElements(By::xpath("select/option"));
   EXPECT_EQ(children.size(), 8);
-  EXPECT_STREQ(children[0].text().c_str(), "One");
-  EXPECT_EQ(children[1].text(), "Two");
+  assertThat(equals(children[0].text(), "One"));
+  assertThat(equals(children[1].text(), "Two"));
 }
 
 
@@ -93,7 +94,7 @@ TEST_F(ChildrenFindingTest, testFindElementByName) {
   webDriver().get(testEnvironment().pages().nestedPage);
   WebElement element = webDriver().findElement(By::name("form2"));
   WebElement child = element.findElement(By::name("selectomatic"));
-  EXPECT_STREQ(child.getAttribute("id").c_str(), "2");
+  assertThat(equals(child.getAttribute("id"), "2"));
 }
 
 
@@ -109,7 +110,7 @@ TEST_F(ChildrenFindingTest, testFindElementById) {
   webDriver().get(testEnvironment().pages().nestedPage);
   WebElement element = webDriver().findElement(By::name("form2"));
   WebElement child = element.findElement(By::id("2"));
-  EXPECT_STREQ(child.getAttribute("name").data(), "selectomatic");
+  assertThat(equals(child.getAttribute("name"), "selectomatic"));
 }
 
 
@@ -117,19 +118,14 @@ TEST_F(ChildrenFindingTest, testFindElementByIdWhenMultipleMatchesExist) {
   webDriver().get(testEnvironment().pages().nestedPage);
   WebElement element = webDriver().findElement(By::id("test_id_div"));
   WebElement child = element.findElement(By::id("test_id"));
-  EXPECT_STREQ(child.text().data(), "inside");
+  assertThat(equals(child.text().data(), "inside"));
 }
 
 
 TEST_F(ChildrenFindingTest, testFindElementByIdWhenNoMatchInContext) {
   webDriver().get(testEnvironment().pages().nestedPage);
   WebElement element = webDriver().findElement(By::id("test_id_div"));
-  try {
-    element.findElement(By::id("test_id_out"));
-    FAIL();
-  } catch (NoSuchElementException& e) {
-    // This is expected
-  }
+  ASSERT_THROW(element.findElement(By::id("test_id_out")), NoSuchElementException);
 }
 
 
@@ -145,7 +141,7 @@ TEST_F(ChildrenFindingTest, testFindElementByLinkText) {
   webDriver().get(testEnvironment().pages().nestedPage);
   WebElement element = webDriver().findElement(By::name("div1"));
   WebElement child = element.findElement(By::linkText("hello world"));
-  EXPECT_STREQ(child.getAttribute("name").data(), "link1");
+  assertThat(equals(child.getAttribute("name"), "link1"));
 }
 
 
@@ -155,8 +151,8 @@ TEST_F(ChildrenFindingTest, testFindElementsByLinkTest) {
   WebElements elements = element.findElements(By::linkText("hello world"));
 
   EXPECT_EQ(2, elements.size());
-  EXPECT_STREQ(elements[0].getAttribute("name").data(), "link1");
-  EXPECT_STREQ(elements[1].getAttribute("name").data(), "link2");
+  assertThat(equals(elements[0].getAttribute("name"), "link1"));
+  assertThat(equals(elements[1].getAttribute("name"), "link2"));
 }
 
 
@@ -166,7 +162,7 @@ TEST_F(ChildrenFindingTest, testShouldFindChildElementsByClassName) {
 
   WebElement element = parent.findElement(By::className("one"));
 
-  EXPECT_STREQ("Find me", element.text().data());
+  assertThat(equals("Find me", element.text()));
 }
 
 
@@ -186,7 +182,7 @@ TEST_F(ChildrenFindingTest, testShouldFindChildElementsByTagName) {
 
   WebElement element = parent.findElement(By::tagName("a"));
 
-  EXPECT_EQ("link1", element.getAttribute("name"));
+  assertThat(equals("link1", element.getAttribute("name")));
 }
 
 
@@ -205,7 +201,7 @@ TEST_F(ChildrenFindingTest, testShouldBeAbleToFindAnElementByCssSelector) {
 
   WebElement element = parent.findElement(By::cssSelector("*[name=\"selectomatic\"]"));
 
-  EXPECT_EQ("2", element.getAttribute("id"));
+  assertThat(equals("2", element.getAttribute("id")));
 }
 
 TEST_F(ChildrenFindingTest, testShouldBeAbleToFindAnElementByCss3Selector) {
@@ -214,7 +210,7 @@ TEST_F(ChildrenFindingTest, testShouldBeAbleToFindAnElementByCss3Selector) {
 
   WebElement element = parent.findElement(By::cssSelector("*[name^=\"selecto\"]"));
 
-  EXPECT_STREQ("2", element.getAttribute("id").data());
+  assertThat(equals("2", element.getAttribute("id")));
 }
 
 TEST_F(ChildrenFindingTest, testShouldBeAbleToFindElementsByCssSelector) {
@@ -277,7 +273,7 @@ TEST_F(ChildrenFindingTest, testFindingByCssShouldNotIncludeParentElementIfSameT
   WebElement parent = webDriver().findElement(By::cssSelector("div#parent"));
   WebElement child = parent.findElement(By::cssSelector("div"));
 
-  EXPECT_STREQ("child", child.getAttribute("id").data());
+  assertThat(equals("child", child.getAttribute("id")));
 }
 
 TEST_F(ChildrenFindingTest, testFindMultipleElements) {
@@ -296,7 +292,7 @@ TEST_F(ChildrenFindingTest, testLinkWithLeadingSpaces) {
   WebElement elem = webDriver().findElement(By::id("links"));
 
   WebElement res = elem.findElement(By::partialLinkText("link with leading space"));
-  EXPECT_STREQ("link with leading space", res.text().data());
+  assertThat(equals("link with leading space", res.text()));
 }
 
 
@@ -306,7 +302,7 @@ TEST_F(ChildrenFindingTest, testLinkWithTrailingSpace) {
   WebElement elem = webDriver().findElement(By::id("links"));
 
   WebElement res = elem.findElement(By::partialLinkText("link with trailing space"));
-  EXPECT_STREQ("link with trailing space", res.text().data());
+  assertThat(equals("link with trailing space", res.text()));
 }
 
 
@@ -316,7 +312,7 @@ TEST_F(ChildrenFindingTest, testElementCanGetLinkByLinkTestIgnoringTrailingWhite
 
   try {
     WebElement link = elem.findElement(By::linkText("link with trailing space"));
-    EXPECT_STREQ("linkWithTrailingSpace", link.getAttribute("id").data());
+    assertThat(equals("linkWithTrailingSpace", link.getAttribute("id")));
   } catch (NoSuchElementException& e) {
     FAIL() << "Should have found link";
   }

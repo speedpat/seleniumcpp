@@ -11,6 +11,9 @@
 #include <selenium/types.hpp>
 
 namespace selenium {
+namespace interactions {
+class Keys;
+}
 
 class CommandExecutor;
 
@@ -25,7 +28,7 @@ public:
 	void submit();
 	void click();
 	void clear();
-	const std::string getAttribute(const std::string& name);
+	Attribute getAttribute(const std::string& name);
 	bool isSelected();
 	bool isEnabled();
 	WebElement findElementByID(const std::string& id);
@@ -52,7 +55,8 @@ public:
 	WebElements findElements(const By& by, const std::string& value);
   WebElements findElements(const Locator& locator);
 
-	void sendKeys();
+	void sendKeys(const std::string& keys);
+	void sendKeys(const selenium::interactions::Keys& key);
 
 	bool isDisplayed();
 

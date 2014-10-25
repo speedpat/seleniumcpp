@@ -291,7 +291,7 @@ TEST_F(CorrectEventFiringTest, testShouldEmitClickEventWhenClickingOnATextInputE
   clicker.click();
 
   wait().until(ElementValueToBeEqual(clicker, "Clicked"));
-  ASSERT_STREQ(clicker.getAttribute("value").data(), "Clicked");
+  ASSERT_STREQ(clicker.getAttribute("value").asString().data(), "Clicked");
 }
 
 
@@ -454,6 +454,7 @@ TEST_F(CorrectEventFiringTest, testShouldReportTheXAndYCoordinatesWhenClicking) 
 TEST_F(CorrectEventFiringTest, testClickEventsShouldBubble) {
   webDriver().get(pages().clicksPage);
   webDriver().findElement(By::id("bubblesFrom")).click();
-  bool eventBubbled = webDriver().executeScript("return !!window.bubbledClick;");
-  ASSERT_TRUE(eventBubbled) << "Event didn't bubble up";
+  ScriptResult eventBubbled = webDriver().executeScript("return !!window.bubbledClick;");
+
+  ASSERT_TRUE(eventBubbled.isBool() && eventBubbled.asBool()) << "Event didn't bubble up";
 }

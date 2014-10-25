@@ -13,13 +13,18 @@
 
 namespace selenium {
 
-namespace DesiredCapabilities {
+class DesiredCapabilities {
+public:
+static const Capabilities FIREFOX;
+static const Capabilities CHROME;
 
-static const Capabilities FIREFOX = { { "browserName", "firefox" }, { "version",
-		"" }, { "platform", "ANY" }, { "javascriptEnabled", "True" } };
-
-static const Capabilities CHROME = { { "browserName", "chrome" }, { "version",
-		"" }, { "platform", "ANY" }, { "javascriptEnabled", "True" } };
+private:
+struct Initializer
+{
+  Initializer();
+  ~Initializer();
+};
+static const Initializer INITIALIZER;
 
 /*
  INTERNETEXPLORER = { "browserName", "internet explorer",
@@ -57,7 +62,7 @@ static const Capabilities CHROME = { { "browserName", "chrome" }, { "version",
  "javascriptEnabled", True }
 
  */
-} /* namespace DesiredCapabilities */
+};
 
 } /* namespace selenium */
 

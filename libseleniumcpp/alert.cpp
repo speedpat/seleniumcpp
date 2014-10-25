@@ -46,7 +46,7 @@ void Alert::accept()
 void Alert::sendKeys(const std::string& keys)
 {
   CommandParameters params;
-  params.add("text", keys);
+  params["text"] = keys;
   m_driver.execute(Command::SET_ALERT_VALUE, params);
 
 }

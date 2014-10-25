@@ -12,7 +12,6 @@ libseleniumcpp_la_SOURCES = \
 	webdriver.cpp \
 	webelement.cpp \
 	by.cpp \
-	exceptions.cpp \
 	actions.cpp \
 	action.cpp \
 	types.cpp \
@@ -24,12 +23,14 @@ libseleniumcpp_la_SOURCES = \
 	application_cache.cpp \
 	cookie.cpp \
 	script_arg.cpp \
-	script_result.cpp
+	script_result.cpp \
+	desired_capabilities.cpp \
+	keys.cpp
 
 # Linker options libTestProgram
-libseleniumcpp_la_LDFLAGS = 
+libseleniumcpp_la_LDFLAGS = $(COVERAGE_LDFLAGS)
 
 # Compiler options. Here we are adding the include directory
 # to be searched for headers included in the source code.
-libseleniumcpp_la_CPPFLAGS = -I$(top_srcdir)/include -std=c++0x
+libseleniumcpp_la_CPPFLAGS = -I$(top_srcdir)/include -std=c++0x $(JSONCPP_CFLAGS) $(COVERAGE_CFLAGS)
 

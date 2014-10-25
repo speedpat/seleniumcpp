@@ -9,6 +9,7 @@
 #define BY_H_
 
 #include <ostream>
+#include <json/json.h>
 
 namespace selenium {
 
@@ -34,6 +35,8 @@ public:
 	static Locator className(const std::string& className);
 	static Locator cssSelector(const std::string& selector);
 
+	operator Json::Value() const;
+
 protected:
 	By(const std::string& selector);
 	//virtual ~By() = default;
@@ -41,10 +44,8 @@ protected:
 private:
 	std::string m_selector;
 
-	friend std::ostream& operator<<(std::ostream& os, const By& by);
 };
 
-std::ostream& operator<< (std::ostream& stream, const By& by);
 
 class Locator
 {

@@ -30,7 +30,10 @@ public:
 
 protected:
   long getScrollTop() {
-    return webDriver().executeScript("return document.body.scrollTop;");
+    ScriptResult res = webDriver().executeScript("return document.body.scrollTop;");
+    return (res.isBool())
+        ? res.asBool()
+        : 0L;
   }
 };
 
@@ -54,9 +57,10 @@ TEST_F(ClickScrollingTest, testClickingOnAnchorScrollsPage) {
 
   webDriver().findElement(By::partialLinkText("last speech")).click();
 
-  long yOffset = webDriver()
+  ScriptResult res = webDriver()
       .executeScript(scrollScript.str());
 
+  long yOffset = res.asLargestInt();
   // Focusing on to click, but not actually following,
   // the link will scroll it in to view, which is a few pixels further than 0
   EXPECT_GT(yOffset, 300L) << "Did not scroll";
@@ -87,11 +91,15 @@ TEST_F(ClickScrollingTest, testShouldBeAbleToClickOnAnElementHiddenByOverflow) {
 }
 
 
-
-/*TEST_F(ClickScrollingTest, testShouldBeAbleToClickOnAnElementHiddenByDoubleOverflow) {
+//@JavascriptEnabled
+//@Ignore(value = {CHROME, IPHONE},
+//        reason = "Chrome: failed, iPhone: untested, Firefox: failed with native events")
+//@Test
+/*
+TEST_F(ClickScrollingTest, testShouldBeAbleToClickOnAnElementHiddenByDoubleOverflow) {
   webDriver().get(whereIs("scrolling_tests/page_with_double_overflow_auto.html"));
 
-  try
+  try {
     webDriver().findElement(By::id("link")).click();
   }
   catch (WebDriverException& e)
@@ -99,8 +107,8 @@ TEST_F(ClickScrollingTest, testShouldBeAbleToClickOnAnElementHiddenByOverflow) {
     LOG("got exception: " << e.what());
   }
   wait().until(TitleIs("Clicked Successfully!"));
-}*/
-
+}
+*/
 
 
 
@@ -119,7 +127,8 @@ TEST_F(ClickScrollingTest, testShouldNotScrollOverflowElementsWhichAreVisible) {
   WebElement list = webDriver().findElement(By::tagName("ul"));
   WebElement item = list.findElement(By::id("desired"));
   item.click();
-  long yOffset = webDriver().executeScript("return arguments[0].scrollTop;", {list});
+  ScriptResult res = webDriver().executeScript("return arguments[0].scrollTop;", {list});
+  long yOffset = res.asLargestInt();
   EXPECT_EQ(0, yOffset) << "Should not have scrolled";
 }
 

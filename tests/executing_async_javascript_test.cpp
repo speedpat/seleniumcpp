@@ -7,6 +7,8 @@
 
 #include <list>
 
+#include <boost/algorithm/string.hpp>
+
 #include "selenium/selenium.hpp"
 #include "support/selenium_testcase.hpp"
 #include "support/expected_test_conditions.hpp"
@@ -45,6 +47,14 @@ public:
     }
     return ::testing::AssertionSuccess();
   }
+
+
+  long getNumDivElements() {
+    // Selenium does not support "findElements" yet, so we have to do this through a script.
+    return (long)webDriver().executeScript(
+        "return document.getElementsByTagName('div').length;");
+  }
+
 };
 
 
@@ -194,38 +204,30 @@ TEST_F(ExecutingAsyncJavaScript, shouldTimeoutIfScriptDoesNotInvokeCallbackWithL
         "var callback = arguments[arguments.length - 1];"
         "window.setTimeout(callback, 1500);"), TimeoutException);
 }
-/*
+
 //@JavascriptEnabled
 //@Test
 //@Ignore(IE)
 TEST_F(ExecutingAsyncJavaScript, shouldDetectPageLoadsWhileWaitingOnAnAsyncScriptAndReturnAnError) {
   webDriver().get(pages().ajaxyPage);
-  webDriver().manage().timeouts().setScriptTimeout(100, TimeUnit.MILLISECONDS);
-  try {
-    webDriver().executeAsyncScript("window.location = '" + pages().dynamicPage + "';");
-    fail();
-  } catch (WebDriverException expected) {
-  }
+  webDriver().setScriptTimeout(std::chrono::milliseconds(100));
+  ASSERT_THROW(webDriver().executeAsyncScript("window.location = '" + pages().dynamicPage + "';"), JavaScriptErrorException);
 }
 
 //@JavascriptEnabled
 //@Test
 TEST_F(ExecutingAsyncJavaScript, shouldCatchErrorsWhenExecutingInitialScript) {
   webDriver().get(pages().ajaxyPage);
-  try {
-    webDriver().executeAsyncScript("throw Error('you should catch this!');");
-    fail();
-  } catch (WebDriverException expected) {
-  }
+  ASSERT_THROW(webDriver().executeAsyncScript("throw Error('you should catch this!');"), JavaScriptErrorException);
 }
 
 //@JavascriptEnabled
 //@Test
 TEST_F(ExecutingAsyncJavaScript, shouldNotTimeoutWithMultipleCallsTheFirstOneBeingSynchronous) {
   webDriver().get(pages().ajaxyPage);
-  webDriver().manage().timeouts().setScriptTimeout(10, TimeUnit.MILLISECONDS);
-  assertTrue((Boolean) webDriver().executeAsyncScript("arguments[arguments.length - 1](true);"));
-  assertTrue((Boolean) webDriver().executeAsyncScript(
+  webDriver().setScriptTimeout(std::chrono::milliseconds(10));
+  ASSERT_TRUE((bool) webDriver().executeAsyncScript("arguments[arguments.length - 1](true);"));
+  ASSERT_TRUE((bool) webDriver().executeAsyncScript(
       "var cb = arguments[arguments.length - 1]; window.setTimeout(function(){cb(true);}, 9);"));
 }
 
@@ -234,117 +236,105 @@ TEST_F(ExecutingAsyncJavaScript, shouldNotTimeoutWithMultipleCallsTheFirstOneBei
 //@Ignore(value = {ANDROID, CHROME, HTMLUNIT, IE, IPHONE, OPERA, OPERA_MOBILE, PHANTOMJS, SAFARI})
 TEST_F(ExecutingAsyncJavaScript, shouldCatchErrorsWithMessageAndStacktraceWhenExecutingInitialScript) {
   webDriver().get(pages().ajaxyPage);
-  String js = "function functionB() { throw Error('errormessage'); };"
-              + "function functionA() { functionB(); };"
-              + "functionA();";
+  std::string js = "function functionB() { throw Error('errormessage'); };"
+               "function functionA() { functionB(); };"
+               "functionA();";
   try {
     webDriver().executeAsyncScript(js);
-    fail("Expected an exception");
-  } catch (WebDriverException e) {
-    assertThat(e.getMessage(), containsString("errormessage"));
+    FAIL() << "Expected an exception";
+  } catch (WebDriverException& e) {
 
-    Throwable rootCause = Throwables.getRootCause(e);
-    assertThat(rootCause.getMessage(), containsString("errormessage"));
-
-    StackTraceElement [] st = rootCause.getStackTrace();
-    boolean seen = false;
-    for (StackTraceElement s: st) {
-      if (s.getMethodName().equals("functionB")) {
-        seen = true;
-      }
-    }
-    assertTrue("Stacktrace has not js method info", seen);
   }
 }
 
 //@Ignore(value = {ANDROID},
-        reason = "Android: Emulator is too slow and latency causes test to fall out of sync with app;")
+//        reason = "Android: Emulator is too slow and latency causes test to fall out of sync with app;")
 //@JavascriptEnabled
 //@Test
 TEST_F(ExecutingAsyncJavaScript, shouldBeAbleToExecuteAsynchronousScripts) {
   webDriver().get(pages().ajaxyPage);
 
-  WebElement typer = webDriver().findElement(By.name("typer"));
+  WebElement typer = webDriver().findElement(By::name("typer"));
   typer.sendKeys("bob");
-  ASSERT_EQ("bob", typer.getAttribute("value"));
+  ASSERT_TRUE(equals(typer.getAttribute("value"), "bob"));
 
-  webDriver().findElement(By.id("red")).click();
-  webDriver().findElement(By.name("submit")).click();
+  webDriver().findElement(By::id("red")).click();
+  webDriver().findElement(By::name("submit")).click();
 
-  ASSERT_EQ("There should only be 1 DIV at this point, which is used for the butter message",
-               1, getNumDivElements());
+  ASSERT_EQ(1, getNumDivElements()) << "There should only be 1 DIV at this point, which is used for the butter message";
 
-  webDriver().manage().timeouts().setScriptTimeout(15, TimeUnit.SECONDS);
-  String text = (String) webDriver().executeAsyncScript(
+  webDriver().setScriptTimeout(std::chrono::seconds(15));
+  std::string text = (std::string) webDriver().executeAsyncScript(
       "var callback = arguments[arguments.length - 1];"
-      + "window.registerListener(arguments[arguments.length - 1]);");
-  ASSERT_EQ("bob", text);
-  ASSERT_EQ("", typer.getAttribute("value"));
+       "window.registerListener(arguments[arguments.length - 1]);");
+  ASSERT_TRUE(equals("bob", text));
+  ASSERT_TRUE(equals(typer.getAttribute("value"), ""));
 
-  ASSERT_EQ("There should be 1 DIV (for the butter message) + 1 DIV (for the new label)",
-               2, getNumDivElements());
+  ASSERT_EQ(2, getNumDivElements()) << "There should be 1 DIV (for the butter message) + 1 DIV (for the new label)";
 }
 
 //@JavascriptEnabled
 //@Test
 TEST_F(ExecutingAsyncJavaScript, shouldBeAbleToPassMultipleArgumentsToAsyncScripts) {
   webDriver().get(pages().ajaxyPage);
-  Number result = (Number) ((JavascriptExecutor) webDriver().
-      .executeAsyncScript("arguments[arguments.length - 1](arguments[0] + arguments[1]);", 1, 2);
-  ASSERT_EQ(3, result.intValue());
+  ScriptResult result = webDriver()
+      .executeAsyncScript("arguments[arguments.length - 1](arguments[0] + arguments[1]);", { 1, 2 });
+  ASSERT_EQ(3, (int)result);
 }
 
 //@JavascriptEnabled
 //@Test
 //@NeedsLocalEnvironment(reason = "Relies on timing")
 TEST_F(ExecutingAsyncJavaScript, shouldBeAbleToMakeXMLHttpRequestsAndWaitForTheResponse) {
-  String script =
-      "var url = arguments[0];" +
-      "var callback = arguments[arguments.length - 1];" +
+  std::string script =
+      "var url = arguments[0];"
+      "var callback = arguments[arguments.length - 1];"
       // Adapted from http://www.quirksmode.org/js/xmlhttp.html
-      "var XMLHttpFactories = [" +
-      "  function () {return new XMLHttpRequest()}," +
-      "  function () {return new ActiveXScriptResult('Msxml2.XMLHTTP')}," +
-      "  function () {return new ActiveXScriptResult('Msxml3.XMLHTTP')}," +
-      "  function () {return new ActiveXScriptResult('Microsoft.XMLHTTP')}" +
-      "];" +
-      "var xhr = false;" +
-      "while (!xhr && XMLHttpFactories.length) {" +
-      "  try {" +
-      "    xhr = XMLHttpFactories.shift().call();" +
-      "  } catch (e) {}" +
-      "}" +
-      "if (!xhr) throw Error('unable to create XHR ScriptResult');" +
-      "xhr.open('GET', url, true);" +
-      "xhr.onreadystatechange = function() {" +
-      "  if (xhr.readyState == 4) callback(xhr.responseText);" +
-      "};" +
+      "var XMLHttpFactories = ["
+      "  function () {return new XMLHttpRequest()},"
+      "  function () {return new ActiveXScriptResult('Msxml2.XMLHTTP')},"
+      "  function () {return new ActiveXScriptResult('Msxml3.XMLHTTP')},"
+      "  function () {return new ActiveXScriptResult('Microsoft.XMLHTTP')}"
+      "];"
+      "var xhr = false;"
+      "while (!xhr && XMLHttpFactories.length) {"
+      "  try {"
+      "    xhr = XMLHttpFactories.shift().call();"
+      "  } catch (e) {}"
+      "}"
+      "if (!xhr) throw Error('unable to create XHR ScriptResult');"
+      "xhr.open('GET', url, true);"
+      "xhr.onreadystatechange = function() {"
+      "  if (xhr.readyState == 4) callback(xhr.responseText);"
+      "};"
       "xhr.send('');"; // empty string to stop firefox 3 from choking
 
   webDriver().get(pages().ajaxyPage);
-  webDriver().manage().timeouts().setScriptTimeout(3, TimeUnit.SECONDS);
-  String response = (String) ((JavascriptExecutor) webDriver().
-      .executeAsyncScript(script, pages().sleepingPage + "?time=2");
-  assertThat(response.trim(),
-             equalTo("<html><head><title>Done</title></head><body>Slept for 2s</body></html>"));
+  webDriver().setScriptTimeout(std::chrono::seconds(3));
+  std::string response = (std::string) webDriver()
+      .executeAsyncScript(script, { pages().sleepingPage + "?time=2"} );
+  ::boost::algorithm::trim(response);
+  assertThat(equals(response,
+             "<html><head><title>Done</title></head><body>Slept for 2s</body></html>"));
 }
 
+/*
 //@JavascriptEnabled
 //@Test
 //@Ignore(value = {ANDROID, CHROME, HTMLUNIT, IE, IPHONE, OPERA})
 //@NeedsLocalEnvironment(reason = "Relies on timing")
 TEST_F(ExecutingAsyncJavaScript, throwsIfScriptTriggersAlert) {
   webDriver().get(pages().simpleTestPage);
-  webDriver().manage().timeouts().setScriptTimeout(5000, TimeUnit.MILLISECONDS);
+  webDriver().setScriptTimeout(std::chrono::milliseconds(5000));
   try {
-    ((JavascriptExecutor) webDriver()..executeAsyncScript(
+    webDriver().executeAsyncScript(
         "setTimeout(arguments[0], 200) ; setTimeout(function() { window.alert('Look! An alert!'); }, 50);");
-    fail("Expected UnhandledAlertException");
-  } catch (UnhandledAlertException expected) {
+    FAIL() << "Expected UnexpectedAlertException";
+  } catch (UnexpectedAlertException& expected) {
     // Expected exception
   }
   // Shouldn't throw
-  webDriver().getTitle();
+  webDriver().title();
 }
 
 //@JavascriptEnabled
@@ -353,15 +343,15 @@ TEST_F(ExecutingAsyncJavaScript, throwsIfScriptTriggersAlert) {
 //@NeedsLocalEnvironment(reason = "Relies on timing")
 TEST_F(ExecutingAsyncJavaScript, throwsIfAlertHappensDuringScript) {
   webDriver().get(pages().slowLoadingAlertPage);
-  webDriver().manage().timeouts().setScriptTimeout(5000, TimeUnit.MILLISECONDS);
+  webDriver().setScriptTimeout(std::chrono::milliseconds(5000));
   try {
-    ((JavascriptExecutor) webDriver()..executeAsyncScript("setTimeout(arguments[0], 1000);");
-    fail("Expected UnhandledAlertException");
-  } catch (UnhandledAlertException expected) {
+    webDriver().executeAsyncScript("setTimeout(arguments[0], 1000);");
+    FAIL() << "Expected UnexpectedAlertException";
+  } catch (UnexpectedAlertException& expected) {
     //Expected exception
   }
   // Shouldn't throw
-  webDriver().getTitle();
+  webDriver().title();
 }
 
 //@Test
@@ -369,16 +359,15 @@ TEST_F(ExecutingAsyncJavaScript, throwsIfAlertHappensDuringScript) {
 //@NeedsLocalEnvironment(reason = "Relies on timing")
 TEST_F(ExecutingAsyncJavaScript, throwsIfScriptTriggersAlertWhichTimesOut) {
   webDriver().get(pages().simpleTestPage);
-  webDriver().manage().timeouts().setScriptTimeout(5000, TimeUnit.MILLISECONDS);
+  webDriver().setScriptTimeout(std::chrono::milliseconds(5000));
   try {
-    ((JavascriptExecutor) webDriver().
-        .executeAsyncScript("setTimeout(function() { window.alert('Look! An alert!'); }, 50);");
-    fail("Expected UnhandledAlertException");
-  } catch (UnhandledAlertException expected) {
+    webDriver().executeAsyncScript("setTimeout(function() { window.alert('Look! An alert!'); }, 50);");
+    FAIL() << "Expected UnexpectedAlertException";
+  } catch (UnexpectedAlertException& expected) {
     // Expected exception
   }
   // Shouldn't throw
-  webDriver().getTitle();
+  webDriver().title();
 }
 
 //@JavascriptEnabled
@@ -387,15 +376,15 @@ TEST_F(ExecutingAsyncJavaScript, throwsIfScriptTriggersAlertWhichTimesOut) {
 //@NeedsLocalEnvironment(reason = "Relies on timing")
 TEST_F(ExecutingAsyncJavaScript, throwsIfAlertHappensDuringScriptWhichTimesOut) {
   webDriver().get(pages().slowLoadingAlertPage);
-  webDriver().manage().timeouts().setScriptTimeout(5000, TimeUnit.MILLISECONDS);
+  webDriver().setScriptTimeout(std::chrono::milliseconds(5000));
   try {
-    ((JavascriptExecutor) webDriver()..executeAsyncScript("");
-    fail("Expected UnhandledAlertException");
-  } catch (UnhandledAlertException expected) {
+    webDriver().executeAsyncScript("");
+    FAIL() << "Expected UnexpectedAlertException";
+  } catch (UnexpectedAlertException& expected) {
     //Expected exception
   }
   // Shouldn't throw
-  webDriver().getTitle();
+  webDriver().title();
 }
 
 //@JavascriptEnabled
@@ -403,21 +392,15 @@ TEST_F(ExecutingAsyncJavaScript, throwsIfAlertHappensDuringScriptWhichTimesOut) 
 //@Ignore(value = {ANDROID, CHROME, HTMLUNIT, IE, IPHONE, OPERA})
 //@NeedsLocalEnvironment(reason = "Relies on timing")
 TEST_F(ExecutingAsyncJavaScript, includesAlertTextInUnhandledAlertException) {
-  webDriver().manage().timeouts().setScriptTimeout(5000, TimeUnit.MILLISECONDS);
-  String alertText = "Look! An alert!";
+  webDriver().setScriptTimeout(std::chrono::milliseconds(5000));
+  std::string alertText = "Look! An alert!";
   try {
-    ((JavascriptExecutor) webDriver()..executeAsyncScript(
+    webDriver().executeAsyncScript(
         "setTimeout(arguments[0], 200) ; setTimeout(function() { window.alert('" + alertText
         + "'); }, 50);");
-    fail("Expected UnhandledAlertException");
-  } catch (UnhandledAlertException e) {
-    ASSERT_EQ(alertText, e.getAlertText());
+    FAIL() << "Expected UnexpectedAlertException";
+  } catch (UnexpectedAlertException& e) {
+    ASSERT_EQ(alertText, e.what());
   }
-}
-
-private long getNumDivElements() {
-  // Selenium does not support "findElements" yet, so we have to do this through a script.
-  return (Long) ((JavascriptExecutor) webDriver()..executeScript(
-      "return document.getElementsByTagName('div').length;");
 }
 */

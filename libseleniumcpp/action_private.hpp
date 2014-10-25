@@ -9,6 +9,7 @@
 #define ACTION_PRIVATE_HPP_
 
 #include <vector>
+#include <memory>
 
 #include "selenium/interactions/action.hpp"
 #include "selenium/command_executor.hpp"

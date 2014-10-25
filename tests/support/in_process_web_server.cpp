@@ -78,8 +78,8 @@ struct InProcessWebServer::WebServer
             std::transform(domain.begin(), domain.end(), domain.begin(), ::tolower);
             buf << domain ;// lowercase for IE
         }
-/*        std::chrono::system_clock::time_point maxAge = cookie.getExpiry();
-        std::chrono::nanoseconds secs = std::chrono::system_clock::time_point() + maxAge;
+/*        Cookie::TimePoint maxAge = cookie.getExpiry();
+        std::chrono::nanoseconds secs = Cookie::TimePoint() + maxAge;
         if (maxAge.count() >=0)
         {
             if (version==0)
@@ -163,12 +163,12 @@ struct InProcessWebServer::WebServer
 
 
 
-          std::chrono::system_clock::time_point tp_expiry;
+          Cookie::TimePoint tp_expiry;
           if (!expiry.empty())
           {
             try
             {
-              tp_expiry = std::chrono::system_clock::time_point() + std::chrono::seconds(std::stoul(expiry));
+              tp_expiry = Cookie::TimePoint() + std::chrono::seconds(std::stoul(expiry));
             }
             catch (std::invalid_argument& e)
             {
@@ -235,7 +235,7 @@ struct InProcessWebServer::WebServer
                      if (token == name)
                      {
                        Cookie toDelete(name, "");
-                       toDelete.setExpiry(std::chrono::system_clock::time_point());
+                       toDelete.setExpiry(Cookie::TimePoint());
                        addCookie(res, toDelete);
                        res.content += response("cookie removed", name);
                        return;
@@ -267,7 +267,7 @@ struct InProcessWebServer::WebServer
                    {
                      name = *it;
                        Cookie toDelete(name, "");
-                       toDelete.setExpiry(std::chrono::system_clock::time_point());
+                       toDelete.setExpiry(Cookie::TimePoint());
                        addCookie(res, toDelete);
                    }
                  }

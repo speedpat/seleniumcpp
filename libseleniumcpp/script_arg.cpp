@@ -11,96 +11,101 @@
 
 namespace selenium
 {
+ScriptArg::ScriptArg(Json::ValueType type)
+    : Json::Value(type)
+{
+
+}
 
 ScriptArg::ScriptArg(const char* val)
-    : m_type(_STRING), m_int_value(0), m_stringvalue(val), m_double_value(0)
+    : Json::Value(val)
 {
   LOG("create char*");
 }
 
-ScriptArg::ScriptArg(std::string val)
-    : m_type(_STRING), m_int_value(0), m_stringvalue(val), m_double_value(0)
+ScriptArg::ScriptArg(const std::string& val)
+    : Json::Value(val)
 {
   LOG("create string");
 }
 
 ScriptArg::ScriptArg(int val)
-    : m_type(_INT), m_int_value(val), m_double_value(0)
+    : Json::Value(val)
 {
   LOG("create int");
 }
 
 ScriptArg::ScriptArg(long val)
-    : m_type(_INT), m_int_value(val), m_double_value(0)
+    : Json::Value((Json::Int64)val)
 {
   LOG("create long");
 }
 
 ScriptArg::ScriptArg(double val)
-    : m_type(_DOUBLE), m_int_value(0), m_double_value(val)
+    :Json::Value(val)
 {
   LOG("create double");
 }
 
 ScriptArg::ScriptArg(float val)
-    : m_type(_DOUBLE), m_int_value(0), m_double_value(val)
+:Json::Value(val)
 {
   LOG("create float");
 }
 
 ScriptArg::ScriptArg(bool val)
-    : m_type(_STRING), m_int_value(val), m_stringvalue(val ? "true" : "false"),
-        m_double_value(0)
+:Json::Value(val)
 {
   LOG("create bool");
 }
 
 ScriptArg::ScriptArg(const WebElement& val)
-    : m_type(_WEBELEMENT), m_int_value(0), m_stringvalue(val.id()),
-        m_double_value(0)
+  : Json::Value(Json::objectValue)
 {
   LOG("create WebElement");
+  (*this)["ELEMENT"] = val.id();
 }
 
 ScriptArg::ScriptArg(const ScriptArg& other)
-    : m_type(other.m_type), m_int_value(other.m_int_value),
-        m_stringvalue(other.m_stringvalue), m_double_value(other.m_double_value)
+    : Json::Value(other)
 {
-  LOG("copy element " << m_type);
+  LOG("copy element " << type());
 }
 
-ScriptArg::ArgType  ScriptArg::type() const
+ScriptArg::ScriptArg(const Json::Value& value)
+ : Json::Value(value)
 {
-  return m_type;
+
 }
+
 
 ScriptArg::operator int() const
 {
-  return m_int_value;
+  return asInt();
 }
 
 ScriptArg::operator long() const
 {
-  return m_int_value;
+  return asInt64();
 }
 
 ScriptArg::operator float() const
 {
-  return m_double_value;
+  return asFloat();
 }
 
 ScriptArg::operator double() const
 {
-  return m_double_value;
+  return asDouble();
 }
 
 ScriptArg::operator bool() const
 {
-  return m_int_value;
+  return asBool();
 }
 
 ScriptArg::operator std::string() const
 {
-  return m_stringvalue;
+  return asString();
 }
 } /* namespace selenium */

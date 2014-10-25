@@ -20,11 +20,17 @@ dnl Libtool is used for building share libraries
 AC_PROG_LIBTOOL
 AC_PROG_CXX
 
+PKG_PROG_PKG_CONFIG
+
+PKG_CHECK_MODULES([JSONCPP], [jsoncpp])
+
 AC_ARG_ENABLE(coverage, AS_HELP_STRING([--enable-coverage]), COVERAGE=1, COVERAGE=0)
 
+
+
 AS_IF([test "x$enable_coverage" != "xno"],
-	[COVERAGE_CFLAGS="--coverage"],
-	[COVERAGE_LDFLAGS="--coverage"])
+	[COVERAGE_CFLAGS="--coverage"]
+	[COVERAGE_LDFLAGS="--coverage -lgcov"],)
 
 AC_SUBST(COVERAGE_CFLAGS)
 AC_SUBST(COVERAGE_LDFLAGS)

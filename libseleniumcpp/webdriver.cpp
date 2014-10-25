@@ -6,12 +6,9 @@
  */
 
 #include <string>
+#include <fstream>
 
 #include <boost/optional.hpp>
-
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/stream_translator.hpp>
 
 #include <boost/xpressive/xpressive.hpp>
 
@@ -24,6 +21,7 @@
 
 #include "log.hpp"
 #include "command.hpp"
+#include "types_internal.hpp"
 #include <selenium/exceptions.hpp>
 #include "selenium/script_arg.hpp"
 #include "selenium/script_result.hpp"
@@ -70,10 +68,10 @@ struct WebDriver::Private : public CommandExecutor
   }
 
 
-  virtual Response execute(const Command& command, const CommandParameters& params);
-  virtual Response execute(const Command& command);
+  virtual Response execute(const Command& command, const CommandParameters& params) override;
+  virtual Response execute(const Command& command) override;
 
-  virtual ScriptResult executeScript(const Command& command, const std::string& script, std::vector<ScriptArg> args);
+  virtual const ScriptResult executeScript(const Command& command, const std::string& script, const ScriptArgs& args);
 
   static Cookie createCookie(const Response& cookie );
 
@@ -95,22 +93,14 @@ WebDriver::WebDriver(const std::string& uri, const Capabilities& capabilitites)
 	Response status = m_private->execute(Command::STATUS, {});
 
 	CommandParameters params;
-	CommandParameters desiredCapabilities;
-	for (auto capability: capabilitites)
-	{
-		desiredCapabilities.add(capability.first, capability.second);
-	}
-	params.add_child("desiredCapabilities", desiredCapabilities);
+	params["desiredCapabilities"] = capabilitites;
 	Response response = m_private->execute(Command::NEW_SESSION, params);
 
-	std::string sessionId = response.get<std::string>("sessionId");
+	std::string sessionId = response["sessionId"].asString();
 	m_private->m_sessionId = sessionId;
 
-	Response caps = response.get_child("value");
-	for (Response::const_iterator pos = caps.begin(); pos != caps.end(); ++pos)
-	{
-		m_capabilitites[pos->first] = pos->second.data();
-	}
+	m_capabilitites = response["value"];
+
 
 }
 
@@ -132,7 +122,7 @@ void WebDriver::quit()
 void WebDriver::get(std::string uri)
 {
 	CommandParameters params;
-	params.add("url", uri);
+	params["url"] = uri;
 
 	m_private->execute(Command::GET, params);
 }
@@ -141,7 +131,7 @@ std::string WebDriver::title()
 {
 	Response response = m_private->execute(Command::GET_TITLE, {});
 
-	return response.get<std::string>("value");
+	return response["value"].asString();
 }
 
 WebElement WebDriver::findElementByID(const std::string& id)
@@ -187,14 +177,14 @@ WebElement WebDriver::findElementByCssSelector(const std::string& css_selector)
 WebElement WebDriver::findElement(const By& by, const std::string& value)
 {
 	CommandParameters params;
-	params.add("using", by);
-	params.add("value", value);
+	params["using"] = by;
+	params["value"] = value;
 
 	Response response = m_private->execute(Command::FIND_ELEMENT, params);
 
-	Response child = response.get_child("value");
+	Response child = response["value"];
 
-	std::string elementId = child.get<std::string>("ELEMENT");
+	std::string elementId = child["ELEMENT"].asString();
 
 	return WebElement(*m_private, elementId);
 }
@@ -248,15 +238,15 @@ WebElements WebDriver::findElementsByCssSelector(const std::string& css_selector
 WebElements WebDriver::findElements(const By& by, const std::string& value)
 {
 	CommandParameters params;
-	params.add("using", by);
-	params.add("value", value);
+	params["using"] = by;
+	params["value"] = value;
 
 	Response response = m_private->execute(Command::FIND_ELEMENTS, params);
-	Response elements = response.get_child("value");
+	Response elements = response["value"];
 	WebElements webElements;
-	for (Response::const_iterator pos = elements.begin(); pos != elements.end(); ++pos)
+	for (Response::iterator pos = elements.begin(); pos != elements.end(); ++pos)
 	{
-		std::string elementId = pos->second.get<std::string>("ELEMENT");
+		std::string elementId = (*pos)["ELEMENT"].asString();
 		webElements.push_back(WebElement(*m_private, elementId));
 	}
 
@@ -268,12 +258,12 @@ WebElements WebDriver::findElements(const Locator& locator)
   return findElements(locator.getClause(), locator.getValue());
 }
 
-ScriptResult WebDriver::executeScript(const std::string& script, std::vector<ScriptArg> args)
+const ScriptResult WebDriver::executeScript(const std::string& script, const ScriptArgs& args)
 {
   return m_private->executeScript(Command::EXECUTE_SCRIPT, script, args);
 }
 
-ScriptResult WebDriver::executeAsyncScript(const std::string& script, std::vector<ScriptArg> args)
+const ScriptResult WebDriver::executeAsyncScript(const std::string& script, const ScriptArgs& args)
 {
   return m_private->executeScript(Command::EXECUTE_ASYNC_SCRIPT, script, args);
 }
@@ -290,22 +280,22 @@ std::string WebDriver::pageSource()
 }
 
 
-std::string WebDriver::currentWindowHandle()
+WindowHandle WebDriver::currentWindowHandle()
 {
-	return m_private->execute<std::string>(Command::GET_CURRENT_WINDOW_HANDLE);
+	return m_private->execute<WindowHandle>(Command::GET_CURRENT_WINDOW_HANDLE);
 }
 
 template<>
-struct response_value_handler<std::vector<std::string>>
+struct response_value_handler<WindowHandles>
 {
 
-	std::vector<std::string> get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
+	WindowHandles get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
 	{
-		Response elements = response.get_child("value");
-		std::vector<std::string> handles;
-		for (Response::const_iterator pos = elements.begin();
+		Response elements = response["value"];
+		WindowHandles handles;
+		for (Response::iterator pos = elements.begin();
 				pos != elements.end(); ++pos) {
-			std::string handle = pos->second.get_value<std::string>();
+			WindowHandle handle = WindowHandle((*pos).asString());
 			handles.push_back(handle);
 		}
 
@@ -313,9 +303,9 @@ struct response_value_handler<std::vector<std::string>>
 	}
 };
 
-std::vector<std::string> WebDriver::windowHandles()
+WindowHandles WebDriver::windowHandles()
 {
-	return m_private->execute<std::vector<std::string> >(Command::GET_WINDOW_HANDLES);
+	return m_private->execute<WindowHandles>(Command::GET_WINDOW_HANDLES);
 }
 
 
@@ -351,11 +341,11 @@ struct response_value_handler<Cookies>
 
 	Cookies get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
 	{
-		Response elements = response.get_child("value");
+		Response elements = response["value"];
 		Cookies cookies;
-		for (Response::const_iterator pos = elements.begin(); pos != elements.end(); ++pos)
+		for (Response::iterator pos = elements.begin(); pos != elements.end(); ++pos)
 		{
-			cookies.push_back(WebDriver::Private::createCookie(pos->second));
+			cookies.push_back(WebDriver::Private::createCookie(*pos));
 		}
 
 		return cookies;
@@ -367,14 +357,19 @@ struct response_value_handler<Cookie>
 {
 	Cookie get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
 	{
-	  if (params.find("name") != params.not_found())
+	  if (!params["name"].isNull())
 	  {
-      std::string name = params.get<std::string>("name");
-      Response elements = response.get_child("value");
-      for (Response::const_iterator pos = elements.begin();
+      std::string name = params["name"].asString();
+      LOG("cookie: " << name);
+      Response elements = response["value"];
+      for (Response::iterator pos = elements.begin();
           pos != elements.end(); ++pos) {
-        if (pos->second.find("name") != pos->second.not_found() && name == pos->second.get<std::string>("name")) {
-          return WebDriver::Private::createCookie(pos->second);
+        LOG("have: " << (*pos)["name"].toStyledString());
+        LOG(!((*pos)["name"].isNull()));
+        LOG((name == (*pos)["name"].asString()));
+        if ((!((*pos)["name"].isNull())) && name == (*pos)["name"].asString()) {
+          LOG("found");
+          return WebDriver::Private::createCookie(*pos);
         }
       }
 	  }
@@ -392,12 +387,12 @@ Cookies WebDriver::getCookies()
 Cookie WebDriver::getCookie(const std::string& name)
 {
 	CommandParameters params;
-	params.put("name", name);
+	params["name"] = name;
 
-  for (auto entry: params)
+  for (CommandParameters::iterator entry = params.begin(); entry != params.end(); ++entry)
   {
-    std::string key = entry.first;
-    std::string val = entry.second.data();
+    std::string key = entry.key().asString();
+    std::string val = (*entry).asString();
     LOG(key << ": " << val);
   }
 	return m_private->execute<Cookie>(Command::GET_ALL_COOKIES, params);
@@ -406,7 +401,7 @@ Cookie WebDriver::getCookie(const std::string& name)
 void WebDriver::deleteCookie(const std::string& name)
 {
 	CommandParameters params;
-	params.add("name", name);
+	params["name"] = name;
 
 	m_private->execute(Command::DELETE_COOKIE, params);
 }
@@ -422,9 +417,9 @@ void WebDriver::addCookie(const Cookie& cookie)
 	CommandParameters cookieParam;
 	for (auto prop: cookie)
 	{
-		cookieParam.add(prop.first, prop.second);
+		cookieParam[prop.first] = prop.second;
 	}
-	params.add_child("cookie", cookieParam);
+	params["cookie"]= cookieParam;
 
 	m_private->execute(Command::ADD_COOKIE, params);
 }
@@ -433,7 +428,7 @@ void WebDriver::addCookie(const Cookie& cookie)
 void WebDriver::implicitlyWait(const unsigned int timeToWait)
 {
 	CommandParameters params;
-	params.add("ms", timeToWait*1000);
+	params["ms"] = timeToWait*1000;
 
 	m_private->execute(Command::IMPLICIT_WAIT, params);
 }
@@ -441,7 +436,7 @@ void WebDriver::implicitlyWait(const unsigned int timeToWait)
 void WebDriver::setScriptTimeout(double timeoutInMs)
 {
 	CommandParameters params;
-	params.add("ms", std::to_string(timeoutInMs));
+	params["ms"] = timeoutInMs;
 
 	m_private->execute(Command::SET_SCRIPT_TIMEOUT, params);
 }
@@ -449,8 +444,8 @@ void WebDriver::setScriptTimeout(double timeoutInMs)
 void WebDriver::setPageLoadTimeout(const unsigned int timeToWait)
 {
 	CommandParameters params;
-	params.add("ms", timeToWait*1000);
-	params.add("type", "page load");
+	params["ms"] = timeToWait*1000;
+	params["type"] = "page load";
 
 	m_private->execute(Command::SET_TIMEOUTS, params);
 }
@@ -488,9 +483,9 @@ std::string WebDriver::getScreenshotAsBase64()
 void WebDriver::setWindowSize(const unsigned int width, const unsigned int height, const std::string& windowHandle)
 {
 	CommandParameters params;
-	params.put("width", width);
-	params.put("height", height);
-	params.put("windowHandle", windowHandle);
+	params["width"] = width;
+	params["height"] = height;
+	params["windowHandle"] = windowHandle;
 
 	m_private->execute(Command::SET_WINDOW_SIZE, params);
 }
@@ -498,7 +493,7 @@ void WebDriver::setWindowSize(const unsigned int width, const unsigned int heigh
 Dimension WebDriver::getWindowSize(const std::string& windowHandle)
 {
 	CommandParameters params;
-	params.put("windowHandle", windowHandle);
+	params["windowHandle"] = windowHandle;
 	return m_private->execute<Dimension>(Command::GET_WINDOW_SIZE, params);
 }
 
@@ -506,9 +501,9 @@ Dimension WebDriver::getWindowSize(const std::string& windowHandle)
 void WebDriver::setWindowPosition(const unsigned int x, const unsigned int y, const std::string& windowHandle)
 {
 	CommandParameters params;
-	params.put("x", x);
-	params.put("y", y);
-	params.put("windowHandle", windowHandle);
+	params["x"] = x;
+	params["y"] = y;
+	params["windowHandle"] = windowHandle;
 
 	m_private->execute(Command::SET_WINDOW_POSITION, params);
 }
@@ -518,17 +513,36 @@ struct response_value_handler<Rect>
 {
 	Rect get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
 	{
-		return {response.get<int>("x"), response.get<int>("y")};
+		return {response["x"].asInt(), response["y"].asInt()};
 	}
 };
 
 Rect WebDriver::getWindowPosition(const std::string& windowHandle)
 {
 	CommandParameters params;
-	params.put("windowHandle", windowHandle);
+	params["windowHandle"] = windowHandle;
 	return m_private->execute<Rect>(Command::GET_WINDOW_POSITION, params);
 }
 
+template<>
+struct response_value_handler<ScreenOrientation>
+{
+  ScreenOrientation get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
+  {
+    std::string value = ::boost::to_upper_copy(response["value"].asString());
+    LOG("get value: " << value);
+    if (value == "PORTRAIT")
+    {
+      return PORTRAIT;
+    }
+    else if (value == "LANDSCAPE")
+    {
+      return LANDSCAPE;
+    }
+
+    return UNDEFINED;
+  }
+};
 
 ScreenOrientation WebDriver::getOrientiation()
 {
@@ -536,55 +550,10 @@ ScreenOrientation WebDriver::getOrientiation()
 }
 
 
-struct ScreenOrientationTranslator
-{
-    typedef std::string            internal_type;
-    typedef ScreenOrientation      external_type;
-
-    // Converts a string to ScreenOrientation
-    ::boost::optional<external_type> get_value(const internal_type& str)
-    {
-    	LOG("get value: " << str);
-        std::string value = ::boost::to_upper_copy(str);
-        if (value == "PORTRAIT")
-        {
-        	return ::boost::optional<external_type>(PORTRAIT);
-        }
-        else if (value == "LANDSCAPE")
-        {
-        	return ::boost::optional<external_type>(LANDSCAPE);
-        }
-        return ::boost::optional<external_type>(boost::none);
-    }
-
-    // Converts a ScreenOrientation to string
-    ::boost::optional<internal_type> put_value(const external_type& e)
-    {
-    	switch (e)
-    	{
-    	case PORTRAIT: {
-    		LOG("PORTRAIT");
-    		return ::boost::optional<internal_type>("PORTRAIT");
-    	}
-    	case LANDSCAPE: {
-    		LOG("LANDSCAPE");
-    		return ::boost::optional<internal_type>("LANDSCAPE");
-    		break;
-    	}
-    	default: {
-    		LOG("NONE");
-    		return ::boost::optional<internal_type>(boost::none);
-    	}
-    	}
-
-    }
-};
-
-
 void WebDriver::setOrientation(ScreenOrientation orientation)
 {
 	CommandParameters params;
-	params.put("orientation", orientation);
+	params["orientation"] = orientation;
 
 	m_private->execute(Command::SET_SCREEN_ORIENTATION, params);
 }
@@ -643,7 +612,7 @@ struct ScriptArgTranslator
           CommandParameters argParam;
           std::string s;
           s = (std::string)e;
-          argParam.put("ELEMENT", s);
+          argParam["ELEMENT"] = s;
 
           std::stringstream str;
           boost::property_tree::json_parser::write_json(str, argParam, false);
@@ -732,7 +701,7 @@ WebDriver::Private::Commands WebDriver::Private::s_commands =
         { Command::ACTIVATE_IME, { POST, "/session/${sessionId}/ime/activate" } },
         { Command::SWITCH_TO_FRAME, { POST, "/session/$(sessionId)/frame" } },
         { Command::SWITCH_TO_PARENT_FRAME, { POST,
-            "/session/${sessionId}/frame/parent" } },
+            "/session/$(sessionId)/frame/parent" } },
         { Command::SWITCH_TO_WINDOW, { POST, "/session/$(sessionId)/window" } },
         { Command::CLOSE, { DELETE, "/session/$(sessionId)/window" } },
         { Command::GET_WINDOW_SIZE, { GET,
@@ -898,7 +867,7 @@ WebDriver::Private::execute(const Command& command,
   }
 
   CommandParameters _params = params;
-  _params.add(std::string("sessionId"), m_sessionId);
+  _params["sessionId"] = m_sessionId;
 
   boost::network::uri::uri request_uri(m_uri);
   std::string path = pos->second.second;
@@ -908,10 +877,12 @@ WebDriver::Private::execute(const Command& command,
       [&_params](boost::xpressive::smatch const &what)
       {
         LOG(what[1].str());
-        std::string value = _params.get<std::string>(what[1].str());
-        _params.erase(what[1].str());
+        std::string value = _params[what[1].str()].asString();
+        _params.removeMember(what[1].str());
         return value;
       });
+
+  _params.removeMember("sessionId");
 
   request_uri.append(output);
 
@@ -922,15 +893,9 @@ WebDriver::Private::execute(const Command& command,
       "application/x-www-form-urlencoded");
   request << boost::network::header("Accept", "application/json");
 
-  std::stringstream bs;
-  boost::property_tree::json_parser::write_json(bs, _params, false);
-  std::string body = bs.str();
-  std::stringstream length;
-  length << body.length();
-  request << boost::network::header("Content-Length", length.str());
-
-  LOG("request: " << body);
-  request.body(body);
+  Json::FastWriter writer;
+  std::string body = writer.write(_params);
+  std::string length = std::to_string(body.length());
 
   httpclient::response response;
   switch (pos->second.first)
@@ -939,17 +904,24 @@ WebDriver::Private::execute(const Command& command,
       {
       LOG("GET");
       response = m_client.get(request);
+      request << boost::network::header("Content-Length", "0");
       break;
     }
     case POST:
       {
       LOG("POST");
+      LOG("request: " << body);
+      request << boost::network::header("Content-Length", length);
+      request.body(body);
       response = m_client.post(request);
       break;
     }
     case DELETE:
       {
       LOG("DELETE");
+      LOG("request: " << body);
+      request << boost::network::header("Content-Length", length);
+      request.body(body);
       response = m_client.delete_(request);
       break;
     }
@@ -959,32 +931,23 @@ WebDriver::Private::execute(const Command& command,
     }
   }
 
-  if (response.status() == 200)
+  if (response.status() == 200 || response.status() == 500)
   {
-    boost::property_tree::iptree res;
-    std::stringstream str(response.body());
+    Response res;
+    Json::Reader reader;
     LOG("response: " << response.body());
-    try
+    if (!reader.parse(response.body(), res, false))
     {
-      boost::property_tree::json_parser::read_json(str, res);
-    }
-    catch (boost::property_tree::json_parser::json_parser_error& e)
-    {
-      throw ErrorInResponseException("failed to parse response", e);
+      throw ErrorInResponseException(reader.getFormattedErrorMessages());
     }
 
-    ResponseStatusCode status = static_cast<ResponseStatusCode>(res.get<int>(
-        "status"));
-    std::string value = res.get<std::string>("value");
-    ::boost::property_tree::iptree valueObj = res.get_child("value");
+    ResponseStatusCode status = static_cast<ResponseStatusCode>(res["status"].asInt());
+    //std::string value = res["value"].asString();
+    Response valueObj = res["value"];
     std::string message;
-    if (valueObj.find("message") != valueObj.not_found())
+    if (valueObj.isObject() && !(valueObj["message"].isNull()))
     {
-      message = valueObj.get<std::string>("message");
-    }
-    else
-    {
-      message = value;
+      message = valueObj["message"].asString();
     }
     switch (status)
     {
@@ -1000,12 +963,12 @@ WebDriver::Private::execute(const Command& command,
       }
       case NoSuchElement:
         {
-        throw NoSuchElementException(value);
+        throw NoSuchElementException(message);
         break;
       }
       case NoSuchFrame:
         {
-        throw NoSuchFrameException(value);
+        throw NoSuchFrameException(message);
         break;
       }
       case UnknownCommand:
@@ -1019,7 +982,7 @@ WebDriver::Private::execute(const Command& command,
       }
       case ElementNotVisible:
       {
-        throw ElementNotVisibleException(value);
+        throw ElementNotVisibleException(message);
         break;
       }
       case InvalidElementState:
@@ -1048,10 +1011,12 @@ WebDriver::Private::execute(const Command& command,
       }
       case Timeout:
         {
+          throw TimeoutException(message);
         break;
       }
       case NoSuchWindow:
         {
+          throw NoSuchWindowException(message);
         break;
       }
       case InvalidCookieDomain:
@@ -1064,6 +1029,7 @@ WebDriver::Private::execute(const Command& command,
       }
       case UnexpectedAlertOpen:
         {
+          throw UnexpectedAlertException(message);
         break;
       }
       case NoAlertOpenError:
@@ -1103,11 +1069,12 @@ WebDriver::Private::execute(const Command& command,
         break;
       }
       default:
-        throw ErrorInResponseException(value);
+        throw ErrorInResponseException(message);
     }
   }
   else
   {
+    LOG("response status : " << response.status());
     throw ErrorInResponseException(response.body());
   }
 
@@ -1124,115 +1091,62 @@ Cookie
 WebDriver::Private::createCookie(const Response& element)
 {
   Cookie cookie;
-  cookie["name"] = element.get<std::string>("name");
-  cookie["value"] = element.get<std::string>("value");
+  cookie["name"] = element["name"];
+  cookie["value"] = element["value"];
 
-  boost::optional<std::string> path = element.get_optional<std::string>("path");
-  if (path)
+  Response path = element["path"];
+  if (!path.isNull())
   {
-    cookie["path"] = path.get();
+    cookie["path"] = path;
   }
 
-  boost::optional<std::string> domain = element.get_optional<std::string>(
-      "domain");
-  if (domain)
+  Response domain = element["domain"];
+  if (!domain.isNull())
   {
-    cookie["domain"] = domain.get();
+    cookie["domain"] = domain;
   }
 
-  boost::optional< bool > secure = element.get_optional< bool >("secure");
-  if (secure)
+  Response secure = element["secure"];
+  if (!secure.isNull())
   {
-    cookie["secure"] = secure.get() ? "true" : "false";
+    cookie["secure"] = secure;
   }
 
-  boost::optional< bool > httpOnly = element.get_optional< bool >("httpOnly");
-  if (httpOnly)
+  Response httpOnly = element["httpOnly"];
+  if (!httpOnly.isNull())
   {
-    cookie["httpOnly"] = httpOnly.get() ? "true" : "false";
+    cookie["httpOnly"] = httpOnly;
   }
 
-  boost::optional<unsigned int> expiry = element.get_optional<unsigned int>(
-      "expiry");
-  if (expiry)
+  Response expiry = element["expiry"];
+  if (!expiry.isNull())
   {
-    std::stringstream str;
-    str << expiry.get();
-    cookie["expiry"] = str.str();
+    cookie["expiry"] = expiry;
   }
   return cookie;
 }
 
-ScriptResult WebDriver::Private::executeScript(
+const ScriptResult WebDriver::Private::executeScript(
     const Command& command,
-    const std::string& script, std::vector<ScriptArg> args)
+    const std::string& script, const ScriptArgs& args)
 {
   CommandParameters params;
-  params.add("script", script);
-  CommandParameters argsParam;
-  CommandParameters argParam;
-  CommandParameters elementParam;
+  params["script"] = script;
+  CommandParameters argsParam(Json::arrayValue);
 
   for (ScriptArg arg : args)
   {
-    switch (arg.type())
-    {
-      case ScriptArg::ArgType::_INT:
-        {
-        argParam.put("", (int) arg);
-        break;
-      }
-      case ScriptArg::ArgType::_DOUBLE:
-        {
-        argParam.put("", (double) arg);
-        break;
-      }
-      case ScriptArg::ArgType::_STRING:
-        {
-        argParam.put("", (std::string) arg);
-        break;
-      }
-      case ScriptArg::ArgType::_WEBELEMENT:
-        {
-        argParam.put("ELEMENT", (std::string) arg);
-        break;
-      }
-    }
-    argsParam.push_back(CommandParameters::value_type("", argParam));
-    argParam.clear();
+    LOG("appending arg type: " << arg.type() );
+     argsParam.append(arg);
   }
-  if (args.empty())
-  {
-    argParam.put("", "");
-    argsParam.push_back(CommandParameters::value_type("", argParam));
-  }
-  params.put_child("args", argsParam);
+
+  params["args"] = argsParam;
   Response response = execute(command, params);
-  Response value = response.get_child("value");
+  Response value = response["value"];
 
   return ScriptResult::create(*this, value);
 
 }
 } /* namespace selenium */
 
-/*  Specialize translator_between so that it uses our custom translator for
-    bool value types. Specialization must be in boost::property_tree
-    namespace. */
-namespace boost {
-namespace property_tree {
 
-template<typename Ch, typename Traits, typename Alloc>
-struct translator_between<std::basic_string< Ch, Traits, Alloc >,  selenium::ScreenOrientation>
-{
-    typedef selenium::ScreenOrientationTranslator type;
-};
-
-/*template<typename Ch, typename Traits, typename Alloc>
-struct translator_between<std::basic_string< Ch, Traits, Alloc >,  selenium::ScriptArg>
-{
-    typedef selenium::ScriptArgTranslator type;
-};*/
-
-
-} // namespace property_tree
-} // namespace boost

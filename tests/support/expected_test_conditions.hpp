@@ -38,40 +38,118 @@ struct PageSourceToContainPredicate
 
 struct NewWindowIsOpenedPredicate
 {
-  NewWindowIsOpenedPredicate(const std::vector<std::string>& originalHandles)
+  NewWindowIsOpenedPredicate(const WindowHandles& originalHandles)
    : m_originalHandles(originalHandles)
   {
   }
 
-  ::boost::optional<std::string> apply(WebDriver& driver)
+  ::boost::optional<WindowHandle> apply(WebDriver& driver)
   {
-    std::vector<std::string> currentHandles = driver.windowHandles();
+    WindowHandles currentHandles = driver.windowHandles();
     if (currentHandles.size() > m_originalHandles.size())
     {
-      for (std::string handle: m_originalHandles)
+      for (WindowHandle handle: m_originalHandles)
       {
         std::remove(currentHandles.begin(), currentHandles.end(), handle);
       }
-      return ::boost::optional<std::string>(currentHandles[0]);
+      return ::boost::optional<WindowHandle>(currentHandles[0]);
     }
-    return ::boost::optional<std::string>(::boost::none);
+    return ::boost::optional<WindowHandle>(::boost::none);
 
   }
 
-  std::vector<std::string> m_originalHandles;
+  WindowHandles m_originalHandles;
 
 
 };
 
+struct FrameToBeAvailableAndSwitchToItPredicate
+{
+  FrameToBeAvailableAndSwitchToItPredicate(const std::string& frameLocator)
+   : m_frameLocator(frameLocator)
+  {
+  }
+  ::boost::optional<std::string> apply(WebDriver& driver)
+    {
+      try {
+        driver.switchTo().frame(m_frameLocator);
+        return ::boost::optional<std::string>(m_frameLocator);
+      } catch (NoSuchFrameException& e) {
+        std::cout << "FOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"<< std::endl;
+        return ::boost::optional<std::string>(::boost::none);
+      }
+    }
+private:
+  std::string m_frameLocator;
+};
+
+struct WindowHandleCountToBeGreaterThanPredicate
+{
+  WindowHandleCountToBeGreaterThanPredicate(const int count)
+   : m_count(count)
+  {
+
+  }
+
+  ::boost::optional<int> apply(WebDriver& driver)
+  {
+    WindowHandles windowHandles = driver.windowHandles();
+    if (windowHandles.size() > m_count)
+    {
+      return ::boost::optional<int>(windowHandles.size());
+    }
+    return ::boost::optional<int>(::boost::none);
+  }
+
+private:
+  int m_count;
+};
+
 
 typedef conditions::ExpectedCondition<std::string, PageSourceToContainPredicate, std::string> PageSourceToContain;
-typedef conditions::ExpectedCondition<std::string, NewWindowIsOpenedPredicate, std::vector<std::string> > NewWindowIsOpened;
+typedef conditions::ExpectedCondition<WindowHandle, NewWindowIsOpenedPredicate, WindowHandles> NewWindowIsOpened;
+typedef conditions::ExpectedCondition<std::string, FrameToBeAvailableAndSwitchToItPredicate, std::string> FrameToBeAvailableAndSwitchToIt;
+typedef conditions::ExpectedCondition<int, WindowHandleCountToBeGreaterThanPredicate, int> WindowHandleCountToBeGreaterThan;
 
 
 } /* namespace tests */
 
 typedef tests::PageSourceToContain PageSourceToContain;
 typedef tests::NewWindowIsOpened NewWindowIsOpened;
+typedef tests::FrameToBeAvailableAndSwitchToIt FrameToBeAvailableAndSwitchToIt;
+typedef tests::WindowHandleCountToBeGreaterThan WindowHandleCountToBeGreaterThan;
+
+template <typename Condition, typename T = typename Condition::return_type>
+class Not
+{
+public:
+  typedef bool return_type;
+  typedef Condition condition_type;
+  typedef T condition_return_type;
+  Not(Condition condition)
+  : m_condition(condition)
+  {
+
+  }
+
+  virtual ~Not() = default;
+
+  virtual bool apply(WebDriver& driver, ::boost::optional<return_type>& retval)
+  {
+    ::boost::optional<condition_return_type> ret;
+
+    bool res = m_condition.apply(driver, ret);
+    if (res)
+    {
+      return false;
+    }
+
+    retval = true;
+    return true;
+  }
+private:
+  Condition m_condition;
+};
 
 } /* namespace selenkum */
 

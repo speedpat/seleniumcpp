@@ -38,7 +38,7 @@ TEST_F(ClearTest, testWritableTextInputShouldClear) {
   webDriver().get(pages().readOnlyPage);
   WebElement element = webDriver().findElement(By::id("writableTextInput"));
   element.clear();
-  EXPECT_STREQ("", element.getAttribute("value").data());
+  EXPECT_STREQ("", element.getAttribute("value").asString().data());
 }
 
 
@@ -72,7 +72,7 @@ TEST_F(ClearTest, testWritableTextAreaShouldClear) {
   webDriver().get(pages().readOnlyPage);
   WebElement element = webDriver().findElement(By::id("writableTextArea"));
   element.clear();
-  EXPECT_STREQ("", element.getAttribute("value").data());
+  EXPECT_STREQ("", element.getAttribute("value").asString().data());
 }
 
 

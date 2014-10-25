@@ -27,6 +27,63 @@ void ApplicationCache::get()
   //TODO PHE check api
 }
 
+template <>
+struct response_value_handler<ApplicationCache::Status>
+{
+  ApplicationCache::Status get_value(CommandExecutor& driver, const CommandParameters& params, Response& response)
+  {
+    std::string str = response["value"].asString();
+    LOG("get value: " << str);
+     std::string value = ::boost::to_upper_copy(str);
+     int intVal = 0;
+     try
+     {
+       intVal = std::stoi(value);
+     }
+     catch (const std::invalid_argument& e)
+     {
+       return ApplicationCache::UNCACHED;
+     }
+     catch (const std::out_of_range& e)
+     {
+       return ApplicationCache::UNCACHED;
+     }
+     switch (intVal)
+     {
+       case 0:
+         {
+         return ApplicationCache::UNCACHED;
+       }
+       case 1:
+         {
+         return ApplicationCache::IDLE;
+       }
+       case 2:
+         {
+         return ApplicationCache::CHECKING;
+       }
+       case 3:
+         {
+         return ApplicationCache::DOWNLOADING;
+       }
+       case 4:
+         {
+         return ApplicationCache::UPDATE_READY;
+       }
+       case 5:
+         {
+         return ApplicationCache::OBSOLETE;
+       }
+
+       default:
+         {
+         return ApplicationCache::UNCACHED;
+       }
+     }
+
+  }
+};
+
 ApplicationCache::Status ApplicationCache::getStatus()
 {
   return m_driver.execute<ApplicationCache::Status>(Command::GET_APP_CACHE_STATUS);
@@ -38,85 +95,6 @@ void ApplicationCache::clear()
 }
 
 
-struct ApplicationCacheStatusTranslator
-{
-  typedef std::string internal_type;
-  typedef ApplicationCache::Status external_type;
-
-  // Converts a string to Status
-  ::boost::optional<external_type> get_value(const internal_type& str)
-  {
-    LOG("get value: " << str);
-    std::string value = ::boost::to_upper_copy(str);
-    int intVal = 0;
-    try
-    {
-      intVal = std::stoi(value);
-    }
-    catch (std::invalid_argument& e)
-    {
-      return ::boost::optional<external_type>(::boost::none);
-    }
-    catch (std::out_of_range& e)
-    {
-      return ::boost::optional<external_type>(::boost::none);
-    }
-    switch (intVal)
-    {
-      case 0:
-        {
-        return ::boost::optional<external_type>(ApplicationCache::UNCACHED);
-      }
-      case 1:
-        {
-        return ::boost::optional<external_type>(ApplicationCache::IDLE);
-      }
-      case 2:
-        {
-        return ::boost::optional<external_type>(ApplicationCache::CHECKING);
-      }
-      case 3:
-        {
-        return ::boost::optional<external_type>(ApplicationCache::DOWNLOADING);
-      }
-      case 4:
-        {
-        return ::boost::optional<external_type>(ApplicationCache::UPDATE_READY);
-      }
-      case 5:
-        {
-        return ::boost::optional<external_type>(ApplicationCache::OBSOLETE);
-      }
-
-      default:
-        {
-        return ::boost::optional<external_type>(::boost::none);
-      }
-    }
-  }
-
-  // Converts a Status to string
-  ::boost::optional<internal_type> put_value(const external_type& e)
-  {
-    std::stringstream str;
-    str << e;
-    return ::boost::optional<internal_type>(str.str());
-  }
-};
-
 } /* namespace selenium */
 
 
-namespace boost {
-namespace property_tree {
-
-template<typename Ch, typename Traits, typename Alloc>
-struct translator_between<std::basic_string< Ch, Traits, Alloc >,  selenium::ApplicationCache::Status>
-{
-    typedef selenium::ApplicationCacheStatusTranslator type;
-};
-
-
-
-} // namespace property_tree
-} // namespace boost

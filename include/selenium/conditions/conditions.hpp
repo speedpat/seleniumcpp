@@ -213,7 +213,9 @@ struct TextToBePresentInElementValuePredicate : public PresenceOfElementLocatedP
       ::boost::optional<WebElement> element = PresenceOfElementLocatedPredicate::apply(driver);
       if (element)
       {
-        std::string text = element->getAttribute("value");
+        Response res = element->getAttribute("value");
+        std::string text = res.asString();
+
         if (text.find(m_text) != std::string::npos)
         {
           return ::boost::optional<std::string>(text);
@@ -427,6 +429,34 @@ struct ElementTextToBeEqualPredicate : public WebElementPredicate
   std::string m_text;
 };
 
+struct ElementTextToBeEqualLocatedPredicate : public PresenceOfElementLocatedPredicate
+{
+  ElementTextToBeEqualLocatedPredicate(const Locator& locator, const std::string& text)
+   : PresenceOfElementLocatedPredicate(locator), m_text(text)
+  {
+
+  }
+
+  ::boost::optional<std::string> apply(WebDriver& driver)
+  {
+    ::boost::optional<WebElement> element =
+        PresenceOfElementLocatedPredicate::apply(driver);
+    if (element)
+    {
+      const std::string text = element->text();
+      std::cerr << "  text: " << text << std::endl;
+      std::cerr << "m_text: " << m_text << std::endl;
+      if (text == m_text)
+      {
+        return ::boost::optional<std::string>(text);
+      }
+    }
+    return ::boost::optional<std::string>(::boost::none);
+  }
+
+  std::string m_text;
+};
+
 struct ElementValueToBeEqualPredicate : public WebElementPredicate
 {
   ElementValueToBeEqualPredicate(const WebElement element, const std::string& text)
@@ -437,7 +467,9 @@ struct ElementValueToBeEqualPredicate : public WebElementPredicate
 
   ::boost::optional<std::string> apply(WebDriver& driver)
   {
-    const std::string text = m_element.getAttribute("value");
+
+    Response res = m_element.getAttribute("value");
+    std::string text = res.asString();
     std::cerr << "  text: " << text << std::endl;
     std::cerr << "m_text: " << m_text << std::endl;
     if (text == m_text)

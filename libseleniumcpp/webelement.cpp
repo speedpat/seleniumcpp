@@ -5,15 +5,22 @@
  *      Author: speedpat
  */
 
+#include <sstream>
 
-#include <boost/property_tree/json_parser.hpp>
+#include <utf8.h>
 
+#include <boost/type_traits/make_unsigned.hpp>
 
 #include "selenium/by.hpp"
 #include "selenium/command_executor.hpp"
 #include "selenium/webdriver.hpp"
 #include "selenium/webelement.hpp"
+
+#include <selenium/interactions/keys.hpp>
+
+
 #include "command.hpp"
+#include "log.hpp"
 
 namespace selenium {
 
@@ -29,7 +36,7 @@ struct WebElement::Private {
   RES execute(const Command& command, const CommandParameters& params)
   {
     CommandParameters _params = params;
-    _params.add(std::string("id"), m_elementId);
+    _params["id"] = m_elementId;
     return m_driver.execute<RES, value_handler>(command, _params);
   }
 
@@ -38,7 +45,7 @@ struct WebElement::Private {
   RES execute(const Command& command)
   {
     CommandParameters params;
-    params.add(std::string("id"), m_elementId);
+    params["id"] = m_elementId;
     return execute<RES, value_handler>(command, params);
   }
 
@@ -90,12 +97,12 @@ void WebElement::clear()
 	m_private->execute(Command::CLEAR_ELEMENT);
 }
 
-const std::string WebElement::getAttribute(const std::string& name)
+Attribute WebElement::getAttribute(const std::string& name)
 {
 	CommandParameters params;
-	params.add("name", name);
+	params["name"] = name;
 
-	return m_private->execute<std::string>(Command::GET_ELEMENT_ATTRIBUTE, params);
+	return m_private->execute<Attribute>(Command::GET_ELEMENT_ATTRIBUTE, params);
 }
 
 bool WebElement::isSelected()
@@ -151,8 +158,8 @@ WebElement WebElement::findElementByCssSelector(const std::string& css_selector)
 WebElement WebElement::findElement(const By& by, const std::string& value)
 {
 	CommandParameters params;
-	params.add("using", by);
-	params.add("value", value);
+	params["using"] = by;
+	params["value"] = value;
 
 	return m_private->execute<WebElement>(Command::FIND_CHILD_ELEMENT, params);
 }
@@ -206,8 +213,8 @@ WebElements WebElement::findElementsByCssSelector(const std::string& css_selecto
 WebElements WebElement::findElements(const By& by, const std::string& value)
 {
 	CommandParameters params;
-	params.add("using", by);
-	params.add("value", value);
+  params["using"] = by;
+  params["value"] = value;
 
 	return m_private->execute<WebElements>(Command::FIND_CHILD_ELEMENTS, params);
 }
@@ -218,9 +225,36 @@ WebElements WebElement::findElements(const Locator& locator)
 }
 
 
-void WebElement::sendKeys()
+void WebElement::sendKeys(const std::string& keysToSend)
 {
+  CommandParameters params;
+  CommandParameters keysParam;
+  CommandParameters keyParam;
+  for (char key: keysToSend)
+  {
+    std::string keyString;
+    keyString += key;
+    keysParam.append(keyString);
 
+  }
+  params["value"] = keysParam;
+  params["id"] = m_private->m_elementId;
+  m_private->execute(Command::SEND_KEYS_TO_ELEMENT, params);
+}
+
+
+
+void WebElement::sendKeys(const selenium::interactions::Keys& key)
+{
+  CommandParameters params;
+  CommandParameters keysParam;
+
+  keysParam.append(key.key());
+
+
+  params["value"] = keysParam;
+  params["id"] = m_private->m_elementId;
+  m_private->execute(Command::SEND_KEYS_TO_ELEMENT, params);
 }
 
 bool WebElement::isDisplayed()
@@ -236,7 +270,7 @@ Dimension WebElement::size()
 std::string WebElement::valueOfCssProperty(const std::string& propertyName)
 {
 	CommandParameters params;
-	params.put("propertyName", propertyName);
+	params["propertyName"] = propertyName;
 	return m_private->execute(Command::GET_ELEMENT_VALUE_OF_CSS_PROPERTY, params);
 }
 std::string WebElement::location()
@@ -283,5 +317,12 @@ bool WebElement::operator==(const WebElement& other) const
 }
 
 
+
 } /* namespace selenium */
 
+namespace boost {
+namespace property_tree {
+namespace json_parser {
+}
+}
+}

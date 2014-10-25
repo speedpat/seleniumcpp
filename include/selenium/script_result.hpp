@@ -14,7 +14,7 @@ namespace selenium
 {
 class CommandExecutor;
 
-class ScriptResult
+class ScriptResult : public Json::Value
 {
 public:
     template <bool is_const_iterator = true>
@@ -42,8 +42,8 @@ public:
       }
 
       ScriptResult operator*() {
-        std::cerr << (_pos->second.data()) << std::endl;
-        return ScriptResult::create(_result.m_driver, _pos->second);
+        std::cerr << ((*_pos)) << std::endl;
+        return ScriptResult::create(_result.m_driver, *_pos);
       }
 
       const_noconst_iterator& operator--(){
@@ -78,19 +78,18 @@ public:
     }; // end of nested class const_noconst_iterator
 
     /**
-     * Shorthand for a regular iterator (non-const) type for MyDataStructure.
+     * Shorthand for a regular iterator (non-const) type for ScriptResult.
      */
     typedef const_noconst_iterator<false> iterator;
 
     /**
-     * Shorthand for a constant iterator (const_iterator) type for a MyDataStructure.
+     * Shorthand for a constant iterator (const_iterator) type for a ScriptResult.
      */
     typedef const_noconst_iterator<true> const_iterator;
 
 
 private:
   static ScriptResult create(CommandExecutor& driver, const Response& value);
-  ScriptResult(CommandExecutor& driver, const std::string& val);
   ScriptResult(CommandExecutor& driver, const Response& array);
 
   friend class WebDriver;
@@ -98,17 +97,18 @@ private:
 public:
   ScriptResult(const ScriptResult& other);
 
-  operator int() const throw (std::invalid_argument, std::out_of_range);
-  operator long() const throw (std::invalid_argument, std::out_of_range);
-  operator long long int() const throw (std::invalid_argument, std::out_of_range);
-  operator float() const;
-  operator double() const;
-  operator bool() const;
-  operator WebElement() const;
-  operator std::string() const;
+  operator int() const throw (std::runtime_error);
+  operator long() const throw (std::runtime_error);
+  operator long long int() const throw (std::runtime_error);
+  operator float() const throw (std::runtime_error);
+  operator double() const throw (std::runtime_error);
+  operator bool() const throw (std::runtime_error);
+  operator WebElement() const throw (std::runtime_error);
+  operator WebElements() const;
+  operator std::string() const throw (std::runtime_error);
+  explicit operator const char*() const throw (std::runtime_error);
 
-  bool isNull() const;
-  bool isArray() const;
+  ScriptResult& operator =(const ScriptResult& other);
 
   iterator begin();
   iterator end();
@@ -116,7 +116,6 @@ public:
   const_iterator begin() const;
   const_iterator end() const;
 
-  unsigned int size() const;
 
   bool operator==(const int&) const;
   bool operator==(const long&) const;
@@ -129,8 +128,6 @@ public:
   bool operator==(const char*) const;
 
 private:
-  std::string m_value;
-  Response m_array;
   CommandExecutor& m_driver;
 };
 

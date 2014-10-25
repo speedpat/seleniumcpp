@@ -20,22 +20,48 @@ tests_SOURCES= \
 	dummy_test.cpp \
 	alerts_test.cpp \
 	children_finding_test.cpp \
+	children_finding_shortcut_test.cpp \
 	clear_test.cpp \
 	click_scrolling_test.cpp \
 	click_test.cpp \
 	correct_event_firing_test.cpp \
+	cookie_implementation_test.cpp \
+	cookie_test.cpp \
 	css_value_test.cpp \
 	element_attribute_test.cpp \
 	element_equality_test.cpp \
 	element_finding_test.cpp \
+	element_finding_shortcut_test.cpp \
 	element_selecting_test.cpp \
-	executing_async_javascript_test.cpp	
+	executing_async_javascript_test.cpp	\
+	executing_javascript_test.cpp \
+	form_handling_test.cpp \
+	frame_switching_test.cpp \
+	typing_test.cpp \
+	scriptarg_test.cpp \
+	scriptresult_test.cpp \
+	window_switching_test.cpp
 
 # Linker options for a.out
-tests_LDFLAGS = $(top_srcdir)/tests/support/libseleniumcpptest.la $(top_srcdir)/libseleniumcpp/libseleniumcpp.la  -lpthread -lcppnetlib-client-connections -lboost_system -lboost_thread -lcppnetlib-uri 
+tests_LDFLAGS = \
+	$(top_srcdir)/tests/support/libseleniumcpptest.la \
+	$(top_srcdir)/libseleniumcpp/libseleniumcpp.la \
+	$(JSONCPP_LIBS) \
+	$(COVERAGE_LDFLAGS) \
+	-lpthread \
+	-lcppnetlib-client-connections \
+	-lboost_system \
+	-lboost_thread \
+	-lcppnetlib-uri 
 
 # Compiler options for a.out
-tests_CPPFLAGS = -I$(top_srcdir)/include -I/usr/src/gtest -I$(top_srcdir)/ -std=c++0x
+tests_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I/usr/src/gmock/gtest/include \
+	-I$(top_srcdir)/third_party/boost-process \
+	-I$(top_srcdir)/third_party/hamcrestcpp \
+	-std=c++0x \
+	$(JSONCPP_CFLAGS)
 
 tests_DEPENDENCIES = $(top_srcdir)/tests/support/libseleniumcpptest.la
 

@@ -66,7 +66,7 @@ public:
   }
 
   static const std::string describe(WebElement element) {
-    return element.getAttribute("id");
+    return element.getAttribute("id").asString();
   }
 
   void assertCanToggle(WebElement element) {
