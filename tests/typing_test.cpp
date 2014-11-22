@@ -186,6 +186,18 @@ TEST_F(TypingTest, testShouldBeAbleToUseArrowKeys) {
   ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("test")));
 }
 
+//@Ignore(value = {HTMLUNIT, IPHONE, OPERA_MOBILE, MARIONETTE})
+//@Test
+TEST_F(TypingTest, testShouldBeAbleToUseArrowKeys2) {
+  webDriver().get(pages().javascriptPage);
+
+  WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
+  keyReporter.sendKeys("tet", Keys::ARROW_LEFT, "s");
+
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("test")));
+}
+
+
 //@JavascriptEnabled
 //@Ignore(ANDROID)
 //@Test

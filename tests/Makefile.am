@@ -40,7 +40,9 @@ tests_SOURCES= \
 	typing_test.cpp \
 	scriptarg_test.cpp \
 	scriptresult_test.cpp \
-	window_switching_test.cpp
+	window_switching_test.cpp \
+	basic_keyboard_interface_test.cpp \
+	basic_mouse_interface_test.cpp
 
 # Linker options for a.out
 tests_LDFLAGS = \
@@ -48,6 +50,7 @@ tests_LDFLAGS = \
 	$(top_srcdir)/libseleniumcpp/libseleniumcpp.la \
 	$(JSONCPP_LIBS) \
 	$(COVERAGE_LDFLAGS) \
+	-lboost_regex \
 	-lpthread \
 	-lcppnetlib-client-connections \
 	-lboost_system \

@@ -14,6 +14,7 @@
 
 #include <boost/network/protocol/http/client.hpp>
 #include <boost/network/uri.hpp>
+#include <boost/network/constants.hpp>
 
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
@@ -36,7 +37,7 @@
 
 namespace selenium {
 
-typedef boost::network::http::basic_client<boost::network::http::tags::http_keepalive_8bit_udp_resolve, 1, 1> httpclient;
+typedef boost::network::http::basic_client<boost::network::http::tags::http_keepalive_8bit_tcp_resolve, 1, 1> httpclient;
 
 struct WebDriver::Private : public CommandExecutor
 {
@@ -706,8 +707,7 @@ WebDriver::Private::Commands WebDriver::Private::s_commands =
         { Command::CLOSE, { DELETE, "/session/$(sessionId)/window" } },
         { Command::GET_WINDOW_SIZE, { GET,
             "/session/$(sessionId)/window/$(windowHandle)/size" } },
-        { Command::SET_WINDOW_SIZE, { POST,
-            "/session/$(sessionId)/window/$(windowHandle)/size" } },
+        { Command::SET_WINDOW_SIZE, { POST, "/session/$(sessionId)/window/$(windowHandle)/size" } },
         { Command::GET_WINDOW_POSITION, { GET,
             "/session/$(sessionId)/window/$(windowHandle)/position" } },
         { Command::SET_WINDOW_POSITION, { POST,
@@ -889,13 +889,13 @@ WebDriver::Private::execute(const Command& command,
   LOG(request_uri.string());
 
   httpclient::request request(request_uri);
-  request << boost::network::header("Content-Type",
-      "application/x-www-form-urlencoded");
-  request << boost::network::header("Accept", "application/json");
 
-  Json::FastWriter writer;
-  std::string body = writer.write(_params);
-  std::string length = std::to_string(body.length());
+  typedef typename httpclient::request::tag Tag;
+  typedef boost::network::constants<Tag> consts;
+
+  request << boost::network::header(consts::accept(), "application/json");
+  request << boost::network::header(consts::connection(), "Keep-Alive");
+  request << boost::network::header(consts::user_agent(), consts::cpp_netlib_slash());
 
   httpclient::response response;
   switch (pos->second.first)
@@ -903,25 +903,34 @@ WebDriver::Private::execute(const Command& command,
     case GET:
       {
       LOG("GET");
+      request << boost::network::header("Cache-Control", "no-cache");
       response = m_client.get(request);
-      request << boost::network::header("Content-Length", "0");
       break;
     }
     case POST:
       {
       LOG("POST");
+      Json::FastWriter writer;
+      std::string body = writer.write(_params);
+      std::string length = std::to_string(body.length()-1);
       LOG("request: " << body);
+      request << boost::network::header("Content-Type",
+          "application/json; charset=utf-8");
       request << boost::network::header("Content-Length", length);
-      request.body(body);
+      request << boost::network::header(consts::accept_encoding(), "utf8");
+      httpclient::request::headers_container_type::iterator it = request.headers().begin();
+      while (it != request.headers().end())
+      {
+        LOG(it->first << ": " << it->second);
+        ++it;
+      }
+      request.body(body.substr(0, body.length()-1));
       response = m_client.post(request);
       break;
     }
     case DELETE:
       {
       LOG("DELETE");
-      LOG("request: " << body);
-      request << boost::network::header("Content-Length", length);
-      request.body(body);
       response = m_client.delete_(request);
       break;
     }

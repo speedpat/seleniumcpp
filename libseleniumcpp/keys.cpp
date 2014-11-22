@@ -79,8 +79,8 @@ const Keys Keys::F12 = Keys(u8"\ue03c");
 const Keys Keys::META = Keys(u8"\ue03d");
 const Keys Keys::COMMAND = Keys(u8"\ue03d");
 
-Keys::Keys(std::string key)
- : m_key(key)
+Keys::Keys(const std::string& key)
+ : std::string(key)
 {
 
 }

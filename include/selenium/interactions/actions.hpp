@@ -1,8 +1,17 @@
 /*
- * Actions.h
+ * Copyright (C) 2014 Patrick Heeb
  *
- *  Created on: Sep 11, 2014
- *      Author: speedpat
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #ifndef ACTIONS_H_
@@ -55,7 +64,7 @@ public:
   /**
    Clicks (without releasing) in the middle of the given element.
    */
-  Actions& clickAndHold(const WebElement& onElement, MouseButton button);
+  Actions& clickAndHold(const WebElement& onElement, MouseButton button = Left);
   /**
    Performs a context-click at the current mouse location.
    */
@@ -83,19 +92,19 @@ public:
   /**
    Performs a modifier key press.
    */
-//  Actions& keyDown(std::vector<Keys> key);
+  Actions& keyDown(const Keys& key);
   /**
    Performs a modifier key press after focusing on an element.
    */
-//  Actions& keyDown(const WebElement& element, std::vector<Keys> key);
+  Actions& keyDown(const WebElement& element, const Keys& key);
   /**
    Performs a modifier key release.
    */
-//  Actions& keyUp(std::vector<Keys> key);
+  Actions& keyUp(const Keys& key);
   /**
    Performs a modifier key release after focusing on an element.
    */
-//  Actions& keyUp(const WebElement& element, std::vector<Keys> key);
+  Actions& keyUp(const WebElement& element, const Keys& key);
   /**
    Moves the mouse from its current position (or 0,0) by the given offset.
    */
@@ -125,7 +134,7 @@ public:
   /**
    Releases the depressed left mouse button, in the middle of the given element.
    */
-  Actions& release(const WebElement& onElement, MouseButton button);
+  Actions& release(const WebElement& onElement, MouseButton button = Left);
   /**
    Sends keys to the active element.
    */

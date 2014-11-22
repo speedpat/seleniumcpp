@@ -46,7 +46,7 @@ TEST_F(ClearTest, testTextInputShouldNotClearWhenDisabled) {
   webDriver().get(pages().readOnlyPage);
   try {
     WebElement element = webDriver().findElement(By::id("textInputnotenabled"));
-    EXPECT_EQ(false, element.isEnabled());
+    EXPECT_FALSE(element.isEnabled());
     element.clear();
     FAIL() << ("Should not have succeeded");
   } catch (InvalidElementStateException& e) {

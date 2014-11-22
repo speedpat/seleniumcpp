@@ -179,69 +179,50 @@ Actions& Actions::dragAndDropBy(const WebElement& source, int xOffset,
 /**
  Performs a modifier key press.
  */
-/*Actions& Actions::keyDown(std::vector<Keys> keys)
+Actions& Actions::keyDown(const Keys& key)
 {
-  m_private->add([keys](CommandExecutor& driver){
+  m_private->add([key](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
-    CommandParameters keyParam;
-    for (Keys key: keys)
-    {
-      keyParam[""] = key;
-      keysParam.push_back(CommandParameters::value_type("", keyParam));
-
-    }
-    params.put_child("value", keysParam);
+    keysParam.append(key);
+    params["value"] = keysParam;
     driver.execute(Command::SEND_KEYS_TO_ACTIVE_ELEMENT, params);
   });
   return *this;
-}*/
+}
 /**
  Performs a modifier key press after focusing on an element.
  */
-/*Actions& Actions::keyDown(const WebElement& element, std::vector<Keys> keys)
+Actions& Actions::keyDown(const WebElement& element, const Keys& keys)
 {
-  m_private->add([element](CommandExecutor& driver){
-    CommandParameters params;
-    params["element"] = element.id();
-    driver.execute(Command::CLICK_ELEMENT, params);
-  });
+  click(element);
   keyDown(keys);
   return *this;
-}*/
+}
 /**
  Performs a modifier key release.
  */
-/*Actions& Actions::keyUp(std::vector<Keys> keys)
+Actions& Actions::keyUp(const Keys& keys)
 {
   m_private->add([keys](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
-    CommandParameters keyParam;
-    for (Keys key: keys)
-    {
-      keyParam[""] = key;
-      keysParam.push_back(CommandParameters::value_type("", keyParam));
-
-    }
-    params.put_child("value", keysParam);
+    keysParam.append(keys);
+    params["value"] = keysParam;
     driver.execute(Command::SEND_KEYS_TO_ACTIVE_ELEMENT, params);
   });
   return *this;
-}*/
+}
 /**
  Performs a modifier key release after focusing on an element.
  */
-/*Actions& Actions::keyUp(const WebElement& element, std::vector<Keys> keys)
+Actions& Actions::keyUp(const WebElement& element, const Keys& keys)
 {
-  m_private->add([element](CommandExecutor& driver){
-    CommandParameters params;
-    params["element"] = element.id();
-    driver.execute(Command::CLICK_ELEMENT, params);
-  });
+  click(element);
   keyUp(keys);
+
   return *this;
-}*/
+}
 /**
  Moves the mouse from its current position (or 0,0) by the given offset.
  */
@@ -340,11 +321,11 @@ Actions& Actions::sendKeys(const std::string& keysToSend)
   m_private->add([keysToSend](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
-    CommandParameters keyParam;
     for (char key: keysToSend)
     {
-      keyParam[""] = key;
-      keysParam.append(key);
+      std::string keyString;
+      keyString += key;
+      keysParam.append(keyString);
 
     }
     params["value"] = keysParam;
@@ -361,14 +342,7 @@ Actions& Actions::sendKeys(const WebElement& element,
   m_private->add([keysToSend, element](CommandExecutor& driver){
     CommandParameters params;
     CommandParameters keysParam;
-    CommandParameters keyParam;
-    for (char key: keysToSend)
-    {
-      std::string keyString;
-      keyString += key;
-      keysParam.append(keyString);
-
-    }
+    keysParam.append(keysToSend);
     params["value"] = keysParam;
     params["id"] = element.id();
     driver.execute(Command::SEND_KEYS_TO_ELEMENT, params);

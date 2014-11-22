@@ -7,10 +7,6 @@
 
 #include <sstream>
 
-#include <utf8.h>
-
-#include <boost/type_traits/make_unsigned.hpp>
-
 #include "selenium/by.hpp"
 #include "selenium/command_executor.hpp"
 #include "selenium/webdriver.hpp"
@@ -224,6 +220,41 @@ WebElements WebElement::findElements(const Locator& locator)
   return findElements(locator.getClause(), locator.getValue());
 }
 
+void WebElement::appendKeys(CommandParameters& result, const char* keys)
+{
+  std::string keysToSend(keys);
+  appendKeys(result, keysToSend);
+}
+
+void WebElement::appendKeys(CommandParameters& result, const std::string& keysToSend)
+{
+  for (char key: keysToSend)
+  {
+    std::string keyString;
+    keyString += key;
+    result.append(keyString);
+
+  }
+}
+
+void WebElement::appendKeys(CommandParameters& result, const selenium::interactions::Keys& key)
+{
+  result.append(key);
+}
+
+void WebElement::sendSequence(CommandParameters& result)
+{
+  CommandParameters params;
+  params["value"] = result;
+  params["id"] = m_private->m_elementId;
+  m_private->execute(Command::SEND_KEYS_TO_ELEMENT, params);
+}
+
+void WebElement::sendKeys(const char* keys)
+{
+  std::string keysToSend = keys;
+  sendKeys(keysToSend);
+}
 
 void WebElement::sendKeys(const std::string& keysToSend)
 {
@@ -249,7 +280,7 @@ void WebElement::sendKeys(const selenium::interactions::Keys& key)
   CommandParameters params;
   CommandParameters keysParam;
 
-  keysParam.append(key.key());
+  keysParam.append(key);
 
 
   params["value"] = keysParam;
@@ -300,11 +331,6 @@ WebElement::Private::Private(const Private& other)
 WebElement::Private::~Private() {
 }
 
-std::ostream& operator<<(std::ostream& stream, const WebElement& element) {
-  stream << element.m_private->m_elementId;
-  return stream;
-}
-
 WebElement& WebElement::operator=(WebElement other)
 {
         std::swap(m_private, other.m_private);
@@ -319,10 +345,3 @@ bool WebElement::operator==(const WebElement& other) const
 
 
 } /* namespace selenium */
-
-namespace boost {
-namespace property_tree {
-namespace json_parser {
-}
-}
-}

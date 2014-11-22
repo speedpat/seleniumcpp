@@ -9,4 +9,6 @@ include_HEADERS = \
 	selenium/webdriver.hpp \
 	selenium/webelement.hpp \
 	selenium/interactions/actions.hpp \
-	selenium/interactions/action.hpp 
+	selenium/interactions/action.hpp \
+	selenium/support/color.hpp \
+	selenium/support/colors.hpp

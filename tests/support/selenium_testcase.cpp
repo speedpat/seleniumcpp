@@ -26,7 +26,14 @@ SeleniumTestCase::~SeleniumTestCase()
 
 void SeleniumTestCase::SetUpTestCase()
 {
-  s_driver = new WebDriver(testEnvironment().driverUrl(), DesiredCapabilities::FIREFOX);
+  Capabilities caps = DesiredCapabilities::CHROME;
+  caps["nativeEvents"] = false;
+  Capabilities chromeOptions(Json::objectValue);
+  Capabilities chromeArgs(Json::arrayValue);
+  chromeArgs.append("disable-extensions");
+  chromeOptions["args"] = chromeArgs;
+  caps["chromeOptions"] = chromeOptions;
+  s_driver = new WebDriver(testEnvironment().driverUrl(), caps);
 }
 
 void SeleniumTestCase::TearDownTestCase()

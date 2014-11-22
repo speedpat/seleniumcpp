@@ -90,6 +90,8 @@ ScriptResult::operator long long int() const throw (std::runtime_error)
 
 ScriptResult::operator bool() const throw (std::runtime_error)
 {
+  bool value = asBool();
+  LOG(toStyledString() << " asBool is " << value);
   return asBool();
 }
 
@@ -191,6 +193,7 @@ bool ScriptResult::operator==(const bool& value) const
   }
    catch (const std::exception& e)
   {
+     LOG(e.what())
     return false;
   }
 }

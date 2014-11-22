@@ -19,7 +19,7 @@ noinst_PROGRAMS=exampleProgram
 exampleProgram_SOURCES= exampleProgram.cpp
 
 # Linker options for a.out
-exampleProgram_LDFLAGS = $(top_srcdir)/libseleniumcpp/libseleniumcpp.la $(JSONCPP_LIBS) $(COVERAGE_LDFLAGS) -lpthread -lcppnetlib-client-connections -lboost_system -lboost_thread -lcppnetlib-uri 
+exampleProgram_LDFLAGS = $(top_srcdir)/libseleniumcpp/libseleniumcpp.la $(JSONCPP_LIBS) $(COVERAGE_LDFLAGS) -lboost_regex -lpthread -lcppnetlib-client-connections -lboost_system -lboost_thread -lcppnetlib-uri 
 
 # Compiler options for a.out
 exampleProgram_CPPFLAGS = -I$(top_srcdir)/include -std=c++0x $(JSONCPP_CFLAGS)

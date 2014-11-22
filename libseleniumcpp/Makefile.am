@@ -25,7 +25,9 @@ libseleniumcpp_la_SOURCES = \
 	script_arg.cpp \
 	script_result.cpp \
 	desired_capabilities.cpp \
-	keys.cpp
+	keys.cpp \
+	color.cpp \
+	colors.cpp
 
 # Linker options libTestProgram
 libseleniumcpp_la_LDFLAGS = $(COVERAGE_LDFLAGS)
