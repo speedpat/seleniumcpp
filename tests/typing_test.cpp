@@ -1,16 +1,24 @@
 /*
- * typing_test.cpp
+ * Copyright (C) 2014 Patrick Heeb
  *
- *  Created on: Sep 20, 2014
- *      Author: speedpat
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include <list>
 
 #include <boost/algorithm/string/trim_all.hpp>
 
-#include <hamcrest/hc_matchers.h>
-#include <hamcrest/hc_gtest.h>
+#include <gmock/gmock.h>
 
 #include "selenium/selenium.hpp"
 #include "selenium/interactions/keys.hpp"
@@ -20,6 +28,7 @@
 
 using namespace selenium;
 using namespace interactions;
+using namespace testing;
 
 class TypingTest : public SeleniumTestCase
 {
@@ -54,8 +63,7 @@ public:
    std::string trimmed = element.text();
    boost::trim(trimmed);
   ASSERT_THAT(trimmed,
-             hamcrest::any_of(hamcrest::is(seq1),
-                   hamcrest::is(seq2)));
+		  AnyOf(Eq(seq1), Eq(seq2)));
 }
 };
 
@@ -71,7 +79,7 @@ TEST_F(TypingTest, testShouldFireKeyPressEvents) {
   keyReporter.sendKeys("a");
 
   WebElement result = webDriver().findElement(By::id("result"));
-  ASSERT_THAT(result.text(), hamcrest::contains(std::string("press:")));
+  ASSERT_THAT(result.text(), testing::HasSubstr("press:"));
 }
 
 //@JavascriptEnabled
@@ -84,7 +92,7 @@ TEST_F(TypingTest, testShouldFireKeyDownEvents) {
   keyReporter.sendKeys("I");
 
   WebElement result = webDriver().findElement(By::id("result"));
-  ASSERT_THAT(result.text(), hamcrest::contains("down:"));
+  ASSERT_THAT(result.text(), testing::HasSubstr("down:"));
 }
 
 //@JavascriptEnabled
@@ -97,7 +105,7 @@ TEST_F(TypingTest, testShouldFireKeyUpEvents) {
   keyReporter.sendKeys("a");
 
   WebElement result = webDriver().findElement(By::id("result"));
-  ASSERT_THAT(result.text(), hamcrest::contains("up:"));
+  ASSERT_THAT(result.text(), testing::HasSubstr("up:"));
 }
 
 //@Test
@@ -108,7 +116,7 @@ TEST_F(TypingTest, testShouldTypeLowerCaseLetters) {
   WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
   keyReporter.sendKeys("abc def");
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("abc def")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq("abc def"));
 }
 
 //@Test
@@ -119,7 +127,7 @@ TEST_F(TypingTest, testShouldBeAbleToTypeCapitalLetters) {
   WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
   keyReporter.sendKeys("ABC DEF");
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("ABC DEF")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq("ABC DEF"));
 }
 
 //@Test
@@ -130,7 +138,7 @@ TEST_F(TypingTest, testShouldBeAbleToTypeQuoteMarks) {
   WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
   keyReporter.sendKeys("\"");
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("\"")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq("\""));
 }
 
 //@Test
@@ -147,7 +155,7 @@ TEST_F(TypingTest, testShouldBeAbleToTypeTheAtCharacter) {
   WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
   keyReporter.sendKeys("@");
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("@")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq("@"));
 }
 
 //@Test
@@ -158,7 +166,7 @@ TEST_F(TypingTest, testShouldBeAbleToMixUpperAndLowerCaseLetters) {
   WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
   keyReporter.sendKeys("me@eXample.com");
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("me@eXample.com")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq("me@eXample.com"));
 }
 
 //@JavascriptEnabled
@@ -170,7 +178,7 @@ TEST_F(TypingTest, testArrowKeysShouldNotBePrintable) {
   WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
   keyReporter.sendKeys(Keys::ARROW_LEFT);
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq(""));
 }
 
 //@Ignore(value = {HTMLUNIT, IPHONE, OPERA_MOBILE, MARIONETTE})
@@ -183,7 +191,7 @@ TEST_F(TypingTest, testShouldBeAbleToUseArrowKeys) {
   keyReporter.sendKeys(Keys::ARROW_LEFT);
   keyReporter.sendKeys("s");
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("test")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq("test"));
 }
 
 //@Ignore(value = {HTMLUNIT, IPHONE, OPERA_MOBILE, MARIONETTE})
@@ -194,7 +202,7 @@ TEST_F(TypingTest, testShouldBeAbleToUseArrowKeys2) {
   WebElement keyReporter = webDriver().findElement(By::id("keyReporter"));
   keyReporter.sendKeys("tet", Keys::ARROW_LEFT, "s");
 
-  ASSERT_THAT(keyReporter.getAttribute("value").asString(), hamcrest::is(std::string("test")));
+  ASSERT_THAT(keyReporter.getAttribute("value").asString(), testing::Eq("test"));
 }
 
 
@@ -208,7 +216,7 @@ TEST_F(TypingTest, testWillSimulateAKeyUpWhenEnteringTextIntoInputElements) {
   element.sendKeys("I like cheese");
 
   WebElement result = webDriver().findElement(By::id("result"));
-  ASSERT_THAT(result.text(), hamcrest::equal_to(std::string("I like cheese")));
+  ASSERT_THAT(result.text(), testing::Eq("I like cheese"));
 }
 
 //@JavascriptEnabled
@@ -223,7 +231,7 @@ TEST_F(TypingTest, testWillSimulateAKeyDownWhenEnteringTextIntoInputElements) {
   WebElement result = webDriver().findElement(By::id("result"));
   // Because the key down gets the result before the input element is
   // filled, we're a letter short here
-  ASSERT_THAT(result.text(), hamcrest::equal_to(std::string("I like chees")));
+  ASSERT_THAT(result.text(), testing::Eq("I like chees"));
 }
 
 //@JavascriptEnabled
@@ -238,7 +246,7 @@ TEST_F(TypingTest, testWillSimulateAKeyPressWhenEnteringTextIntoInputElements) {
   WebElement result = webDriver().findElement(By::id("result"));
   // Because the key down gets the result before the input element is
   // filled, we're a letter short here
-  ASSERT_THAT(result.text(), hamcrest::equal_to(std::string("I like chees")));
+  ASSERT_THAT(result.text(), testing::Eq("I like chees"));
 }
 
 //@JavascriptEnabled
@@ -251,7 +259,7 @@ TEST_F(TypingTest, testWillSimulateAKeyUpWhenEnteringTextIntoTextAreas) {
   element.sendKeys("I like cheese");
 
   WebElement result = webDriver().findElement(By::id("result"));
-  ASSERT_THAT(result.text(), hamcrest::equal_to(std::string("I like cheese")));
+  ASSERT_THAT(result.text(), Eq("I like cheese"));
 }
 
 //@JavascriptEnabled
@@ -266,7 +274,7 @@ TEST_F(TypingTest, testWillSimulateAKeyDownWhenEnteringTextIntoTextAreas) {
   WebElement result = webDriver().findElement(By::id("result"));
   // Because the key down gets the result before the input element is
   // filled, we're a letter short here
-  ASSERT_THAT(result.text(), hamcrest::equal_to(std::string("I like chees")));
+  ASSERT_THAT(result.text(), testing::Eq("I like chees"));
 }
 
 //@JavascriptEnabled
@@ -281,7 +289,7 @@ TEST_F(TypingTest, testWillSimulateAKeyPressWhenEnteringTextIntoTextAreas) {
   WebElement result = webDriver().findElement(By::id("result"));
   // Because the key down gets the result before the input element is
   // filled, we're a letter short here
-  ASSERT_THAT(result.text(), hamcrest::equal_to(std::string("I like chees")));
+  ASSERT_THAT(result.text(), testing::Eq("I like chees"));
 }
 
 //@JavascriptEnabled
@@ -298,7 +306,7 @@ TEST_F(TypingTest, testShouldFireFocusKeyEventsInTheRightOrder) {
   element.sendKeys("a");
   std::string text = result.text();
   boost::trim(text);
-  ASSERT_THAT(text, hamcrest::is(std::string("focus keydown keypress keyup")));
+  ASSERT_THAT(text, testing::Eq("focus keydown keypress keyup"));
 }
 /*
 //@JavascriptEnabled
@@ -344,20 +352,20 @@ TEST_F(TypingTest, testShouldReportKeyCodeOfArrowKeysUpDownEvents) {
   WebElement element = webDriver().findElement(By::id("keyReporter"));
 
   element.sendKeys(Keys::ARROW_DOWN);
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("down: 40"));
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("up: 40"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("down: 40"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("up: 40"));
 
   element.sendKeys(Keys::ARROW_UP);
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("down: 38"));
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("up: 38"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("down: 38"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("up: 38"));
 
   element.sendKeys(Keys::ARROW_LEFT);
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("down: 37"));
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("up: 37"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("down: 37"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("up: 37"));
 
   element.sendKeys(Keys::ARROW_RIGHT);
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("down: 39"));
-  ASSERT_THAT(result.text().trim(), hamcrest::contains("up: 39"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("down: 39"));
+  ASSERT_THAT(result.text().trim(), testing::Contains("up: 39"));
 
   // And leave no rubbish/printable keys in the "keyReporter"
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(std::string("")));
@@ -391,7 +399,7 @@ TEST_F(TypingTest, testNumericShiftKeys) {
   element.sendKeys(numericShiftsEtc);
 
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(numericShiftsEtc));
-  ASSERT_THAT(result.text().trim(), hamcrest::contains(" up: 16"));
+  ASSERT_THAT(result.text().trim(), testing::Contains(" up: 16"));
 }
 
 //@JavascriptEnabled
@@ -422,7 +430,7 @@ TEST_F(TypingTest, testUppercaseAlphaKeys) {
   element.sendKeys(upperAlphas);
 
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(upperAlphas));
-  ASSERT_THAT(result.text().trim(), hamcrest::contains(" up: 16"));
+  ASSERT_THAT(result.text().trim(), testing::Contains(" up: 16"));
 }
 
 //@JavascriptEnabled
@@ -441,7 +449,7 @@ TEST_F(TypingTest, testAllPrintableKeys) {
   element.sendKeys(allPrintable);
 
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(allPrintable));
-  ASSERT_THAT(result.text().trim(), hamcrest::contains(" up: 16"));
+  ASSERT_THAT(result.text().trim(), testing::Contains(" up: 16"));
 }
 
 //@Ignore(value = {HTMLUNIT, IPHONE, ANDROID, OPERA_MOBILE, MARIONETTE},
@@ -573,7 +581,7 @@ TEST_F(TypingTest, testChordControlHomeShiftEndDelete) {
 
   element.sendKeys(Keys::HOME);
   element.sendKeys("" + Keys::SHIFT + Keys::END);
-  ASSERT_THAT(result.text(), hamcrest::contains(" up: 16"));
+  ASSERT_THAT(result.text(), testing::Contains(" up: 16"));
 
   element.sendKeys(Keys::DELETE);
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(std::string("")));
@@ -604,7 +612,7 @@ TEST_F(TypingTest, testChordReveseShiftHomeSelectionDeletes) {
   element.sendKeys("" + Keys::END + Keys::SHIFT + Keys::HOME);
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(std::string("done")));
   ASSERT_THAT( // Note: trailing SHIFT up here
-              result.text().trim(), hamcrest::contains(" up: 16"));
+              result.text().trim(), testing::Contains(" up: 16"));
 
   element.sendKeys("" + Keys::DELETE);
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(std::string("")));
@@ -636,7 +644,7 @@ TEST_F(TypingTest, testChordControlCutAndPaste) {
 
   element.sendKeys(Keys::HOME);
   element.sendKeys("" + Keys::SHIFT + Keys::END);
-  ASSERT_THAT(result.text().trim(), hamcrest::contains(" up: 16"));
+  ASSERT_THAT(result.text().trim(), testing::Contains(" up: 16"));
 
   element.sendKeys(Keys::CONTROL, "x");
   ASSERT_THAT(element.getAttribute("value"), hamcrest::is(std::string("")));

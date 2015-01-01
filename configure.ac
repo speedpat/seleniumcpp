@@ -2,6 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 AC_INIT(libseleniumcpp, 1.0)
+
 AC_PROG_CC
 
 AC_CANONICAL_SYSTEM
@@ -20,17 +21,21 @@ dnl Libtool is used for building share libraries
 AC_PROG_LIBTOOL
 AC_PROG_CXX
 
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS(include)
+
 PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES([JSONCPP], [jsoncpp])
+AC_SUBST(JSONCPP_CFLAGS)
 
-AC_ARG_ENABLE(coverage, AS_HELP_STRING([--enable-coverage]), COVERAGE=1, COVERAGE=0)
+AX_BOOST_BASE([1.49])
+AX_BOOST_THREAD
+
+AC_ARG_ENABLE(coverage, AS_HELP_STRING([--enable-coverage]), [COVERAGE_CFLAGS="--coverage"]
+        [COVERAGE_LDFLAGS="--coverage"] ,)
 
 
-
-AS_IF([test "x$enable_coverage" != "xno"],
-	[COVERAGE_CFLAGS="--coverage"]
-	[COVERAGE_LDFLAGS="--coverage -lgcov"],)
 
 AC_SUBST(COVERAGE_CFLAGS)
 AC_SUBST(COVERAGE_LDFLAGS)

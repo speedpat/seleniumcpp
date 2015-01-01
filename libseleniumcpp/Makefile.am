@@ -14,9 +14,7 @@ libseleniumcpp_la_SOURCES = \
 	by.cpp \
 	actions.cpp \
 	action.cpp \
-	types.cpp \
 	wait.cpp \
-	expectedconditions.cpp \
 	alert.cpp \
 	switch_to.cpp \
 	mobile.cpp \
@@ -30,9 +28,20 @@ libseleniumcpp_la_SOURCES = \
 	colors.cpp
 
 # Linker options libTestProgram
-libseleniumcpp_la_LDFLAGS = $(COVERAGE_LDFLAGS)
+libseleniumcpp_la_LDFLAGS = $(COVERAGE_LDFLAGS) \
+	-stdlib=libc++ \
+	$(BOOST_LDFLAGS) \
+	-lcppnetlib-uri \
+	-lcppnetlib-client-connections \
+	$(BOOST_THREAD_LIB)
 
 # Compiler options. Here we are adding the include directory
 # to be searched for headers included in the source code.
-libseleniumcpp_la_CPPFLAGS = -I$(top_srcdir)/include -std=c++0x $(JSONCPP_CFLAGS) $(COVERAGE_CFLAGS)
+libseleniumcpp_la_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(AM_CPPFLAGS) \
+	-std=c++11 \
+	$(JSONCPP_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
+	$(BOOST_CFLAGS)
 

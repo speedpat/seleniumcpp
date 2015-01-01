@@ -120,7 +120,6 @@ public:
   /**
    Deprecated.
    'Pause' is considered to be a bad design practice.
-   /**
    */
   Actions& pause(long pause);
   /**

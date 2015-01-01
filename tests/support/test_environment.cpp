@@ -1,15 +1,23 @@
 /*
- * test_environment.cpp
+ * Copyright (C) 2014 Patrick Heeb
  *
- *  Created on: Sep 18, 2014
- *      Author: speedpat
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
-#include <iostream>
 
 #include "test_environment.hpp"
 #include "in_process_web_server.hpp"
 #include "pages.hpp"
+#include "log.hpp"
 
 namespace selenium
 {
@@ -17,50 +25,65 @@ namespace selenium
 TestEnvironment* TestEnvironment::s_testEnvironment = new TestEnvironment();
 
 TestEnvironment::TestEnvironment()
- : m_webserver(nullptr), m_driver(-1), m_pages(nullptr)
+ : m_driver(-1), m_pages(nullptr)
 {
 
 }
 
 TestEnvironment::~TestEnvironment()
 {
-  delete m_webserver;
-  m_webserver = nullptr;
-  delete m_pages;
+	delete m_pages;
+	m_pages = nullptr;
 }
 
 void TestEnvironment::SetUp()
 {
-  std::cout << "TestEnvironment::SetUp" << std::endl;
-  m_webserver = new InProcessWebServer(8686, "/home/speedpat/development/selenium/common/src/web/");
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  EXPECT_TRUE(m_webserver->isRunning());
+	LOG("TestEnvironment::SetUp");
 
-  m_pages = new Pages(*m_webserver);
+	std::string url;
+	char* baseUrl = std::getenv("SELENIUMCPP_BASE_URL");
+	if (!baseUrl) {
+		url = "http://testhost.test.ch:8787/common";
+	} else {
+		url = baseUrl;
+	}
 
-  ::boost::process::context ctx;
-  ctx.stdout_behavior = ::boost::process::inherit_stream();
-  ctx.stderr_behavior = ::boost::process::inherit_stream();
-  ctx.environment = ::boost::process::self::get_environment();
+	m_pages = new Pages(url);
 
-  std::string command = "/home/speedpat/tools/chromedriver/chromedriver";
-  std::vector<std::string> args({command});
-  m_driver = ::boost::process::launch(command, args, ctx);
-  std::cout << "chromedriver started, pid: " << m_driver.get_id() << std::endl;
+	char* driverUrl = std::getenv("SELENIUMCPP_DRIVER_URL");
+	if (!driverUrl) {
 
-  m_driverUrl = "http://localhost:9515";
-  //m_driverUrl = "http://localhost:4444/wd/hub";
+		std::string chromedriverPath;
+		char* path = std::getenv("SELENIUMCPP_CHROMEDRIVER_PATH");
+		if (!path) {
+			chromedriverPath = "chromedriver";
+		} else {
+			chromedriverPath = path;
+		}
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		::boost::process::context ctx;
+		ctx.stdout_behavior = ::boost::process::inherit_stream();
+		ctx.stderr_behavior = ::boost::process::inherit_stream();
+		ctx.environment = ::boost::process::self::get_environment();
+
+		std::vector<std::string> args( { chromedriverPath });
+		std::string exec = ::boost::process::find_executable_in_path(chromedriverPath);
+		m_driver = ::boost::process::launch(exec, args, ctx);
+		std::cout << "chromedriver started, pid: " << m_driver.get_id()
+				<< std::endl;
+
+		m_driverUrl = "http://localhost:9515";
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	} else {
+		m_driverUrl = driverUrl;
+	}
+
 }
 
 void TestEnvironment::TearDown()
 {
   std::cout << "TestEnvironment::TearDown" << std::endl;
   m_driver.terminate();
-  m_webserver->stop();
-  delete m_webserver;
-  m_webserver = nullptr;
 
   delete m_pages;
   m_pages = nullptr;
@@ -79,8 +102,7 @@ std::string& TestEnvironment::driverUrl()
 
 std::string TestEnvironment::whereIs(const std::string& page)
 {
-  //return m_webserver->whereIs(page);
-  return "http://testhost.test.ch:8787/common/" + page;
+  return m_pages->whereIs(page);
 
 }
 

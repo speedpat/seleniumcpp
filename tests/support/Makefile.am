@@ -7,32 +7,33 @@ noinst_LTLIBRARIES = libseleniumcpptest.la
 #######################################
 # Build information for each library
 
-AM_OPTION=subdir-objects
+# AUTOMAKE_OPTIONS = subdir-objects
 
 # Sources for libseleniumcpp
 libseleniumcpptest_la_SOURCES = \
 	main.cpp \
 	selenium_testcase.cpp \
-	in_process_web_server.cpp \
-	/usr/src/gmock/gtest/src/gtest-all.cc \
-	/usr/src/gmock/src/gmock-all.cc \
+	$(top_srcdir)/third_party/gmock-1.7.0/gtest/src/gtest-all.cc \
+	$(top_srcdir)/third_party/gmock-1.7.0/src/gmock-all.cc \
 	test_environment.cpp \
 	pages.cpp
 
 # Linker options libTestProgram
 libseleniumcpptest_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	$(COVERAGE_LDFLAGS)
+	$(COVERAGE_LDFLAGS) \
+	-stdlib=libc++
 
 # Compiler options. Here we are adding the include directory
 # to be searched for headers included in the source code.
 libseleniumcpptest_la_CPPFLAGS = \
 	-I$(top_srcdir)/include \
-	-I/usr/src/gmock/ \
-	-I/usr/src/gmock/gtest \
-	-I/usr/src/gmock/gtest/include \
+	-I$(top_srcdir)/third_party/gmock-1.7.0/include \
+	-I$(top_srcdir)/third_party/gmock-1.7.0 \
+	-I$(top_srcdir)/third_party/gmock-1.7.0/gtest \
+	-I$(top_srcdir)/third_party/gmock-1.7.0/gtest/include \
 	-I$(top_srcdir)/third_party/boost-process   \
-	-std=c++0x \
-	$(AM_CFLAGS) \
+	-std=c++11 \
+	$(AM_CPPFLAGS) \
 	$(JSONCPP_CFLAGS)
 

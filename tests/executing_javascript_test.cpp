@@ -1,8 +1,17 @@
 /*
- * executing_javascript_test.cpp
+ * Copyright (C) 2014 Patrick Heeb
  *
- *  Created on: Sep 20, 2014
- *      Author: speedpat
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include <list>
@@ -156,7 +165,7 @@ TEST_F(ExecutingJavaScript, testShouldBeAbleToExecuteJavascriptAndReturnABasicOb
 
   // Cannot do an exact match; Firefox 4 inserts a few extra keys in our object; this is OK, as
   // long as the expected keys are there.
-  ASSERT_GE(result.size(), expected.size()) << "Expected:<" << expected.size() << ">, but was:<" << result.size() + ">";
+  ASSERT_GE(result.size(), expected.size()) << "Expected:<" << expected.size() << ">, but was:<" << result.size() << ">";
 
   Response::iterator expIterator = expected.begin();
   for (; expIterator != expected.end(); ++expIterator)

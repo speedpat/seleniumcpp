@@ -46,24 +46,28 @@ tests_SOURCES= \
 
 # Linker options for a.out
 tests_LDFLAGS = \
+	-stdlib=libc++ \
 	$(top_srcdir)/tests/support/libseleniumcpptest.la \
 	$(top_srcdir)/libseleniumcpp/libseleniumcpp.la \
 	$(JSONCPP_LIBS) \
 	$(COVERAGE_LDFLAGS) \
-	-lboost_regex \
-	-lpthread \
-	-lcppnetlib-client-connections \
 	-lboost_system \
-	-lboost_thread \
-	-lcppnetlib-uri 
+	$(BOOST_THREAD_LIB) \
+	-lboost_regex \
+	-lcppnetlib-uri \
+	-lcppnetlib-client-connections \
+	-lcrypto \
+	-lssl
+#	-lpthread
 
 # Compiler options for a.out
 tests_CPPFLAGS = \
 	-I$(top_srcdir)/include \
-	-I/usr/src/gmock/gtest/include \
+	-I$(top_srcdir)/third_party/gmock-1.7.0/include \
+	-I$(top_srcdir)/third_party/gmock-1.7.0/gtest/include \
 	-I$(top_srcdir)/third_party/boost-process \
-	-I$(top_srcdir)/third_party/hamcrestcpp \
-	-std=c++0x \
+	$(AM_CPPFLAGS) \
+	-std=c++11 \
 	$(JSONCPP_CFLAGS)
 
 tests_DEPENDENCIES = $(top_srcdir)/tests/support/libseleniumcpptest.la

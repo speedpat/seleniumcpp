@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1491393278/PATH/delimiter=\:
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1491393278/PATH/operation=replace
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1491393278/PATH/value=${PATH}\:/usr/local/bin
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1491393278/append=true
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1491393278/appendContributed=true

@@ -1,18 +1,18 @@
 /*
- ============================================================================
- Name        : exampleProgram.c
- Author      : SpeedPat
- Version     :
- Copyright   : (C) 2014 by SpeedPat
- Description : Uses shared library to print greeting
- To run the resulting executable the LD_LIBRARY_PATH must be
- set to ${project_loc}/libseleniumcpp/.libs
- Alternatively, libtool creates a wrapper shell script in the
- build directory of this program which can be used to run it.
- Here the script will be called exampleProgram.
- ============================================================================
+ * Copyright (C) 2014 Patrick Heeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 
 #include <iostream>
 #include <boost/exception/all.hpp>
@@ -25,9 +25,9 @@ int main(void) {
 				DesiredCapabilities::CHROME);
 //    driver.get("file:///tmp/test.html");
     driver.get("http://www.google.ch");
-    driver.addCookie(Cookie("test", "foo"));
+    //driver.addCookie(Cookie("test", "foo"));
 
-    driver.getCookies();
+    //driver.getCookies();
 /*
 		driver.title();
 		WebElement element = driver.findElementByID("viewport");

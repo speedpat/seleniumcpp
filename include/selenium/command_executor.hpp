@@ -110,7 +110,7 @@ struct response_value_handler<Dimension>
 class CommandExecutor
 {
 public:
-  inline CommandExecutor() {};
+  CommandExecutor() = default;
   virtual ~CommandExecutor() = default;
 
   template <typename RES, typename value_handler = response_value_handler<RES> >

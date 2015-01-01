@@ -2,3 +2,9 @@
 /autom4te.cache
 /configure
 /Makefile.in
+/m4
+/status*
+/include.in
+/include/config.h
+/ltmain.sh
+/aclocal.m4

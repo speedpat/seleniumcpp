@@ -1,8 +1,17 @@
 /*
- * pages.hpp
+ * Copyright (C) 2014 Patrick Heeb
  *
- *  Created on: Sep 20, 2014
- *      Author: speedpat
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #ifndef PAGES_HPP_
@@ -10,14 +19,17 @@
 
 #include <string>
 
+#include "app_server.hpp"
+
 namespace selenium
 {
-class AppServer;
-class Pages
+class Pages : public AppServer
 {
 public:
-  Pages(const AppServer& appServer);
+  Pages(const std::string& baseUrl);
   virtual ~Pages() = default;
+
+  virtual const std::string whereIs(const std::string& relativeUrl) const;
 
   std::string ajaxyPage;
   std::string alertsPage;
@@ -76,6 +88,8 @@ public:
   std::string veryLargeCanvas;
   std::string xhtmlFormPage;
   std::string xhtmlTestPage;
+private:
+  std::string m_baseUrl;
 };
 
 } /* namespace selenium */

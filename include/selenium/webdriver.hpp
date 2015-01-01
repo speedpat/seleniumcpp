@@ -119,14 +119,14 @@ public:
 	void addCookie(const Cookie& cookie);
 
 	void implicitlyWait(const unsigned int timeToWait);
-	template <class period>
-  void setScriptTimeout(std::chrono::duration<long int, period> timeout)
+	template <class Rep, class period>
+  void setScriptTimeout(std::chrono::duration<Rep, period> timeout)
 	{
 	  std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
-	  setScriptTimeout(ms.count());
+	  setScriptTimeoutMs(ms.count());
 	}
 
-	void setScriptTimeout(double timeToWait);
+	void setScriptTimeoutMs(double timeToWait);
 	void setPageLoadTimeout(const unsigned int timeToWait);
 
 	Capabilities getCapabilities();

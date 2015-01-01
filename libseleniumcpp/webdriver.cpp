@@ -1,8 +1,17 @@
 /*
- * WebDriver.cpp
+ * Copyright (C) 2014 Patrick Heeb
  *
- *  Created on: Sep 4, 2014
- *      Author: speedpat
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include <string>
@@ -22,7 +31,6 @@
 
 #include "log.hpp"
 #include "command.hpp"
-#include "types_internal.hpp"
 #include <selenium/exceptions.hpp>
 #include "selenium/script_arg.hpp"
 #include "selenium/script_result.hpp"
@@ -37,7 +45,8 @@
 
 namespace selenium {
 
-typedef boost::network::http::basic_client<boost::network::http::tags::http_keepalive_8bit_tcp_resolve, 1, 1> httpclient;
+typedef typename boost::network::http::tags::http_default_8bit_tcp_resolve Tags;
+typedef boost::network::http::basic_client<Tags, 1, 1> httpclient;
 
 struct WebDriver::Private : public CommandExecutor
 {
@@ -434,7 +443,7 @@ void WebDriver::implicitlyWait(const unsigned int timeToWait)
 	m_private->execute(Command::IMPLICIT_WAIT, params);
 }
 
-void WebDriver::setScriptTimeout(double timeoutInMs)
+void WebDriver::setScriptTimeoutMs(double timeoutInMs)
 {
 	CommandParameters params;
 	params["ms"] = timeoutInMs;
@@ -878,7 +887,7 @@ WebDriver::Private::execute(const Command& command,
       {
         LOG(what[1].str());
         std::string value = _params[what[1].str()].asString();
-        _params.removeMember(what[1].str());
+        _params.removeMember(what[1].str().data());
         return value;
       });
 
@@ -890,14 +899,15 @@ WebDriver::Private::execute(const Command& command,
 
   httpclient::request request(request_uri);
 
-  typedef typename httpclient::request::tag Tag;
-  typedef boost::network::constants<Tag> consts;
+  typedef boost::network::constants<Tags> consts;
 
   request << boost::network::header(consts::accept(), "application/json");
-  request << boost::network::header(consts::connection(), "Keep-Alive");
+  request << boost::network::header(consts::connection(), "close");
   request << boost::network::header(consts::user_agent(), consts::cpp_netlib_slash());
 
   httpclient::response response;
+  httpclient::string_type response_data;
+
   switch (pos->second.first)
   {
     case GET:
@@ -905,6 +915,7 @@ WebDriver::Private::execute(const Command& command,
       LOG("GET");
       request << boost::network::header("Cache-Control", "no-cache");
       response = m_client.get(request);
+      LOG("got response");
       break;
     }
     case POST:
@@ -912,26 +923,24 @@ WebDriver::Private::execute(const Command& command,
       LOG("POST");
       Json::FastWriter writer;
       std::string body = writer.write(_params);
-      std::string length = std::to_string(body.length()-1);
+      std::string length = std::to_string(body.length());
       LOG("request: " << body);
       request << boost::network::header("Content-Type",
           "application/json; charset=utf-8");
       request << boost::network::header("Content-Length", length);
       request << boost::network::header(consts::accept_encoding(), "utf8");
-      httpclient::request::headers_container_type::iterator it = request.headers().begin();
-      while (it != request.headers().end())
-      {
-        LOG(it->first << ": " << it->second);
-        ++it;
-      }
-      request.body(body.substr(0, body.length()-1));
+
+      request.body(body);
+
       response = m_client.post(request);
+      LOG("got response");
       break;
     }
     case DELETE:
       {
       LOG("DELETE");
       response = m_client.delete_(request);
+      LOG("got response");
       break;
     }
     default:
